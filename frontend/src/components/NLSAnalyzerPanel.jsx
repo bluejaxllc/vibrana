@@ -128,7 +128,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
 
     const handleUpload = async () => {
         if (!file) {
-            toast.error("Please select a PDF file first");
+            toast.error("Seleccione un archivo PDF primero");
             return;
         }
 
@@ -222,10 +222,10 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         </div>
                         <div>
                             <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#e2e8f0', letterSpacing: '0.2px' }}>
-                                NLS PDF Analyzer
+                                Analizador NLS
                             </h3>
                             <p style={{ margin: 0, fontSize: 11, color: '#64748b', marginTop: 1 }}>
-                                Biorresonance scan interpreter
+                                Intérprete de Escaneo de Biorresonancia
                             </p>
                         </div>
                     </div>
@@ -278,16 +278,16 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                             <>
                                 <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#f1f5f9' }}>{file.name}</p>
                                 <p style={{ margin: '5px 0 0', fontSize: 11, color: '#64748b' }}>
-                                    {(file.size / 1024).toFixed(1)} KB · Click to change file
+                                    {(file.size / 1024).toFixed(1)} KB · Clic para cambiar archivo
                                 </p>
                             </>
                         ) : (
                             <>
                                 <p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: '#94a3b8' }}>
-                                    Select NLS Scan PDF
+                                    Seleccionar PDF de Escaneo NLS
                                 </p>
                                 <p style={{ margin: '5px 0 0', fontSize: 11, color: '#475569' }}>
-                                    Click here or drag and drop your scan file
+                                    Haga clic aquí o arrastre y suelte su archivo
                                 </p>
                             </>
                         )}
@@ -324,9 +324,9 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         }}
                     >
                         {status === 'analyzing' ? (
-                            <><Activity size={15} className="animate-spin" /> Analyzing Entropy...</>
+                            <><Activity size={15} className="animate-spin" /> Analizando Entropía...</>
                         ) : (
-                            <><Zap size={15} /> Analyze Scan</>
+                            <><Zap size={15} /> Analizar Escaneo</>
                         )}
                     </button>
 
@@ -352,7 +352,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                                 transition: 'all 0.2s ease',
                             }}
                         >
-                            <FileText size={15} /> View Full Report
+                            <FileText size={15} /> Ver Reporte Completo
                         </button>
                     )}
                 </div>
