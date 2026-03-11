@@ -6810,6 +6810,9 @@ textarea:focus {
 /* Modal body */
 .nls-modal-body {
   padding: 28px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Sections ── */
