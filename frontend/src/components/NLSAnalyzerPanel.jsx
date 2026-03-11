@@ -160,7 +160,8 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         console.warn('[NLS] report_data was a string but could not be parsed:', e);
                     }
                 }
-                console.log('[NLS] Parsed report data:', parsed);
+                console.log('[NLS] Parsed report data keys:', Object.keys(parsed));
+                console.log('[NLS] Full report data:', JSON.stringify(parsed, null, 2));
                 setReportData(parsed);
                 setShowModal(true);
                 toast.success("¡Análisis completo!");
@@ -392,15 +393,15 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                                 <div className="nls-metrics-grid">
                                     <div className="nls-metric nls-metric-danger">
                                         <span className="nls-metric-label">Nivel Fleindler</span>
-                                        <span className="nls-metric-value">{reportData.entropic_analysis?.fleindler_entropy_level || '—'}<span className="nls-metric-unit">/6</span></span>
+                                        <span className="nls-metric-value">{reportData.entropic_analysis?.fleindler_entropy_level ?? '—'}<span className="nls-metric-unit">/6</span></span>
                                     </div>
                                     <div className="nls-metric nls-metric-warning">
                                         <span className="nls-metric-label">Brecha Rojo/Azul</span>
-                                        <span className="nls-metric-value-sm">{reportData.entropic_analysis?.red_blue_dissociation || '—'}</span>
+                                        <span className="nls-metric-value-sm">{reportData.entropic_analysis?.red_blue_dissociation ?? '—'}</span>
                                     </div>
                                     <div className="nls-metric nls-metric-info">
                                         <span className="nls-metric-label">CSS (Valor-D)</span>
-                                        <span className="nls-metric-value">{reportData.entropic_analysis?.css_d_value || '—'}</span>
+                                        <span className="nls-metric-value">{reportData.entropic_analysis?.css_d_value ?? '—'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -418,18 +419,20 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                             )}
 
                             {/* ── Recommended Therapies ── */}
-                            {reportData.recommended_etalons && reportData.recommended_etalons.length > 0 && (
-                                <div className="nls-section">
-                                    <h3 className="nls-section-title">
-                                        <Target size={16} /> Terapias Recomendadas
-                                    </h3>
+                            <div className="nls-section">
+                                <h3 className="nls-section-title">
+                                    <Target size={16} /> Terapias Recomendadas
+                                </h3>
+                                {reportData.recommended_etalons && reportData.recommended_etalons.length > 0 ? (
                                     <div className="nls-therapy-list">
                                         {reportData.recommended_etalons.map((etalon, idx) => (
                                             <TherapyCard key={idx} etalon={etalon} />
                                         ))}
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>El PDF no contenía datos de escaneo de paciente. Suba un reporte NLS con resultados de Fleindler, CSS y disociación para obtener un plan terapéutico completo.</p>
+                                )}
+                            </div>
 
                             {/* ── Foods Grid ── */}
                             <div className="nls-section nls-foods-section">
