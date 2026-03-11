@@ -191,11 +191,11 @@ const Dashboard = () => {
 
     const handleStartScan = async () => {
         if (!selectedPatient) {
-            toast.error("Select a patient first");
+            toast.error("Seleccione un paciente primero");
             return;
         }
         try {
-            setStatus('Requesting Scan...');
+            setStatus('Solicitando Escaneo...');
             const response = await fetch(`${API}/scan/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -203,28 +203,28 @@ const Dashboard = () => {
             });
             const data = await response.json();
             if (data.device_required) {
-                setStatus('Idle');
-                toast.error(data.message || 'NLS device required for scanning');
+                setStatus('Inactivo');
+                toast.error(data.message || 'Dispositivo NLS requerido para escanear');
                 return;
             }
             setStatus(data.message);
             setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${data.message}`]);
-            toast.success('Scan initiated');
+            toast.success('Escaneo iniciado');
         } catch (error) {
             console.error("Error starting scan:", error);
-            setStatus('Error: Backend Offline');
-            setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Error: Backend Offline`]);
-            toast.error('Backend is offline');
+            setStatus('Error: Backend Desconectado');
+            setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Error: Backend Desconectado`]);
+            toast.error('Backend Desconectado');
         }
     };
 
     const handleAnalyze = async () => {
         if (!selectedPatient) {
-            toast.error("Select a patient first");
+            toast.error("Seleccione un paciente primero");
             return;
         }
         try {
-            setStatus('Analyzing...');
+            setStatus('Analizando...');
             const response = await fetch(`${API}/scan/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -232,23 +232,23 @@ const Dashboard = () => {
             });
             const data = await response.json();
             if (data.device_required) {
-                setStatus('Idle');
-                toast.error(data.message || 'NLS device required for analysis');
+                setStatus('Inactivo');
+                toast.error(data.message || 'Dispositivo NLS requerido para análisis');
                 return;
             }
-            setStatus('Analysis Complete');
+            setStatus('Análisis Completo');
             setAnalysisResult(data.analysis);
-            setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Analysis: ${data.analysis.status}`]);
-            toast.success(`Analysis complete: ${data.analysis.status}`);
+            setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Análisis: ${data.analysis.status}`]);
+            toast.success(`Análisis completo: ${data.analysis.status}`);
         } catch (error) {
             console.error("Analysis error:", error);
-            setStatus('Error: Analysis Failed');
-            toast.error('Analysis failed');
+            setStatus('Error: Análisis Fallido');
+            toast.error('Análisis fallido');
         }
     };
 
     const handleStopScan = async () => {
-        setStatus('Idle');
+        setStatus('Inactivo');
         setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Scan Stopped`]);
         toast('Scan stopped', { icon: '⏹' });
     };
@@ -282,12 +282,12 @@ const Dashboard = () => {
             <header className="dashboard-header vfx-fade-in">
                 <div>
                     <h1>Vibrana Overseer</h1>
-                    {selectedPatient && <div className="patient-badge">● Patient: {selectedPatient.name}</div>}
+                    {selectedPatient && <div className="patient-badge">● Paciente: {selectedPatient.name}</div>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {teams.length > 0 && (
                         <div className="team-switcher glass px-2 py-1 rounded flex items-center gap-2 border border-accent/20">
-                            <span className="text-[10px] opacity-40 uppercase font-bold">Team</span>
+                            <span className="text-[10px] opacity-40 uppercase font-bold">Equipo</span>
                             <select
                                 value={currentTeam?.team_id || ''}
                                 onChange={(e) => handleTeamChange(e.target.value)}
@@ -297,9 +297,9 @@ const Dashboard = () => {
                             </select>
                         </div>
                     )}
-                    <a href="/analytics" className="btn btn-ghost btn-sm">📊 Analytics</a>
-                    <a href="/diagnostic-logs" className="btn btn-ghost btn-sm">📋 Logs</a>
-                    <a href="/teams" className="btn btn-ghost btn-sm">👥 Team</a>
+                    <a href="/analytics" className="btn btn-ghost btn-sm">📊 Estadísticas</a>
+                    <a href="/diagnostic-logs" className="btn btn-ghost btn-sm">📋 Registros</a>
+                    <a href="/teams" className="btn btn-ghost btn-sm">👥 Equipo</a>
                     <a href="/settings" className="btn btn-ghost btn-sm">⚙️</a>
                     <span className={`status-badge ${getStatusClass()}`}>{status}</span>
                 </div>
@@ -359,7 +359,7 @@ const Dashboard = () => {
 
                     {/* Collapsible: Live Analysis */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.3s' }}>
-                        <CollapsibleSection title="Live Analysis" icon={<Activity size={14} />} defaultOpen={false}>
+                        <CollapsibleSection title="Análisis en Vivo" icon={<Activity size={14} />} defaultOpen={false}>
                             <LiveEntropyCounter patientId={selectedPatient?.id} />
                             <ScreenWatcherPanel patientId={selectedPatient?.id} />
                         </CollapsibleSection>
@@ -370,7 +370,7 @@ const Dashboard = () => {
                 <div className="column-right">
                     {/* Collapsible: Advanced Tools */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
-                        <CollapsibleSection title="Advanced Tools" icon={<Wrench size={14} />} defaultOpen={false}>
+                        <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
                             <CVTools />
                             <MacroManager />
                         </CollapsibleSection>
@@ -386,10 +386,10 @@ const Dashboard = () => {
 
                     {/* Scan Log */}
                     <div className="data-log vfx-card-enter" style={{ animationDelay: '0.45s', flex: 1 }}>
-                        <h3>Scan Log</h3>
+                        <h3>Registro de Escaneo</h3>
                         <ul>
                             {scanData.map((log, idx) => <li key={idx}>{log}</li>)}
-                            {scanData.length === 0 && <li className="log-empty">No data yet...</li>}
+                            {scanData.length === 0 && <li className="log-empty">Sin datos aún...</li>}
                         </ul>
                     </div>
                 </div>
