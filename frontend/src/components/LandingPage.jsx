@@ -87,7 +87,7 @@ const i18n = {
             prereqTitle: 'Requisitos Previos',
             prereqs: ['Python 3.10+', 'Node.js 18+', 'Git', 'Clave API de Google Gemini (gratis en aistudio.google.com)'],
             steps: [
-                { num: '1', title: 'Clonar el Repositorio', cmd: 'git clone https://github.com/bluejax/vibrana.git\ncd vibrana' },
+                { num: '1', title: 'Clonar el Repositorio', cmd: 'git clone https://github.com/bluejaxllc/vibrana.git\ncd vibrana' },
                 { num: '2', title: 'Configurar el Backend', cmd: 'cd backend\npython -m venv venv\nvenv\\Scripts\\activate    # Windows\n# source venv/bin/activate  # Mac/Linux\npip install -r requirements.txt' },
                 { num: '3', title: 'Variables de Entorno', cmd: '# Crear archivo .env en /backend\necho GEMINI_API_KEY=tu_clave_api > .env' },
                 { num: '4', title: 'Iniciar el Backend', cmd: 'python app.py\n# El servidor inicia en http://localhost:5001' },
@@ -174,7 +174,7 @@ const i18n = {
             prereqTitle: 'Prerequisites',
             prereqs: ['Python 3.10+', 'Node.js 18+', 'Git', 'Google Gemini API Key (free at aistudio.google.com)'],
             steps: [
-                { num: '1', title: 'Clone the Repository', cmd: 'git clone https://github.com/bluejax/vibrana.git\ncd vibrana' },
+                { num: '1', title: 'Clone the Repository', cmd: 'git clone https://github.com/bluejaxllc/vibrana.git\ncd vibrana' },
                 { num: '2', title: 'Set Up the Backend', cmd: 'cd backend\npython -m venv venv\nvenv\\Scripts\\activate    # Windows\n# source venv/bin/activate  # Mac/Linux\npip install -r requirements.txt' },
                 { num: '3', title: 'Environment Variables', cmd: '# Create .env file in /backend\necho GEMINI_API_KEY=your_api_key > .env' },
                 { num: '4', title: 'Start the Backend', cmd: 'python app.py\n# Server starts at http://localhost:5001' },
