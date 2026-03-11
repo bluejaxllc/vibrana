@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f0f1a"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="400" y1="100" x2="800" y2="530" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="textGlow" x1="300" y1="250" x2="900" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c4b5fd"/>
+    </linearGradient>
+    <filter id="blur1">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+    <filter id="blur2">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <filter id="glow-filter">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Ambient glow orbs -->
+  <circle cx="200" cy="150" r="180" fill="#8b5cf6" opacity="0.06" filter="url(#blur1)"/>
+  <circle cx="1000" cy="480" r="200" fill="#6d28d9" opacity="0.06" filter="url(#blur1)"/>
+  <circle cx="600" cy="315" r="250" fill="#7c3aed" opacity="0.04" filter="url(#blur1)"/>
+
+  <!-- Diamond / V shape (enlarged from favicon) -->
+  <path d="M600 140 L720 315 L600 490 L480 315 Z" stroke="url(#glow)" stroke-width="2.5" fill="none" stroke-linejoin="round" opacity="0.3"/>
+
+  <!-- Inner diamond -->
+  <path d="M600 200 L680 315 L600 430 L520 315 Z" stroke="url(#glow)" stroke-width="1.5" fill="none" stroke-linejoin="round" opacity="0.15"/>
+
+  <!-- Glow ring -->
+  <circle cx="600" cy="315" r="160" stroke="url(#glow)" stroke-width="1.5" opacity="0.12" filter="url(#blur2)"/>
+
+  <!-- Inner pulse dot -->
+  <circle cx="600" cy="315" r="6" fill="url(#glow)" opacity="0.5"/>
+
+  <!-- Accent lines -->
+  <line x1="600" y1="140" x2="600" y2="250" stroke="#8b5cf6" stroke-width="1.5" opacity="0.25"/>
+  <line x1="600" y1="380" x2="600" y2="490" stroke="#8b5cf6" stroke-width="1.5" opacity="0.25"/>
+
+  <!-- Brand name -->
+  <text x="600" y="300" text-anchor="middle" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="72" font-weight="700" letter-spacing="12" fill="url(#textGlow)" filter="url(#glow-filter)">VIBRANA</text>
+
+  <!-- Tagline -->
+  <text x="600" y="360" text-anchor="middle" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="300" letter-spacing="6" fill="#a78bfa" opacity="0.7">INTELLIGENT CARE-HOME MANAGEMENT</text>
+
+  <!-- Subtle border -->
+  <rect x="1" y="1" width="1198" height="628" rx="0" stroke="#8b5cf6" stroke-width="1" fill="none" opacity="0.1"/>
+</svg>

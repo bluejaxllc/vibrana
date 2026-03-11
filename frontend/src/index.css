@@ -1,0 +1,37 @@
+/* Vibrana — Base Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  line-height: 1.5;
+  min-width: 320px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: #bd93f9;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #d4b8ff;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

@@ -1,0 +1,2 @@
+Domains already exist on the service:
+🚀 https://vibrana-frontend-production.up.railway.app

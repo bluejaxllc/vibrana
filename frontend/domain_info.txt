@@ -1,0 +1,3 @@
+Domains already exist on the service:
+- https://vibrana.bluejax.ai
+- https://vibrana-frontend-production.up.railway.app
