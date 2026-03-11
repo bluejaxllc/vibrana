@@ -388,6 +388,17 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         {/* Modal Body */}
                         <div className="nls-modal-body">
 
+                            {/* DEBUG: Remove after testing */}
+                            <div style={{ background: '#1e1e3a', border: '1px solid #a78bfa', borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#8be9fd', maxHeight: '120px', overflow: 'auto' }}>
+                                <strong style={{ color: '#f1fa8c' }}>🔍 DEBUG — reportData keys:</strong> {JSON.stringify(Object.keys(reportData || {}))}
+                                <br />
+                                <strong style={{ color: '#f1fa8c' }}>📊 entropic_analysis:</strong> {JSON.stringify(reportData?.entropic_analysis)}
+                                <br />
+                                <strong style={{ color: '#f1fa8c' }}>🩺 scan_metadata:</strong> {JSON.stringify(reportData?.scan_metadata)}
+                                <br />
+                                <strong style={{ color: '#f1fa8c' }}>📝 has clinical_synthesis:</strong> {String(!!reportData?.clinical_synthesis)} | <strong>therapies:</strong> {reportData?.recommended_etalons?.length ?? 0} | <strong>foods:</strong> {reportData?.foods_to_eat?.length ?? 0}
+                            </div>
+
                             {/* ── Entropic Metrics ── */}
                             <div className="nls-section">
                                 <div className="nls-metrics-grid">
