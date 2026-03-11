@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { FileText, UploadCloud, Activity, Printer, X, Shield, Target, Zap, ChevronDown, ChevronRight } from 'lucide-react';
 import { LOCAL_API as API } from '../config.js';
@@ -359,7 +360,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
             </div>
 
             {/* ── Full-Screen Results Modal ── */}
-            {showModal && reportData && (
+            {showModal && reportData && createPortal(
                 <div className="nls-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}>
                     <div className="nls-modal-container print-nls-container">
                         {/* Modal Header */}
@@ -551,7 +552,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         </div>
                     </div>
                 </div>
-            )}
+            , document.body)}
 
             {/* ── Animations ── */}
             <style jsx="true">{`
