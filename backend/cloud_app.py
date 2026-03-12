@@ -15,6 +15,7 @@ import uuid
 import requests
 from datetime import datetime, date, timedelta
 import os
+from licensing import get_license_status, activate_license, deactivate_license, init_license, get_current_tier, require_tier
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": [
@@ -29,6 +30,7 @@ CORS(app, resources={r"/*": {"origins": [
 
 # Initialize database
 init_db()
+init_license()
 
 
 # ──────────────────────────────────────
@@ -63,7 +65,30 @@ def log_audit(db, user_id, action, entity_type=None, entity_id=None, details=Non
 # ──────────────────────────────────────
 @app.route('/status', methods=['GET'])
 def get_status():
-    return jsonify({"status": "online", "message": "Vibrana Cloud API Ready", "bot_online": False, "cloud": True})
+    return jsonify({"status": "online", "message": "Vibrana Cloud API Ready", "bot_online": False, "cloud": True, "license_tier": get_current_tier()})
+
+
+# ──────────────────────────────────────
+# LICENSE
+# ──────────────────────────────────────
+@app.route('/license/status', methods=['GET'])
+def license_status():
+    return jsonify(get_license_status())
+
+
+@app.route('/license/activate', methods=['POST'])
+def license_activate():
+    data = request.json or {}
+    key = data.get('license_key', '').strip()
+    result = activate_license(key)
+    if result.get('success'):
+        return jsonify(result)
+    return jsonify(result), 400
+
+
+@app.route('/license/deactivate', methods=['POST'])
+def license_deactivate():
+    return jsonify(deactivate_license())
 
 
 # ──────────────────────────────────────
