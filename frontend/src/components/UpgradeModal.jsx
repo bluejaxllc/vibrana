@@ -169,37 +169,4 @@ const UpgradeModal = () => {
     );
 };
 
-/**
- * FeatureGate — wraps a component to show a lock overlay when the feature is not available
- * 
- * Usage:
- *   <FeatureGate feature="ai_interpret">
- *     <AIInsights ... />
- *   </FeatureGate>
- */
-export const FeatureGate = ({ feature, children, fallback = null }) => {
-    const { isFeatureAvailable, promptUpgrade, getRequiredTier } = useLicense();
-
-    if (isFeatureAvailable(feature)) {
-        return children;
-    }
-
-    const requiredTier = getRequiredTier(feature);
-
-    return (
-        <div className="feature-locked" onClick={() => promptUpgrade(feature)}>
-            <div className="feature-locked-overlay">
-                <Lock size={24} />
-                <span>Plan {requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)} requerido</span>
-                <button className="btn-unlock">
-                    <Sparkles size={14} /> Actualizar
-                </button>
-            </div>
-            <div className="feature-locked-content">
-                {fallback || children}
-            </div>
-        </div>
-    );
-};
-
 export default UpgradeModal;

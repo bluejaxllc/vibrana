@@ -12,7 +12,6 @@ import LiveEntropyCounter from './LiveEntropyCounter';
 import ScreenWatcherPanel from './ScreenWatcherPanel';
 import OrganMap from './OrganMap';
 import NLSAnalyzerPanel from './NLSAnalyzerPanel';
-import { FeatureGate } from './UpgradeModal';
 import { useLicense } from '../hooks/useLicense';
 import '../App.css';
 
@@ -362,12 +361,8 @@ const Dashboard = () => {
                     {/* Collapsible: Live Analysis */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.3s' }}>
                         <CollapsibleSection title="Análisis en Vivo" icon={<Activity size={14} />} defaultOpen={false}>
-                            <FeatureGate feature="live_entropy">
-                                <LiveEntropyCounter patientId={selectedPatient?.id} />
-                            </FeatureGate>
-                            <FeatureGate feature="screen_watcher">
-                                <ScreenWatcherPanel patientId={selectedPatient?.id} />
-                            </FeatureGate>
+                            <LiveEntropyCounter patientId={selectedPatient?.id} />
+                            <ScreenWatcherPanel patientId={selectedPatient?.id} />
                         </CollapsibleSection>
                     </div>
                 </div>
@@ -377,23 +372,17 @@ const Dashboard = () => {
                     {/* Collapsible: Advanced Tools */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
                         <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
-                            <FeatureGate feature="cv_tools">
-                                <CVTools />
-                            </FeatureGate>
-                            <FeatureGate feature="macros">
-                                <MacroManager />
-                            </FeatureGate>
+                            <CVTools />
+                            <MacroManager />
                         </CollapsibleSection>
                     </div>
 
                     {/* NLS Analyzer Panel */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
-                        <FeatureGate feature="nls_analyzer">
-                            <NLSAnalyzerPanel onAnalyzeComplete={(data) => {
-                                setAiReportData(data);
-                                toast.success("Datos de IA sincronizados con Mapa Corporal");
-                            }} />
-                        </FeatureGate>
+                        <NLSAnalyzerPanel onAnalyzeComplete={(data) => {
+                            setAiReportData(data);
+                            toast.success("Datos de IA sincronizados con Mapa Corporal");
+                        }} />
                     </div>
 
                     {/* Scan Log */}

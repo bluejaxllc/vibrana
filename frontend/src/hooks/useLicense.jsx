@@ -18,7 +18,9 @@ export function LicenseProvider({ children }) {
 
     const fetchLicense = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/license/status`);
+            const token = localStorage.getItem('vibrana_token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+            const res = await fetch(`${API}/license/status`, { headers });
             if (res.ok) {
                 const data = await res.json();
                 setLicense({ ...data, loading: false });

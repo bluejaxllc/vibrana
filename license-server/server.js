@@ -142,54 +142,46 @@ app.get('/config', (req, res) => {
  * Called by Vibrana backend on startup and periodically.
  */
 app.post('/validate', (req, res) => {
-    const { license_key, machine_id } = req.body || {};
+    const { email, machine_id } = req.body || {};
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-    if (!license_key) {
-        logValidation(null, machine_id, ip, 'missing_key');
-        return res.status(400).json({ valid: false, error: 'License key required' });
+    if (!email) {
+        logValidation(null, machine_id, ip, 'missing_email');
+        return res.status(400).json({ valid: false, error: 'Email required' });
     }
 
-    const license = db.prepare('SELECT * FROM licenses WHERE license_key = ?').get(license_key);
+    const license = db.prepare('SELECT * FROM licenses WHERE email = ?').get(email);
 
     if (!license) {
-        logValidation(license_key, machine_id, ip, 'not_found');
-        return res.json({ valid: false, error: 'Clave de licencia no encontrada' });
+        logValidation('email:'+email, machine_id, ip, 'not_found');
+        return res.json({ valid: false, error: 'Suscripción no encontrada para este correo' });
     }
 
     if (!license.is_active) {
-        logValidation(license_key, machine_id, ip, 'inactive');
-        return res.json({ valid: false, error: 'Licencia desactivada' });
+        logValidation('email:'+email, machine_id, ip, 'inactive');
+        return res.json({ valid: false, error: 'Suscripción desactivada' });
     }
 
     // Check expiration
     if (license.expires_at) {
         const expires = new Date(license.expires_at);
         if (expires < new Date()) {
-            logValidation(license_key, machine_id, ip, 'expired');
-            return res.json({ valid: false, error: 'Licencia expirada' });
+            logValidation('email:'+email, machine_id, ip, 'expired');
+            return res.json({ valid: false, error: 'Suscripción expirada' });
         }
     }
 
-    // Check machine binding (if already bound)
-    if (license.machine_id && machine_id && license.machine_id !== machine_id) {
-        logValidation(license_key, machine_id, ip, 'machine_mismatch');
-        return res.json({ 
-            valid: false, 
-            error: 'Esta licencia está vinculada a otra máquina' 
-        });
-    }
-
-    // Bind machine on first validation if not yet bound
-    if (!license.machine_id && machine_id) {
+    // Update machine binding to the latest machine
+    if (machine_id && license.machine_id !== machine_id) {
         db.prepare('UPDATE licenses SET machine_id = ? WHERE id = ?').run(machine_id, license.id);
+        logValidation('email:'+email, machine_id, ip, 'machine_roamed');
     }
 
     // Update validation stats
     db.prepare(`UPDATE licenses SET last_validated = datetime('now'), validation_count = validation_count + 1 WHERE id = ?`)
         .run(license.id);
 
-    logValidation(license_key, machine_id, ip, 'valid');
+    logValidation('email:'+email, machine_id, ip, 'valid');
 
     res.json({
         valid: true,
@@ -204,29 +196,29 @@ app.post('/validate', (req, res) => {
  * POST /activate — Activate a license key for a machine
  */
 app.post('/activate', (req, res) => {
-    const { license_key, machine_id } = req.body || {};
+    const { email, machine_id } = req.body || {};
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-    if (!license_key) {
-        return res.status(400).json({ success: false, error: 'License key required' });
+    if (!email) {
+        return res.status(400).json({ success: false, error: 'Email required' });
     }
 
-    const license = db.prepare('SELECT * FROM licenses WHERE license_key = ?').get(license_key);
+    const license = db.prepare('SELECT * FROM licenses WHERE email = ?').get(email);
 
     if (!license) {
-        logValidation(license_key, machine_id, ip, 'activate_not_found');
-        return res.json({ success: false, error: 'Clave de licencia no encontrada' });
+        logValidation('email:'+email, machine_id, ip, 'activate_not_found');
+        return res.json({ success: false, error: 'Suscripción no encontrada' });
     }
 
     if (!license.is_active) {
-        return res.json({ success: false, error: 'Licencia desactivada' });
+        return res.json({ success: false, error: 'Suscripción desactivada' });
     }
 
     // Bind to machine
     db.prepare(`UPDATE licenses SET machine_id = ?, activated_at = datetime('now'), last_validated = datetime('now') WHERE id = ?`)
         .run(machine_id || null, license.id);
 
-    logValidation(license_key, machine_id, ip, 'activated');
+    logValidation('email:'+email, machine_id, ip, 'activated');
 
     res.json({
         success: true,
@@ -240,11 +232,11 @@ app.post('/activate', (req, res) => {
  * POST /deactivate — Release a license key from a machine
  */
 app.post('/deactivate', (req, res) => {
-    const { license_key, machine_id } = req.body || {};
+    const { email, machine_id } = req.body || {};
 
-    const license = db.prepare('SELECT * FROM licenses WHERE license_key = ?').get(license_key);
+    const license = db.prepare('SELECT * FROM licenses WHERE email = ?').get(email);
     if (!license) {
-        return res.json({ success: false, error: 'Clave no encontrada' });
+        return res.json({ success: false, error: 'Suscripción no encontrada' });
     }
 
     db.prepare('UPDATE licenses SET machine_id = NULL WHERE id = ?').run(license.id);
