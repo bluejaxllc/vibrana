@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: vibrana-api
+    runtime: python
+    buildCommand: pip install -r requirements-cloud.txt
+    startCommand: gunicorn cloud_app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vibrana-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://vibrana.vercel.app,https://www.bluejax.ai,https://bluejax.ai,http://localhost:5176
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+databases:
+  - name: vibrana-db
+    plan: free
+    databaseName: vibrana
+    user: vibrana_user

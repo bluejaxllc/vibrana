@@ -1,0 +1,23 @@
+{
+    "research_btn": [
+        100,
+        100
+    ],
+    "scan_btn": [
+        200,
+        200
+    ],
+    "exit_btn": [
+        300,
+        300
+    ],
+    "roi_top_left": [
+        0,
+        0
+    ],
+    "roi_bottom_right": [
+        1920,
+        1080
+    ],
+    "active_monitor": 1
+}

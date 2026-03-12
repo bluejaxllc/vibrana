@@ -1,0 +1,9 @@
+[OK] Database initialized (sqlite:///C:\Users\edgar\OneDr...)
+Patient: Edgar (93899ef8-5ba..., 8 scans)
+Calling gather_patient_data...
+Systems: ['Otro']
+Generating report...
+[AI Report] Generating report for patient 93899ef8-5ba5-47ea-bacf-373ef1971197 (8 scans)...
+[AI Report] Gemini call failed: Expecting property name enclosed in double quotes: line 4 column 450 (char 541)
+Keys: ['patient', 'report', 'raw_data', 'metadata']
+SUCCESS

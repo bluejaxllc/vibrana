@@ -1,0 +1,4 @@
+```json
+{
+  "status": "success",
+  "report_markdown": "# Reporte de Análisis NLS y Protocolo Cuanto-Entrópico\n\n**Paciente:** Maria del Carmen Delgado Burola\n**Edad:** 75 años\n**Fecha de Escaneo:** [No especificada, asumo reciente]\n\n## 1. Análisis Cuanto-Entrópico y Escala de Fleindler (D-Value)\n\nComo ingeniero cuántico y experto clínico en biorresonancia NLS, he analizado el escaneo de Maria del Carmen Delgado Burola utilizando la Escala de Fleindler y la Lógica Cuanto-Entrópica. Los valores D (CSS) indican la desviación del estado homeostático

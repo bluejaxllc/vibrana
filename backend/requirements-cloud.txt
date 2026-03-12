@@ -1,0 +1,11 @@
+flask
+flask-cors
+sqlalchemy
+psycopg2-binary
+pyjwt
+bcrypt
+reportlab
+gunicorn
+pypdf
+google-generativeai
+requests

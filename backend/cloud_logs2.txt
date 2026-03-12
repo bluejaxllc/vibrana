@@ -1,0 +1,500 @@
+[2026-03-10 08:05:36 +0000] [1] [ERROR] Shutting down: Master
+[2026-03-10 08:05:36 +0000] [1] [ERROR] Reason: Worker failed to boot.
+[2026-03-10 08:05:38 +0000] [1] [INFO] Starting gunicorn 25.1.0
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+    import requests
+ModuleNotFoundError: No module named 'requests'
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+No module named 'requests'
+  File "/app/cloud_app.py", line 15, in <module>
+[2026-03-10 08:05:38 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:38 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    worker.init_process()
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "/app/cloud_app.py", line 15, in <module>
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+    import requests
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:38 +0000] [6] [INFO] Worker exiting (pid: 6)
+[2026-03-10 08:05:38 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+[2026-03-10 08:05:39 +0000] [1] [INFO] Worker (pid:6) was sent SIGTERM!
+[2026-03-10 08:05:39 +0000] [1] [ERROR] Shutting down: Master
+[2026-03-10 08:05:39 +0000] [1] [ERROR] Reason: Worker failed to boot.
+[2026-03-10 08:05:40 +0000] [1] [INFO] Starting gunicorn 25.1.0
+[2026-03-10 08:05:40 +0000] [1] [INFO] Listening at: http://0.0.0.0:8080 (1)
+[2026-03-10 08:05:40 +0000] [1] [INFO] Using worker: sync
+[2026-03-10 08:05:40 +0000] [1] [INFO] Control socket listening at /app/gunicorn.ctl
+[2026-03-10 08:05:40 +0000] [5] [INFO] Booting worker with pid: 5
+[2026-03-10 08:05:40 +0000] [6] [INFO] Booting worker with pid: 6
+[2026-03-10 08:05:41 +0000] [5] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+           ^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:41 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:41 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:41 +0000] [6] [INFO] Worker exiting (pid: 6)
+[2026-03-10 08:05:41 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+[2026-03-10 08:05:41 +0000] [1] [INFO] Worker (pid:6) was sent SIGTERM!
+[2026-03-10 08:05:41 +0000] [1] [ERROR] Shutting down: Master
+[2026-03-10 08:05:41 +0000] [1] [ERROR] Reason: Worker failed to boot.
+[2026-03-10 08:05:42 +0000] [1] [INFO] Starting gunicorn 25.1.0
+[2026-03-10 08:05:42 +0000] [1] [INFO] Listening at: http://0.0.0.0:8080 (1)
+[2026-03-10 08:05:42 +0000] [1] [INFO] Using worker: sync
+[2026-03-10 08:05:42 +0000] [1] [INFO] Control socket listening at /app/gunicorn.ctl
+[2026-03-10 08:05:42 +0000] [5] [INFO] Booting worker with pid: 5
+[2026-03-10 08:05:42 +0000] [6] [INFO] Booting worker with pid: 6
+[2026-03-10 08:05:43 +0000] [5] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    self.wsgi = self.app.wsgi()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+           ^^^^^^^^^^^^^^^^^^^
+    self.callable = self.load()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    return util.import_app(self.app_uri)
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    mod = importlib.import_module(module)
+    return self.load_wsgiapp()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:43 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:43 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    return self.load_wsgiapp()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+[2026-03-10 08:05:45 +0000] [1] [INFO] Control socket listening at /app/gunicorn.ctl
+    self.wsgi = self.app.wsgi()
+[2026-03-10 08:05:45 +0000] [5] [ERROR] Exception in worker process
+[2026-03-10 08:05:45 +0000] [5] [INFO] Booting worker with pid: 5
+Traceback (most recent call last):
+[2026-03-10 08:05:45 +0000] [6] [INFO] Booting worker with pid: 6
+[2026-03-10 08:05:43 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+[2026-03-10 08:05:43 +0000] [6] [INFO] Worker exiting (pid: 6)
+[2026-03-10 08:05:43 +0000] [1] [INFO] Worker (pid:6) was sent SIGTERM!
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+[2026-03-10 08:05:45 +0000] [1] [INFO] Starting gunicorn 25.1.0
+[2026-03-10 08:05:43 +0000] [1] [ERROR] Shutting down: Master
+    self.load_wsgi()
+[2026-03-10 08:05:45 +0000] [1] [INFO] Listening at: http://0.0.0.0:8080 (1)
+[2026-03-10 08:05:43 +0000] [1] [ERROR] Reason: Worker failed to boot.
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+[2026-03-10 08:05:45 +0000] [1] [INFO] Using worker: sync
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:45 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:45 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+    self.wsgi = self.app.wsgi()
+[2026-03-10 08:05:45 +0000] [6] [INFO] Worker exiting (pid: 6)
+[2026-03-10 08:05:46 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+[2026-03-10 08:05:46 +0000] [1] [INFO] Worker (pid:6) was sent SIGTERM!
+[2026-03-10 08:05:46 +0000] [1] [ERROR] Shutting down: Master
+[2026-03-10 08:05:46 +0000] [1] [ERROR] Reason: Worker failed to boot.
+[2026-03-10 08:05:47 +0000] [1] [INFO] Starting gunicorn 25.1.0
+[2026-03-10 08:05:47 +0000] [1] [INFO] Listening at: http://0.0.0.0:8080 (1)
+[2026-03-10 08:05:47 +0000] [1] [INFO] Using worker: sync
+[2026-03-10 08:05:47 +0000] [1] [INFO] Control socket listening at /app/gunicorn.ctl
+[2026-03-10 08:05:47 +0000] [5] [INFO] Booting worker with pid: 5
+[2026-03-10 08:05:47 +0000] [6] [INFO] Booting worker with pid: 6
+[2026-03-10 08:05:48 +0000] [5] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:48 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:48 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+    WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]", prog=prog).run()
+Traceback (most recent call last):
+    handler()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 235, in run
+  File "/opt/venv/bin/gunicorn", line 8, in <module>
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 267, in handle_chld
+[2026-03-10 08:05:48 +0000] [1] [ERROR] Worker (pid:6) exited with code 3.
+    sys.exit(run())
+gunicorn.errors.HaltServer: <HaltServer 'Worker failed to boot.' 3>
+    self.reap_workers()
+             ^^^^^
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 637, in reap_workers
+[2026-03-10 08:05:48 +0000] [6] [INFO] Worker exiting (pid: 6)
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 66, in run
+During handling of the above exception, another exception occurred:
+    raise HaltServer(reason, self.WORKER_BOOT_ERROR)
+[2026-03-10 08:05:48 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 242, in run
+
+[2026-03-10 08:05:50 +0000] [5] [ERROR] Exception in worker process
+gunicorn.errors.HaltServer: <HaltServer 'Worker failed to boot.' 3>
+[2026-03-10 08:05:49 +0000] [1] [INFO] Starting gunicorn 25.1.0
+[2026-03-10 08:05:49 +0000] [1] [INFO] Listening at: http://0.0.0.0:8080 (1)
+[2026-03-10 08:05:49 +0000] [1] [INFO] Using worker: sync
+[2026-03-10 08:05:49 +0000] [1] [INFO] Control socket listening at /app/gunicorn.ctl
+[2026-03-10 08:05:49 +0000] [5] [INFO] Booting worker with pid: 5
+[2026-03-10 08:05:49 +0000] [6] [INFO] Booting worker with pid: 6
+    super().run()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 71, in run
+    Arbiter(self).run()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 250, in run
+    self.halt(reason=inst.reason, exit_status=inst.exit_status)
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 374, in halt
+    self.stop()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 454, in stop
+    self.reap_workers()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 637, in reap_workers
+    raise HaltServer(reason, self.WORKER_BOOT_ERROR)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+    worker.init_process()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 148, in load_wsgi
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:50 +0000] [5] [INFO] Worker exiting (pid: 5)
+[2026-03-10 08:05:50 +0000] [6] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/arbiter.py", line 708, in spawn_worker
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+    worker.init_process()
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/workers/base.py", line 136, in init_process
+    self.load_wsgi()
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/gunicorn/util.py", line 377, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.nix-profile/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-03-10 08:05:50 +0000] [6] [INFO] Worker exiting (pid: 6)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/cloud_app.py", line 15, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+No module named 'requests'
+[2026-03-10 08:05:50 +0000] [1] [ERROR] Worker (pid:5) exited with code 3.
+[2026-03-10 08:05:50 +0000] [1] [INFO] Worker (pid:6) was sent SIGTERM!
+[2026-03-10 08:05:51 +0000] [1] [ERROR] Shutting down: Master
+[2026-03-10 08:05:51 +0000] [1] [ERROR] Reason: Worker failed to boot.
