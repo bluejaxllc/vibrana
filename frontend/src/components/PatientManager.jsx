@@ -42,6 +42,11 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                 body: JSON.stringify({ ...newPatient, team_id: teamId })
             });
             const created = await res.json();
+            
+            if (!res.ok) {
+                toast.error(created.message || created.error || 'Error al agregar paciente');
+                return;
+            }
             setPatients([created, ...patients]);
             setNewPatient({ name: '', age: '', gender: 'Masculino', phone_number: '', opt_in_whatsapp: false });
             if (onSelectPatient) onSelectPatient(created);

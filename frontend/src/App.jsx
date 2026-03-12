@@ -14,6 +14,7 @@ import TeamSettings from './components/TeamSettings';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
 import DiagnosticLog from './components/DiagnosticLog';
 import UpgradeModal from './components/UpgradeModal';
+import WebReport from './components/WebReport';
 import { LicenseProvider, useLicense } from './hooks/useLicense';
 import './App.css';
 
@@ -128,49 +129,57 @@ const RequireLicense = ({ children }) => {
 // ... inside App component return:
   return (
     <LicenseProvider>
-      <RequireLicense>
-        <Router>
-          <KeyboardShortcuts onAction={handleShortcutAction} />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3000,
-              className: 'toast-custom',
-              style: {
-                background: '#1f2b47',
-                color: '#e2e8f0',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-              },
-              success: { iconTheme: { primary: '#50fa7b', secondary: '#0f0f1a' } },
-              error: { iconTheme: { primary: '#ff5555', secondary: '#0f0f1a' } },
-            }}
-          />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/patients/:id" element={<PatientProfile />} />
-            <Route path="/analytics" element={
-              <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
-            } />
-            <Route path="/settings" element={
-              <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
-            } />
-            <Route path="/api-docs" element={
-              <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
-            } />
-            <Route path="/plugins" element={
-              <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
-            } />
-            <Route path="/diagnostic-logs" element={
-              <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
-            } />
-            <Route path="/teams" element={
-              <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
-            } />
-          </Routes>
-        </Router>
-      </RequireLicense>
+      <Router>
+        <KeyboardShortcuts onAction={handleShortcutAction} />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            className: 'toast-custom',
+            style: {
+              background: '#1f2b47',
+              color: '#e2e8f0',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+            },
+            success: { iconTheme: { primary: '#50fa7b', secondary: '#0f0f1a' } },
+            error: { iconTheme: { primary: '#ff5555', secondary: '#0f0f1a' } },
+          }}
+        />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/report/:token" element={<WebReport />} />
+          
+          {/* Protected Routes */}
+          <Route path="*" element={
+            <RequireLicense>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/patients/:id" element={<PatientProfile />} />
+                <Route path="/analytics" element={
+                  <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
+                } />
+                <Route path="/settings" element={
+                  <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
+                } />
+                <Route path="/api-docs" element={
+                  <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
+                } />
+                <Route path="/plugins" element={
+                  <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
+                } />
+                <Route path="/diagnostic-logs" element={
+                  <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
+                } />
+                <Route path="/teams" element={
+                  <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
+                } />
+              </Routes>
+            </RequireLicense>
+          } />
+        </Routes>
+      </Router>
     </LicenseProvider>
   );
 }

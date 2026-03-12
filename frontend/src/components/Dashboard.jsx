@@ -379,10 +379,14 @@ const Dashboard = () => {
 
                     {/* NLS Analyzer Panel */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
-                        <NLSAnalyzerPanel onAnalyzeComplete={(data) => {
-                            setAiReportData(data);
-                            toast.success("Datos de IA sincronizados con Mapa Corporal");
-                        }} />
+                        <NLSAnalyzerPanel
+                            patientId={selectedPatient?.id}
+                            patientScans={patientScans}
+                            onAnalyzeComplete={(data) => {
+                                setAiReportData(data);
+                                toast.success("Datos de IA sincronizados con Mapa Corporal");
+                            }}
+                        />
                     </div>
 
                     {/* Scan Log */}

@@ -101,6 +101,24 @@ const PatientProfile = () => {
         }
     };
 
+    const handleShareReport = async () => {
+        try {
+            const res = await fetch(`${API}/patients/${id}/share`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            const data = await res.json();
+            if (res.ok && data.share_url) {
+                window.open(data.share_url, '_blank');
+                toast.success('Enlace de reporte generado');
+            } else {
+                toast.error(data.error || 'Error al generar enlace compartible');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Error de red al compartir');
+        }
+    };
+
     const handleOpenWhatsApp = () => {
         if (!patient.phone_number || !patient.opt_in_whatsapp) {
             toast.error("El paciente no ha dado consentimiento o falta número de teléfono.");
@@ -218,6 +236,9 @@ const PatientProfile = () => {
                         }
                     }}>
                         ✉️ Email
+                    </button>
+                    <button className="btn btn-primary btn-sm" onClick={handleShareReport}>
+                        🌐 Compartir Web / PDF
                     </button>
                     <button className="btn btn-ghost btn-sm" onClick={handleOpenWhatsApp} title="Enviar Mensaje de WhatsApp">
                         <MessageCircle size={14} style={{ color: patient.opt_in_whatsapp ? '#25D366' : 'inherit' }} /> WhatsApp

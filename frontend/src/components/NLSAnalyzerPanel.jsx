@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { FileText, UploadCloud, Activity, Printer, X, Shield, Target, Zap, ChevronDown, ChevronRight } from 'lucide-react';
 import { LOCAL_API as API } from '../config.js';
+import OrganMap from './OrganMap';
 
 /* ── Collapsible Therapy Card ── */
 const TherapyCard = ({ etalon }) => {
@@ -96,12 +97,49 @@ const TimeSlot = ({ label, emoji, color, data }) => {
 };
 
 /* ── Main Component ── */
-const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
+const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
     const [file, setFile] = useState(null);
     const [status, setStatus] = useState('idle');
     const [reportData, setReportData] = useState(null);
     const [selectedDay, setSelectedDay] = useState(0);
     const [showModal, setShowModal] = useState(false);
+    
+    // Therapy selection state
+    const [selectedTherapies, setSelectedTherapies] = useState({
+        "Nutrición Funcional y Suplementos": true,
+        "Fitoterapia y Herbolaria": true,
+        "Homeopatía y Terapia Frecuencial": true,
+        "Medicina Tradicional China (TCM/Acupuntura)": false,
+        "Terapia Emocional y Energética": false,
+        "Terapia Física y Ejercicio": true
+    });
+    
+    // Knowledge Base Reference Documents State
+    const [referenceDocs, setReferenceDocs] = useState([]);
+    const [selectedReferences, setSelectedReferences] = useState({});
+    const [uploadingRef, setUploadingRef] = useState(false);
+
+    // Fetch existing reference documents on mount
+    useEffect(() => {
+        const fetchReferences = async () => {
+            try {
+                const res = await fetch(`${API}/api/references`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.references) {
+                    setReferenceDocs(data.references);
+                    // By default, do not select any reference
+                    const defaults = {};
+                    data.references.forEach(doc => defaults[doc.id] = false);
+                    setSelectedReferences(defaults);
+                }
+            } catch (err) {
+                console.error("Failed to fetch references:", err);
+            }
+        };
+        fetchReferences();
+    }, []);
 
     // Close modal on Escape
     useEffect(() => {
@@ -135,6 +173,14 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
 
         const formData = new FormData();
         formData.append('file', file);
+        
+        // Append selected therapies as a comma-separated string
+        const activeTherapies = Object.keys(selectedTherapies).filter(k => selectedTherapies[k]);
+        formData.append('therapies', activeTherapies.join('|'));
+        
+        // Append selected reference document IDs
+        const activeRefs = Object.keys(selectedReferences).filter(k => selectedReferences[k]);
+        formData.append('reference_ids', activeRefs.join(','));
 
         setStatus('analyzing');
         setSelectedDay(0);
@@ -184,6 +230,36 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const handleReferenceUpload = async (e) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        const refFile = e.target.files[0];
+        setUploadingRef(true);
+        const uploadData = new FormData();
+        uploadData.append('file', refFile);
+
+        try {
+            const res = await fetch(`${API}/api/references/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: uploadData
+            });
+            const data = await res.json();
+            if (res.ok && data.document) {
+                toast.success(data.message || "Documento subido correctamente");
+                setReferenceDocs(prev => [data.document, ...prev]);
+                setSelectedReferences(prev => ({ ...prev, [data.document.id]: true }));
+            } else {
+                toast.error(data.message || "Error al subir documento");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Error de red al subir documento");
+        } finally {
+            setUploadingRef(false);
+            e.target.value = null; // reset input
+        }
     };
 
     const urgencyClass = (timeframe) => {
@@ -295,6 +371,70 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         )}
                         {status === 'analyzing' && <div className="scanning-laser"></div>}
                     </label>
+                    
+                    {/* ── Diagnostic Resources Selector ── */}
+                    <div style={{ marginTop: 24, padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(139,233,253,0.1)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+                            <Target size={14} style={{ color: '#8be9fd' }} />
+                            <h4 style={{ margin: 0, fontSize: 13, color: '#f1f5f9' }}>Filtros de Diagnóstico</h4>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                            {Object.keys(selectedTherapies).map(therapy => (
+                                <label key={therapy} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#e2e8f0', cursor: 'pointer', opacity: status === 'analyzing' ? 0.5 : 1 }}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedTherapies[therapy]}
+                                        disabled={status === 'analyzing'}
+                                        onChange={(e) => setSelectedTherapies(prev => ({ ...prev, [therapy]: e.target.checked }))}
+                                        style={{ accentColor: '#a78bfa', cursor: 'pointer' }}
+                                    />
+                                    {therapy.split(' ')[0]} {/* Display a shortened version if needed, or full name */}
+                                    <span style={{ fontSize: 10 }}>{therapy}</span>
+                                </label>
+                            ))}
+                        </div>
+                        
+                        {/* ── Knowledge Base References ── */}
+                        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(139,233,253,0.1)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <BookOpen size={14} style={{ color: '#f1fa8c' }} />
+                                    <h4 style={{ margin: 0, fontSize: 13, color: '#f1f5f9' }}>Base de Conocimiento (PDFs)</h4>
+                                </div>
+                                <label style={{ cursor: 'pointer', opacity: uploadingRef || status === 'analyzing' ? 0.5 : 1 }}>
+                                    <input 
+                                        type="file" 
+                                        accept="application/pdf" 
+                                        className="hidden" 
+                                        onChange={handleReferenceUpload}
+                                        disabled={uploadingRef || status === 'analyzing'}
+                                    />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(241,250,140,0.1)', color: '#f1fa8c', padding: '4px 8px', borderRadius: 4, fontSize: 11 }}>
+                                        <UploadCloud size={12} /> {uploadingRef ? 'Subiendo...' : 'Subir Protocolo'}
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            {referenceDocs.length === 0 ? (
+                                <p style={{ margin: 0, fontSize: 11, color: '#64748b', fontStyle: 'italic' }}>No hay documentos de referencia subidos.</p>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '100px', overflowY: 'auto' }}>
+                                    {referenceDocs.map(doc => (
+                                        <label key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#e2e8f0', cursor: 'pointer', opacity: status === 'analyzing' ? 0.5 : 1 }}>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={!!selectedReferences[doc.id]}
+                                                disabled={status === 'analyzing'}
+                                                onChange={(e) => setSelectedReferences(prev => ({ ...prev, [doc.id]: e.target.checked }))}
+                                                style={{ accentColor: '#f1fa8c', cursor: 'pointer' }}
+                                            />
+                                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '280px' }} title={doc.filename}>{doc.filename}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
 
                     <button
                         onClick={handleUpload}
@@ -386,7 +526,14 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="nls-modal-body">
+                        <div className="nls-modal-body" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                            {/* Left Side: Body Map */}
+                            <div className="nls-modal-map no-print" style={{ flex: '1 1 400px', maxWidth: '500px', background: 'rgba(15,15,30,0.5)', borderRadius: '12px', overflow: 'hidden' }}>
+                                <OrganMap patientId={patientId} scanResults={patientScans} aiReportData={reportData} />
+                            </div>
+                            
+                            {/* Right Side: Report */}
+                            <div className="nls-modal-report" style={{ flex: '2 1 600px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
                             {/* DEBUG: Remove after testing */}
                             <div style={{ background: '#1e1e3a', border: '1px solid #a78bfa', borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#8be9fd', maxHeight: '150px', overflow: 'auto' }}>
@@ -575,7 +722,8 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete }) => {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                            </div> {/* End Right Side */}
+                        </div> 
                     </div>
                 </div>
             , document.body)}
