@@ -2,7 +2,7 @@
 // All routes served from a single cloud backend (Railway) by default
 // Use local backend for device-dependent features (MJPEG stream, OCR capture)
 
-const USE_LOCAL = false; // Toggle to true if running backend locally on port 5001
+const USE_LOCAL = true; // Toggle to true if running backend locally on port 5001
 
 export const API = USE_LOCAL
     ? 'http://localhost:5001'

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
-import { FileText, UploadCloud, Activity, Printer, X, Shield, Target, Zap, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileText, UploadCloud, Activity, Printer, X, Shield, Target, Zap, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { LOCAL_API as API } from '../config.js';
 import OrganMap from './OrganMap';
 

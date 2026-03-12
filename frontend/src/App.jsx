@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
@@ -17,6 +17,39 @@ import UpgradeModal from './components/UpgradeModal';
 import WebReport from './components/WebReport';
 import { LicenseProvider, useLicense } from './hooks/useLicense';
 import './App.css';
+
+// Error Boundary to catch render crashes
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('[ErrorBoundary]', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, color: '#ff5555', background: '#0f0f1a', minHeight: '100vh' }}>
+          <h2>⚠️ Error en la aplicación</h2>
+          <pre style={{ whiteSpace: 'pre-wrap', color: '#f8f8f2', marginTop: 16 }}>
+            {this.state.error?.message || 'Unknown error'}
+          </pre>
+          <pre style={{ whiteSpace: 'pre-wrap', color: '#888', marginTop: 8, fontSize: '0.8rem' }}>
+            {this.state.error?.stack}
+          </pre>
+          <button onClick={() => window.location.reload()} style={{ marginTop: 20, padding: '8px 24px', background: '#bd93f9', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+            Recargar
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -154,6 +187,7 @@ const RequireLicense = ({ children }) => {
           {/* Protected Routes */}
           <Route path="*" element={
             <RequireLicense>
+            <ErrorBoundary>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/patients/:id" element={<PatientProfile />} />
@@ -176,6 +210,7 @@ const RequireLicense = ({ children }) => {
                   <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
                 } />
               </Routes>
+            </ErrorBoundary>
             </RequireLicense>
           } />
         </Routes>

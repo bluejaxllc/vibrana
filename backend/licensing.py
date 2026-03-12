@@ -17,9 +17,15 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import request, jsonify, g
 
-# ── Paywall Master Switch ─────────────────────────────────
-# Set to True (or env VIBRANA_PAYWALL=1) when ready to enforce tiers
+# ── Paywall Master Switch ─────────────────────────────────────────
 PAYWALL_ENABLED = os.environ.get('VIBRANA_PAYWALL', '').lower() in ('1', 'true', 'yes')
+
+# ── Admin Whitelist (always get clinic tier) ─────────────
+ADMIN_WHITELIST = [
+    'admin@vibrana.local',
+    'dev@vibrana.com',
+    'edgar@bluejax.ai',
+]
 
 # ── Tier Definitions ──────────────────────────────────────
 
@@ -245,6 +251,10 @@ def get_current_tier() -> str:
     email = get_current_user_email()
     if not email:
         return 'free'
+    
+    # Admin whitelist — always clinic tier
+    if email.lower() in [e.lower() for e in ADMIN_WHITELIST]:
+        return 'clinic'
         
     cached = _license_state.get(email)
     

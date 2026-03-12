@@ -24,6 +24,8 @@ export function LicenseProvider({ children }) {
             if (res.ok) {
                 const data = await res.json();
                 setLicense({ ...data, loading: false });
+            } else {
+                setLicense(prev => ({ ...prev, loading: false }));
             }
         } catch (err) {
             console.error('[License] Failed to fetch status:', err);
