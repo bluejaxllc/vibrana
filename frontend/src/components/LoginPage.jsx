@@ -118,16 +118,16 @@ const LoginPage = ({ onLogin }) => {
             const data = await res.json();
 
             if (!res.ok) {
-                toast.error(data.error || 'Authentication failed');
+                toast.error(data.error || 'Autenticación fallida');
                 return;
             }
 
             localStorage.setItem('vibrana_token', data.token);
             localStorage.setItem('vibrana_user', JSON.stringify(data.user));
-            toast.success(`Welcome, ${data.user.full_name || data.user.username}!`);
+            toast.success(`Bienvenido, ${data.user.full_name || data.user.username}!`);
             onLogin(data.user, data.token);
         } catch {
-            toast.error('Server connection failed');
+            toast.error('Error de conexión al servidor');
         } finally {
             setLoading(false);
         }
@@ -157,17 +157,17 @@ const LoginPage = ({ onLogin }) => {
                         <div className="login-icon-ring" />
                     </div>
                     <h1>Vibrana Overseer</h1>
-                    <p>NLS Bioresonance Analysis Platform</p>
+                    <p>Plataforma de Análisis de Biorresonancia NLS</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
                     <div className="form-group login-field-anim" style={{ animationDelay: '0.1s' }}>
-                        <label>Username</label>
+                        <label>Usuario</label>
                         <input
                             type="text"
                             value={form.username}
                             onChange={e => updateField('username', e.target.value)}
-                            placeholder="Enter username"
+                            placeholder="Ingrese usuario"
                             required
                             autoFocus
                         />
@@ -176,29 +176,29 @@ const LoginPage = ({ onLogin }) => {
                     {isRegistering && (
                         <>
                             <div className="form-group login-field-anim" style={{ animationDelay: '0.15s' }}>
-                                <label>Email</label>
+                                <label>Correo Electrónico</label>
                                 <input
                                     type="email"
                                     value={form.email}
                                     onChange={e => updateField('email', e.target.value)}
-                                    placeholder="email@clinic.com"
+                                    placeholder="correo@clinica.com"
                                     required
                                 />
                             </div>
                             <div className="form-group login-field-anim" style={{ animationDelay: '0.2s' }}>
-                                <label>Full Name</label>
+                                <label>Nombre Completo</label>
                                 <input
                                     type="text"
                                     value={form.full_name}
                                     onChange={e => updateField('full_name', e.target.value)}
-                                    placeholder="Dr. Name"
+                                    placeholder="Dr. Nombre"
                                 />
                             </div>
                         </>
                     )}
 
                     <div className="form-group login-field-anim" style={{ animationDelay: '0.2s' }}>
-                        <label>Password</label>
+                        <label>Contraseña</label>
                         <input
                             type="password"
                             value={form.password}
@@ -213,21 +213,21 @@ const LoginPage = ({ onLogin }) => {
                             <span className="login-spinner" />
                         ) : (
                             isRegistering
-                                ? <><UserPlus size={16} /> Create Account</>
-                                : <><LogIn size={16} /> Sign In</>
+                                ? <><UserPlus size={16} /> Crear Cuenta</>
+                                : <><LogIn size={16} /> Iniciar Sesión</>
                         )}
                     </button>
                 </form>
 
                 <div className="login-toggle">
-                    <span>{isRegistering ? 'Already have an account?' : "Don't have an account?"}</span>
+                    <span>{isRegistering ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}</span>
                     <button onClick={() => setIsRegistering(!isRegistering)}>
-                        {isRegistering ? 'Sign In' : 'Register'}
+                        {isRegistering ? 'Iniciar Sesión' : 'Registrarse'}
                     </button>
                 </div>
 
                 <div className="login-hint">
-                    Default: <code>admin</code> / <code>admin123</code>
+                    Por defecto: <code>admin</code> / <code>admin123</code>
                 </div>
             </div>
         </div>

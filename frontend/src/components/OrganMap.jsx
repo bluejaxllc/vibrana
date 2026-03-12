@@ -5,20 +5,20 @@ import { API } from '../config.js';
 
 // Simplified organ map data — coordinates for clickable organ regions
 const ORGANS = [
-    { id: 'brain', name: 'Brain', cx: 200, cy: 55, r: 28, color: '#bd93f9' },
-    { id: 'thyroid', name: 'Thyroid', cx: 200, cy: 105, r: 14, color: '#8be9fd' },
-    { id: 'lungs_l', name: 'Left Lung', cx: 155, cy: 170, r: 30, color: '#50fa7b' },
-    { id: 'lungs_r', name: 'Right Lung', cx: 245, cy: 170, r: 30, color: '#50fa7b' },
-    { id: 'heart', name: 'Heart', cx: 215, cy: 185, r: 20, color: '#ff5555' },
-    { id: 'liver', name: 'Liver', cx: 155, cy: 235, r: 28, color: '#ffb86c' },
-    { id: 'stomach', name: 'Stomach', cx: 230, cy: 240, r: 22, color: '#f1fa8c' },
-    { id: 'spleen', name: 'Spleen', cx: 265, cy: 230, r: 15, color: '#ff79c6' },
-    { id: 'pancreas', name: 'Pancreas', cx: 200, cy: 260, r: 16, color: '#b8e986' },
-    { id: 'kidney_l', name: 'Left Kidney', cx: 160, cy: 275, r: 16, color: '#8be9fd' },
-    { id: 'kidney_r', name: 'Right Kidney', cx: 240, cy: 275, r: 16, color: '#8be9fd' },
-    { id: 'intestines', name: 'Intestines', cx: 200, cy: 315, r: 32, color: '#ffb86c' },
-    { id: 'bladder', name: 'Bladder', cx: 200, cy: 370, r: 18, color: '#f1fa8c' },
-    { id: 'prostate', name: 'Prostate', cx: 200, cy: 395, r: 12, color: '#bd93f9' },
+    { id: 'brain', name: 'Cerebro', cx: 200, cy: 55, r: 28, color: '#bd93f9' },
+    { id: 'thyroid', name: 'Tiroides', cx: 200, cy: 105, r: 14, color: '#8be9fd' },
+    { id: 'lungs_l', name: 'Pulmón Izq', cx: 155, cy: 170, r: 30, color: '#50fa7b' },
+    { id: 'lungs_r', name: 'Pulmón Der', cx: 245, cy: 170, r: 30, color: '#50fa7b' },
+    { id: 'heart', name: 'Corazón', cx: 215, cy: 185, r: 20, color: '#ff5555' },
+    { id: 'liver', name: 'Hígado', cx: 155, cy: 235, r: 28, color: '#ffb86c' },
+    { id: 'stomach', name: 'Estómago', cx: 230, cy: 240, r: 22, color: '#f1fa8c' },
+    { id: 'spleen', name: 'Bazo', cx: 265, cy: 230, r: 15, color: '#ff79c6' },
+    { id: 'pancreas', name: 'Páncreas', cx: 200, cy: 260, r: 16, color: '#b8e986' },
+    { id: 'kidney_l', name: 'Riñón Izq', cx: 160, cy: 275, r: 16, color: '#8be9fd' },
+    { id: 'kidney_r', name: 'Riñón Der', cx: 240, cy: 275, r: 16, color: '#8be9fd' },
+    { id: 'intestines', name: 'Intestinos', cx: 200, cy: 315, r: 32, color: '#ffb86c' },
+    { id: 'bladder', name: 'Vejiga', cx: 200, cy: 370, r: 18, color: '#f1fa8c' },
+    { id: 'prostate', name: 'Próstata', cx: 200, cy: 395, r: 12, color: '#bd93f9' },
 ];
 
 const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
@@ -99,16 +99,16 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
         if (onOrganSelect) {
             onOrganSelect(organ);
         }
-        toast(`${organ.name} selected`, { icon: '🫁' });
+        toast(`${organ.name} seleccionado`, { icon: '🫁' });
     };
 
     const handleAutoScan = async () => {
         if (!patientId) {
-            toast.error('Select a patient first');
+            toast.error('Seleccione un paciente primero');
             return;
         }
         const organCoords = ORGANS.map(o => ({ name: o.name, x: o.cx * 3, y: o.cy * 3 }));
-        toast.loading('Running auto-scan sequence...', { id: 'auto-scan' });
+        toast.loading('Ejecutando secuencia de auto-escaneo...', { id: 'auto-scan' });
         try {
             const res = await fetch(`${API}/scan/auto-sequence`, {
                 method: 'POST',
@@ -118,31 +118,31 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
             const data = await res.json();
             toast.dismiss('auto-scan');
             if (data.status === 'completed') {
-                toast.success(`Auto-scan done: ${data.successful}/${data.total_organs} organs`);
+                toast.success(`Auto-escaneo completado: ${data.successful}/${data.total_organs} órganos`);
             } else {
-                toast.error(`Auto-scan failed: ${data.message}`);
+                toast.error(`Auto-escaneo fallido: ${data.message}`);
             }
         } catch {
             toast.dismiss('auto-scan');
-            toast.error('Auto-scan failed');
+            toast.error('Auto-escaneo fallido');
         }
     };
 
     return (
         <div className="organ-map-container">
             <div className="organ-map-header">
-                <h3>Body Map</h3>
+                <h3>Mapa Corporal</h3>
                 <div className="map-controls">
                     <button
                         className={`btn btn-xs ${showHeatmap ? 'btn-accent' : 'btn-ghost'}`}
                         onClick={() => setShowHeatmap(!showHeatmap)}
                         title="Toggle Global Intensity Heatmap"
                     >
-                        {showHeatmap ? '🔥 Heatmap On' : '❄️ Heatmap Off'}
+                        {showHeatmap ? '🔥 Mapa Calor Activado' : '❄️ Mapa Calor Desactivado'}
                     </button>
                     {patientId && (
                         <button className="btn btn-analyze btn-xs" onClick={handleAutoScan}>
-                            Auto-Scan
+                            Auto-Escaneo
                         </button>
                     )}
                 </div>
@@ -305,9 +305,9 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
             {/* Legend */}
             <div className="organ-legend">
                 <span className="legend-item"><span className="legend-dot normal" /> Normal</span>
-                <span className="legend-item"><span className="legend-dot compromised" /> Compromised</span>
-                <span className="legend-item"><span className="legend-dot pathology" /> Pathology</span>
-                <span className="legend-item"><span className="legend-dot" style={{ background: 'rgba(255,255,255,0.2)' }} /> No Data</span>
+                <span className="legend-item"><span className="legend-dot compromised" /> Comprometido</span>
+                <span className="legend-item"><span className="legend-dot pathology" /> Patología</span>
+                <span className="legend-item"><span className="legend-dot" style={{ background: 'rgba(255,255,255,0.2)' }} /> Sin Datos</span>
             </div>
         </div>
     );

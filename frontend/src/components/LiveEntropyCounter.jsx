@@ -53,7 +53,7 @@ const LiveEntropyCounter = ({ patientId }) => {
                 const lvl5 = parseInt(counts['5']) || 0;
                 if (lvl6 > 3) {
                     playAlertSound(6);
-                    toast('⚠️ High L6 entropy detected!', {
+                    toast('⚠️ ¡Entropía L6 alta detectada!', {
                         icon: '🔴',
                         style: { background: '#2a0f0f', border: '1px solid #ff5555', color: '#ff5555' }
                     });
@@ -71,14 +71,14 @@ const LiveEntropyCounter = ({ patientId }) => {
         fetchLiveAnalysis();
         const id = setInterval(fetchLiveAnalysis, 3000);
         setIntervalId(id);
-        toast.success('Live monitoring started');
+        toast.success('Monitoreo en vivo iniciado');
     };
 
     const stopLiveMonitoring = () => {
         setIsRunning(false);
         if (intervalId) clearInterval(intervalId);
         setIntervalId(null);
-        toast.success('Live monitoring stopped');
+        toast.success('Monitoreo en vivo detenido');
     };
 
     useEffect(() => {
@@ -97,22 +97,22 @@ const LiveEntropyCounter = ({ patientId }) => {
     return (
         <div className="live-entropy">
             <div className="live-entropy-header">
-                <h3><Zap size={14} className={isRunning ? 'pulse-icon' : ''} /> Live Entropy</h3>
+                <h3><Zap size={14} className={isRunning ? 'pulse-icon' : ''} /> Entropía en Vivo</h3>
                 <div className="live-controls">
                     <button
                         className={`btn btn-sm ${audioEnabled ? 'btn-analyze' : 'btn-ghost'}`}
                         onClick={() => setAudioEnabled(!audioEnabled)}
-                        title={audioEnabled ? 'Mute alerts' : 'Enable audio alerts'}
+                        title={audioEnabled ? 'Silenciar alertas' : 'Activar alertas de audio'}
                     >
                         {audioEnabled ? <Volume2 size={12} /> : <VolumeX size={12} />}
                     </button>
                     {!isRunning ? (
                         <button className="btn btn-analyze btn-sm" onClick={startLiveMonitoring}>
-                            <Activity size={12} /> Start
+                            <Activity size={12} /> Iniciar
                         </button>
                     ) : (
                         <button className="btn btn-danger-ghost btn-sm" onClick={stopLiveMonitoring}>
-                            Stop
+                            Detener
                         </button>
                     )}
                 </div>
@@ -120,7 +120,7 @@ const LiveEntropyCounter = ({ patientId }) => {
 
             {isRunning && (
                 <div className="live-indicator">
-                    <span className="live-dot" /> LIVE
+                    <span className="live-dot" /> EN VIVO
                 </div>
             )}
 
@@ -155,7 +155,7 @@ const LiveEntropyCounter = ({ patientId }) => {
 
             {history.length > 0 && (
                 <div className="live-history">
-                    <small style={{ color: 'var(--text-muted)' }}>{history.length} samples</small>
+                    <small style={{ color: 'var(--text-muted)' }}>{history.length} muestras</small>
                     <div className="mini-sparkline">
                         {history.map((h, i) => (
                             <div

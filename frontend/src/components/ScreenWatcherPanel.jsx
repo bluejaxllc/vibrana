@@ -25,9 +25,9 @@ const ScreenWatcherPanel = ({ patientId }) => {
                         setLastEventId(maxId);
                         setTotalChanges(data.total_changes);
                         data.events.forEach(evt => {
-                            const organ = evt.organ_detected || 'Screen change';
+                            const organ = evt.organ_detected || 'Cambio de pantalla';
                             const rows = evt.nls_readings?.row_count || 0;
-                            toast(`🔍 ${organ}${rows > 0 ? ` — ${rows} readings` : ''}`, {
+                            toast(`🔍 ${organ}${rows > 0 ? ` — ${rows} lecturas` : ''}`, {
                                 icon: '📡', duration: 3000
                             });
                         });
@@ -58,7 +58,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                 const res = await fetch(`${API}/watcher/stop`, { method: 'POST' });
                 const data = await res.json();
                 setWatching(false);
-                toast.success(`Watcher stopped — ${data.total_changes} changes captured`);
+                toast.success(`Observador detenido — ${data.total_changes} cambios capturados`);
             } else {
                 const res = await fetch(`${API}/watcher/start`, {
                     method: 'POST',
@@ -68,10 +68,10 @@ const ScreenWatcherPanel = ({ patientId }) => {
                 await res.json();
                 setWatching(true);
                 setLastEventId(0);
-                toast.success('Auto-watcher started — monitoring for NLS screen changes');
+                toast.success('Auto-observador iniciado — monitoreando cambios en pantalla NLS');
             }
         } catch {
-            toast.error('Failed to toggle watcher');
+            toast.error('Error al cambiar observador');
         }
     };
 
@@ -83,7 +83,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
         <div className={`watcher-panel ${watching ? 'watching-active' : ''}`}>
             <div className="watcher-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <h3><Eye size={14} className={watching ? 'pulse-icon' : ''} /> Auto Watcher</h3>
+                    <h3><Eye size={14} className={watching ? 'pulse-icon' : ''} /> Auto Observador</h3>
                     {watching && (
                         <span className="watcher-live-badge">
                             <Radio size={10} className="pulse-icon" /> LIVE
@@ -93,14 +93,14 @@ const ScreenWatcherPanel = ({ patientId }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {totalChanges > 0 && (
                         <span className="watcher-count">
-                            <Activity size={10} /> {totalChanges} changes
+                            <Activity size={10} /> {totalChanges} cambios
                         </span>
                     )}
                     <button
                         className={`btn btn-sm ${watching ? 'btn-danger' : 'btn-primary'}`}
                         onClick={handleToggle}
                     >
-                        {watching ? <><EyeOff size={12} /> Stop</> : <><Eye size={12} /> Start Watching</>}
+                        {watching ? <><EyeOff size={12} /> Detener</> : <><Eye size={12} /> Iniciar Observador</>}
                     </button>
                 </div>
             </div>
@@ -118,14 +118,14 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {new Date(evt.timestamp).toLocaleTimeString()}
                                 </span>
                                 <span className="watcher-event-organ">
-                                    {evt.organ_detected || 'Screen Change'}
+                                    {evt.organ_detected || 'Cambio de Pantalla'}
                                 </span>
                                 <span className="watcher-event-change">
                                     {evt.change_pct}%
                                 </span>
                                 {evt.nls_readings?.row_count > 0 && (
                                     <span className="watcher-event-rows">
-                                        {evt.nls_readings.row_count} rows
+                                        {evt.nls_readings.row_count} filas
                                     </span>
                                 )}
                                 <span className={`watcher-event-status status-${evt.analysis?.status?.includes('Normal') ? 'normal' : 'alert'}`}>
@@ -144,7 +144,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {/* NLS Readings Table */}
                                     {evt.nls_readings?.rows?.length > 0 && (
                                         <div className="watcher-detail-section">
-                                            <h5><Clipboard size={12} /> NLS Organ Readings</h5>
+                                            <h5><Clipboard size={12} /> Lecturas de Órganos NLS</h5>
                                             <div className="nls-readings-table">
                                                 {evt.nls_readings.rows.map((row, i) => (
                                                     <div key={i} className="nls-reading-row">
@@ -159,7 +159,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {/* Reserve % */}
                                     {evt.nls_readings?.reserve_pct != null && (
                                         <div className="watcher-detail-section">
-                                            <h5><Gauge size={12} /> Compensatory Reserve</h5>
+                                            <h5><Gauge size={12} /> Reserva Compensatoria</h5>
                                             <div className="reserve-bar-container">
                                                 <div className="reserve-bar" style={{ width: `${evt.nls_readings.reserve_pct}%` }}></div>
                                                 <span className="reserve-label">{evt.nls_readings.reserve_pct}%</span>
@@ -170,7 +170,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {/* NLS Keywords */}
                                     {evt.nls_readings?.keywords?.length > 0 && (
                                         <div className="watcher-detail-section">
-                                            <h5><Tag size={12} /> Keywords Detected</h5>
+                                            <h5><Tag size={12} /> Palabras Clave Detectadas</h5>
                                             <div className="keyword-tags">
                                                 {evt.nls_readings.keywords.slice(0, 10).map((kw, i) => (
                                                     <span key={i} className="keyword-tag">{kw}</span>
@@ -181,9 +181,9 @@ const ScreenWatcherPanel = ({ patientId }) => {
 
                                     {/* Entropy Analysis */}
                                     <div className="watcher-detail-section">
-                                        <h5><BarChart3 size={12} /> Entropy Analysis</h5>
-                                        <p><strong>Status:</strong> {evt.analysis?.status}</p>
-                                        <p><strong>Total Points:</strong> {evt.analysis?.total_points}</p>
+                                        <h5><BarChart3 size={12} /> Análisis de Entropía</h5>
+                                        <p><strong>Estado:</strong> {evt.analysis?.status}</p>
+                                        <p><strong>Puntos Totales:</strong> {evt.analysis?.total_points}</p>
                                         {evt.analysis?.counts && (
                                             <div className="entropy-grid mini">
                                                 {Object.entries(evt.analysis.counts).map(([lvl, count]) => (
@@ -199,7 +199,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {/* Status bar text */}
                                     {evt.status_bar && (
                                         <div className="watcher-detail-section">
-                                            <h5><FileText size={12} /> Status Bar</h5>
+                                            <h5><FileText size={12} /> Barra de Estado</h5>
                                             <p className="status-bar-text">{evt.status_bar}</p>
                                         </div>
                                     )}
@@ -207,7 +207,7 @@ const ScreenWatcherPanel = ({ patientId }) => {
                                     {/* Raw OCR (collapsed by default) */}
                                     {evt.ocr_text && (
                                         <details className="watcher-detail-section">
-                                            <summary className="ocr-toggle"><Type size={12} /> Raw OCR Text</summary>
+                                            <summary className="ocr-toggle"><Type size={12} /> Texto OCR Sin Procesar</summary>
                                             <pre className="watcher-ocr-text">{evt.ocr_text}</pre>
                                         </details>
                                     )}
@@ -219,8 +219,8 @@ const ScreenWatcherPanel = ({ patientId }) => {
             ) : (
                 <div className="watcher-empty">
                     {watching
-                        ? <><Eye size={16} className="pulse-icon" /> Watching for NLS screen changes...</>
-                        : 'Start watching to auto-detect organ changes and capture NLS data'
+                        ? <><Eye size={16} className="pulse-icon" /> Observando cambios en pantalla NLS...</>
+                        : 'Inicie el observador para auto-detectar cambios de órganos y capturar datos NLS'
                     }
                 </div>
             )}

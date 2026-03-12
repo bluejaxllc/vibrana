@@ -62,7 +62,7 @@ const TeamSettings = ({ user }) => {
                 setInviteUsername('');
                 fetchMembers(activeTeam.team_id);
             } else {
-                alert(data.error || 'Failed to invite');
+                alert(data.error || 'Error al invitar');
             }
         } catch (err) {
             console.error('Error inviting member:', err);
@@ -92,19 +92,19 @@ const TeamSettings = ({ user }) => {
         }
     };
 
-    if (loading) return <div className="p-4">Loading teams...</div>;
+    if (loading) return <div className="p-4">Cargando equipos...</div>;
 
     return (
         <div className="team-settings p-6">
             <div className="section-header mb-6">
-                <h1>Team Collaboration</h1>
-                <p className="subtitle">Manage diagnostic teams and shared patient access</p>
+                <h1>Colaboración en Equipo</h1>
+                <p className="subtitle">Gestionar equipos de diagnóstico y acceso compartido de pacientes</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Team List & Creation */}
                 <div className="card glass p-4">
-                    <h3>Your Teams</h3>
+                    <h3>Tus Equipos</h3>
                     <div className="team-list mt-4 space-y-2">
                         {teams.map(t => (
                             <div
@@ -127,11 +127,11 @@ const TeamSettings = ({ user }) => {
                         <input
                             type="text"
                             className="input-vibrana flex-1"
-                            placeholder="New Team Name..."
+                            placeholder="Nombre de Nuevo Equipo..."
                             value={newTeamName}
                             onChange={(e) => setNewTeamName(e.target.value)}
                         />
-                        <button type="submit" className="btn-vibrana">Create</button>
+                        <button type="submit" className="btn-vibrana">Crear</button>
                     </form>
                 </div>
 
@@ -139,19 +139,19 @@ const TeamSettings = ({ user }) => {
                 {activeTeam && (
                     <div className="card glass p-4">
                         <div className="flex justify-between items-center mb-4">
-                            <h3>{activeTeam.team_name} Members</h3>
+                            <h3>Miembros de {activeTeam.team_name}</h3>
                         </div>
 
                         <form onSubmit={handleInvite} className="mb-6 flex gap-2">
                             <input
                                 type="text"
                                 className="input-vibrana flex-1"
-                                placeholder="Invite by username..."
+                                placeholder="Invitar por usuario..."
                                 value={inviteUsername}
                                 onChange={(e) => setInviteUsername(e.target.value)}
                             />
                             <button type="submit" className="btn-vibrana" disabled={inviting}>
-                                {inviting ? '...' : 'Invite'}
+                                {inviting ? '...' : 'Invitar'}
                             </button>
                         </form>
 
@@ -164,7 +164,7 @@ const TeamSettings = ({ user }) => {
                                         </div>
                                         <div>
                                             <div className="text-sm font-medium">{m.username}</div>
-                                            <div className="text-xs opacity-50">Joined {new Date(m.joined_at).toLocaleDateString()}</div>
+                                            <div className="text-xs opacity-50">Se unió {new Date(m.joined_at).toLocaleDateString()}</div>
                                         </div>
                                     </div>
                                     <span className={`text-[10px] uppercase px-2 py-0.5 rounded ${m.role === 'owner' ? 'bg-amber-500/20 text-amber-500' : 'bg-blue-500/20 text-blue-500'}`}>

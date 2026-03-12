@@ -199,14 +199,14 @@ const LiveMonitor = ({ activeTeam }) => {
             <div className="monitor-header">
                 <h2>
                     <span className={`monitor-live-dot${isSharing || remoteStatus === 'online' ? '' : ' offline'}`} />
-                    {remoteMode ? 'Auto-Detect Monitor' : 'Live Local Feed'}
+                    {remoteMode ? 'Monitor Auto-Detectado' : 'Transmisión Local en Vivo'}
                 </h2>
                 <div className="monitor-meta flex items-center gap-2">
                     <button
                         className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${remoteMode ? 'border-accent bg-accent/20 text-accent' : 'border-white/10 hover:border-accent/50'}`}
                         onClick={toggleAutoDetect}
                     >
-                        {remoteMode ? 'Disable Auto-Detect' : 'Enable Auto-Detect'}
+                        {remoteMode ? 'Desactivar Auto-Detección' : 'Activar Auto-Detección'}
                     </button>
                     <button
                         className="btn-xs border border-white/10 hover:border-accent/50 px-1.5 h-5 rounded transition-all opacity-60 hover:opacity-100"
@@ -226,8 +226,8 @@ const LiveMonitor = ({ activeTeam }) => {
                         <div className="monitor-offline-icon">
                             <MonitorUp size={48} strokeWidth={1.5} />
                         </div>
-                        <span className="monitor-offline-text">Share Your Screen</span>
-                        <span className="monitor-offline-hint">Click to start screen capture</span>
+                        <span className="monitor-offline-text">Compartir Pantalla</span>
+                        <span className="monitor-offline-hint">Clic para iniciar captura de pantalla</span>
                         {shareError && <span style={{ color: '#ff5555', fontSize: '0.75rem', marginTop: 4 }}>{shareError}</span>}
                     </div>
                 ) : remoteMode ? (
@@ -240,22 +240,22 @@ const LiveMonitor = ({ activeTeam }) => {
                                         <span className="text-xs opacity-60">ID: #{latestEvent.id} | {new Date(latestEvent.timestamp).toLocaleTimeString()}</span>
                                     </div>
                                     <div className="flex bg-white/5 rounded-full px-3 py-1 text-xs">
-                                        <span className="text-white/60 mr-2">Change:</span>
+                                        <span className="text-white/60 mr-2">Cambio:</span>
                                         <span className="text-green-400">{latestEvent.change_pct}%</span>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 flex-grow">
                                     <div className="bg-black/50 p-3 rounded-lg border border-white/5">
-                                        <div className="text-xs uppercase opacity-50 mb-2 font-semibold">Entropy Analysis</div>
+                                        <div className="text-xs uppercase opacity-50 mb-2 font-semibold">Análisis de Entropía</div>
                                         {latestEvent.analysis && latestEvent.analysis.total_points !== undefined ? (
                                             <div>
                                                 <div className="flex justify-between items-center mb-1">
-                                                    <span className="text-xs">Total Points:</span>
+                                                    <span className="text-xs">Puntos Totales:</span>
                                                     <span className="text-accent font-mono">{latestEvent.analysis.total_points}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-xs">Status:</span>
+                                                    <span className="text-xs">Estado:</span>
                                                     <span className={`text-xs px-2 py-0.5 rounded ${latestEvent.analysis.status.includes('Pathology') ? 'bg-red-500/20 text-red-400' :
                                                         latestEvent.analysis.status.includes('Functional') ? 'bg-yellow-500/20 text-yellow-400' :
                                                             'bg-green-500/20 text-green-400'
@@ -264,12 +264,12 @@ const LiveMonitor = ({ activeTeam }) => {
                                                 {/* Optional: Show distribution bars like in OrganMap */}
                                             </div>
                                         ) : (
-                                            <div className="text-xs opacity-50 italic">Analysis processing...</div>
+                                            <div className="text-xs opacity-50 italic">Procesando análisis...</div>
                                         )}
                                     </div>
 
                                     <div className="bg-black/50 p-3 rounded-lg border border-white/5 flex flex-col items-center justify-center">
-                                        <div className="text-xs uppercase opacity-50 mb-2 font-semibold w-full text-left">Latest Capture</div>
+                                        <div className="text-xs uppercase opacity-50 mb-2 font-semibold w-full text-left">Última Captura</div>
                                         <div className="w-full h-full min-h-[80px] flex items-center justify-center border border-dashed border-white/10 rounded overflow-hidden">
                                             {latestEvent.id ? (
                                                 <img
@@ -279,14 +279,14 @@ const LiveMonitor = ({ activeTeam }) => {
                                                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
                                                 />
                                             ) : null}
-                                            <span className="text-xs opacity-30 text-center" style={{ display: latestEvent.id ? 'none' : 'block' }}>Image unavailable</span>
+                                            <span className="text-xs opacity-30 text-center" style={{ display: latestEvent.id ? 'none' : 'block' }}>Imagen no disponible</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {latestEvent.nls_readings?.rows && latestEvent.nls_readings.rows.length > 0 && (
                                     <div className="mt-4 border-t border-white/10 pt-2">
-                                        <div className="text-[10px] uppercase opacity-50 mb-1">Detected Etalons</div>
+                                        <div className="text-[10px] uppercase opacity-50 mb-1">Etalones Detectados</div>
                                         <div className="max-h-[60px] overflow-y-auto pr-2 custom-scrollbar">
                                             {latestEvent.nls_readings.rows.slice(0, 3).map((r, i) => (
                                                 <div key={i} className="flex justify-between text-xs py-0.5">
@@ -303,10 +303,10 @@ const LiveMonitor = ({ activeTeam }) => {
                                 <div className="monitor-scanline relative h-1" />
                                 <div className="flex items-center gap-2">
                                     <div className="animate-pulse h-2 w-2 bg-accent rounded-full" />
-                                    Watching screen for NLS changes...
+                                    Observando pantalla para cambios NLS...
                                 </div>
                                 <div className="opacity-40 max-w-[200px] text-center mt-2 font-mono" style={{ fontSize: '10px' }}>
-                                    Pixels changing &gt; 1% will trigger analysis and log automatically.
+                                    Cambios de píxeles &gt; 1% activarán el análisis y registro automáticamente.
                                 </div>
                             </div>
                         )}
@@ -320,8 +320,8 @@ const LiveMonitor = ({ activeTeam }) => {
                             className="monitor-feed-img"
                         />
                         <div className="monitor-scanline" />
-                        <div className="monitor-rec"><span className="monitor-rec-dot" />LOCAL REC</div>
-                        <button className="monitor-stop-btn" onClick={stopScreenShare}>■ Stop</button>
+                        <div className="monitor-rec"><span className="monitor-rec-dot" />REC LOCAL</div>
+                        <button className="monitor-stop-btn" onClick={stopScreenShare}>■ Detener</button>
                     </>
                 )}
             </div>

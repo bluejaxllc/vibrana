@@ -6,7 +6,7 @@ import { API } from '../config.js';
 
 const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, teamId }) => {
     const [patients, setPatients] = useState([]);
-    const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Male', phone_number: '', opt_in_whatsapp: false });
+    const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Masculino', phone_number: '', opt_in_whatsapp: false });
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -43,12 +43,12 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
             });
             const created = await res.json();
             setPatients([created, ...patients]);
-            setNewPatient({ name: '', age: '', gender: 'Male', phone_number: '', opt_in_whatsapp: false });
+            setNewPatient({ name: '', age: '', gender: 'Masculino', phone_number: '', opt_in_whatsapp: false });
             if (onSelectPatient) onSelectPatient(created);
-            toast.success(`Patient "${created.name}" added`);
+            toast.success(`Paciente "${created.name}" agregado`);
         } catch (err) {
             console.error("Failed to create patient", err);
-            toast.error('Failed to add patient');
+            toast.error('Error al agregar paciente');
         } finally {
             setLoading(false);
         }
@@ -56,13 +56,13 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
 
     const handleDelete = async (e, patientId, patientName) => {
         e.stopPropagation();
-        if (!confirm(`Delete patient "${patientName}"? This will also delete all their scans.`)) return;
+        if (!confirm(`¿Eliminar paciente "${patientName}"? Esto también eliminará todos sus escaneos.`)) return;
         try {
             await fetch(`${API}/patients/${patientId}`, { method: 'DELETE' });
             setPatients(patients.filter(p => p.id !== patientId));
-            toast.success(`Patient "${patientName}" deleted`);
+            toast.success(`Paciente "${patientName}" eliminado`);
         } catch {
-            toast.error('Failed to delete patient');
+            toast.error('Error al eliminar paciente');
         }
     };
 
@@ -72,14 +72,14 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
 
     return (
         <div className="patient-manager">
-            <h3>Patient Management</h3>
+            <h3>Gestión de Pacientes</h3>
 
             {/* Search */}
             <div className="patient-search">
                 <Search size={14} className="search-icon" />
                 <input
                     type="text"
-                    placeholder="Search patients..."
+                    placeholder="Buscar pacientes..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -89,7 +89,7 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
             <form onSubmit={handleCreate} className="patient-form" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Nombre"
                     value={newPatient.name}
                     onChange={e => setNewPatient({ ...newPatient, name: e.target.value })}
                     required
@@ -97,7 +97,7 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                 />
                 <input
                     type="number"
-                    placeholder="Age"
+                    placeholder="Edad"
                     value={newPatient.age}
                     onChange={e => setNewPatient({ ...newPatient, age: e.target.value })}
                     required
@@ -107,12 +107,12 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                     value={newPatient.gender}
                     onChange={e => setNewPatient({ ...newPatient, gender: e.target.value })}
                 >
-                    <option>Male</option>
-                    <option>Female</option>
+                    <option>Masculino</option>
+                    <option>Femenino</option>
                 </select>
                 <input
                     type="text"
-                    placeholder="Phone Number (e.g. +1...)"
+                    placeholder="Teléfono (ej. +52...)"
                     value={newPatient.phone_number}
                     onChange={e => setNewPatient({ ...newPatient, phone_number: e.target.value })}
                     style={{ flex: 1 }}
@@ -126,16 +126,16 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                     WhatsApp
                 </label>
                 <button type="submit" disabled={loading} className="btn btn-sm btn-analyze">
-                    {loading ? '...' : '+ Add'}
+                    {loading ? '...' : '+ Agregar'}
                 </button>
             </form>
 
             {/* Patient List */}
             <div className="patient-list">
-                <h4>Patients ({filteredPatients.length})</h4>
+                <h4>Pacientes ({filteredPatients.length})</h4>
                 {filteredPatients.length === 0 ? (
                     <p className="no-data">
-                        {searchQuery ? 'No matching patients.' : 'No patients yet.'}
+                        {searchQuery ? 'No se encontraron pacientes.' : 'Sin pacientes aún.'}
                     </p>
                 ) : (
                     <ul>
@@ -147,14 +147,14 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                             >
                                 <div className="patient-info">
                                     <strong>{p.name}</strong>
-                                    <small>{p.age}y, {p.gender} • {p.scan_count ?? 0} scans</small>
+                                    <small>{p.age}a, {p.gender} • {p.scan_count ?? 0} escaneos</small>
                                 </div>
                                 <div className="patient-actions">
                                     {onViewProfile && (
                                         <button
                                             className="btn btn-ghost"
                                             onClick={(e) => { e.stopPropagation(); onViewProfile(p.id); }}
-                                            title="View Profile"
+                                            title="Ver Perfil"
                                         >
                                             <ExternalLink size={14} />
                                         </button>
@@ -162,7 +162,7 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                                     <button
                                         className="btn btn-danger-ghost"
                                         onClick={(e) => handleDelete(e, p.id, p.name)}
-                                        title="Delete Patient"
+                                        title="Eliminar Paciente"
                                     >
                                         <Trash2 size={14} />
                                     </button>

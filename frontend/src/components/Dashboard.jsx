@@ -12,6 +12,8 @@ import LiveEntropyCounter from './LiveEntropyCounter';
 import ScreenWatcherPanel from './ScreenWatcherPanel';
 import OrganMap from './OrganMap';
 import NLSAnalyzerPanel from './NLSAnalyzerPanel';
+import { FeatureGate } from './UpgradeModal';
+import { useLicense } from '../hooks/useLicense';
 import '../App.css';
 
 import { LOCAL_API as API } from '../config.js';
@@ -135,7 +137,7 @@ const CollapsibleSection = ({ title, icon, children, defaultOpen = false }) => {
 /* ── Dashboard ─────────────────────────── */
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [status, setStatus] = useState('Idle');
+    const [status, setStatus] = useState('Inactivo');
     const [scanData, setScanData] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [patientScans, setPatientScans] = useState([]);
@@ -171,7 +173,7 @@ const Dashboard = () => {
             setCurrentTeam(team);
             localStorage.setItem('vibrana_active_team', team.team_id);
             setSelectedPatient(null);
-            toast.success(`Switched to: ${team.team_name}`);
+            toast.success(`Cambiado a: ${team.team_name}`);
         }
     };
 
@@ -249,13 +251,13 @@ const Dashboard = () => {
 
     const handleStopScan = async () => {
         setStatus('Inactivo');
-        setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Scan Stopped`]);
-        toast('Scan stopped', { icon: '⏹' });
+        setScanData(prev => [...prev, `[${new Date().toLocaleTimeString()}] Escaneo Detenido`]);
+        toast('Escaneo detenido', { icon: '⏹' });
     };
 
     const handleSelectPatient = (patient) => {
         setSelectedPatient(patient);
-        toast.success(`Selected: ${patient.name}`);
+        toast.success(`Seleccionado: ${patient.name}`);
     };
 
     const handleViewProfile = (patientId) => {
@@ -301,7 +303,7 @@ const Dashboard = () => {
                     <a href="/diagnostic-logs" className="btn btn-ghost btn-sm">📋 Registros</a>
                     <a href="/teams" className="btn btn-ghost btn-sm">👥 Equipo</a>
                     <a href="/settings" className="btn btn-ghost btn-sm">⚙️</a>
-                    <span className={`status-badge ${getStatusClass()}`}>{status}</span>
+                    <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                 </div>
             </header>
 
@@ -315,7 +317,7 @@ const Dashboard = () => {
                             patientId={selectedPatient?.id}
                             scanResults={patientScans}
                             aiReportData={aiReportData}
-                            onOrganSelect={(organ) => toast.success(`Target acquired: ${organ.name}`)}
+                            onOrganSelect={(organ) => toast.success(`Objetivo adquirido: ${organ.name}`)}
                         />
                     </div>
                     <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.15s', flex: 1, minHeight: '350px' }}>
@@ -345,11 +347,11 @@ const Dashboard = () => {
                     {analysisResult && (
                         <div className="analysis-card vfx-card-enter" key={analysisResult.id || 'analysis-card-singleton'}>
                             <h4>{analysisResult.organ_name}</h4>
-                            <p className="status-text">{analysisResult.status} • {analysisResult.total_points} points</p>
+                            <p className="status-text">{analysisResult.status} • {analysisResult.total_points} puntos</p>
                             <div className="entropy-grid">
                                 {Object.entries(analysisResult.counts).map(([lvl, count]) => (
                                     <div key={lvl} className={`entropy-item lvl-${lvl}`}>
-                                        <span>Lvl {lvl}</span>
+                                        <span>Nvl {lvl}</span>
                                         <strong>{count}</strong>
                                     </div>
                                 ))}
@@ -360,8 +362,12 @@ const Dashboard = () => {
                     {/* Collapsible: Live Analysis */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.3s' }}>
                         <CollapsibleSection title="Análisis en Vivo" icon={<Activity size={14} />} defaultOpen={false}>
-                            <LiveEntropyCounter patientId={selectedPatient?.id} />
-                            <ScreenWatcherPanel patientId={selectedPatient?.id} />
+                            <FeatureGate feature="live_entropy">
+                                <LiveEntropyCounter patientId={selectedPatient?.id} />
+                            </FeatureGate>
+                            <FeatureGate feature="screen_watcher">
+                                <ScreenWatcherPanel patientId={selectedPatient?.id} />
+                            </FeatureGate>
                         </CollapsibleSection>
                     </div>
                 </div>
@@ -371,17 +377,23 @@ const Dashboard = () => {
                     {/* Collapsible: Advanced Tools */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
                         <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
-                            <CVTools />
-                            <MacroManager />
+                            <FeatureGate feature="cv_tools">
+                                <CVTools />
+                            </FeatureGate>
+                            <FeatureGate feature="macros">
+                                <MacroManager />
+                            </FeatureGate>
                         </CollapsibleSection>
                     </div>
 
                     {/* NLS Analyzer Panel */}
                     <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
-                        <NLSAnalyzerPanel onAnalyzeComplete={(data) => {
-                            setAiReportData(data);
-                            toast.success("AI Data synced with Body Map");
-                        }} />
+                        <FeatureGate feature="nls_analyzer">
+                            <NLSAnalyzerPanel onAnalyzeComplete={(data) => {
+                                setAiReportData(data);
+                                toast.success("Datos de IA sincronizados con Mapa Corporal");
+                            }} />
+                        </FeatureGate>
                     </div>
 
                     {/* Scan Log */}

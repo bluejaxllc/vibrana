@@ -12,7 +12,7 @@ const AIInsights = ({ scanId, patientId }) => {
 
     const interpretScan = async () => {
         if (!scanId) {
-            toast.error('Select a scan to interpret');
+            toast.error('Seleccione un escaneo para interpretar');
             return;
         }
         setLoading(true);
@@ -25,12 +25,12 @@ const AIInsights = ({ scanId, patientId }) => {
             const data = await res.json();
             if (res.ok) {
                 setInterpretation(data);
-                toast.success('AI interpretation complete');
+                toast.success('Interpretación de IA completada');
             } else {
-                toast.error(data.error || 'Interpretation failed');
+                toast.error(data.error || 'Interpretación fallida');
             }
         } catch {
-            toast.error('Failed to connect');
+            toast.error('Error de conexión');
         } finally {
             setLoading(false);
         }
@@ -65,14 +65,14 @@ const AIInsights = ({ scanId, patientId }) => {
     return (
         <div className="ai-insights">
             <div className="ai-header" onClick={() => setExpanded(!expanded)}>
-                <h3><Brain size={16} /> AI Insights</h3>
+                <h3><Brain size={16} /> Perspectivas de IA</h3>
                 <div className="ai-actions">
                     <button className="btn btn-analyze btn-sm" onClick={(e) => { e.stopPropagation(); interpretScan(); }} disabled={loading}>
-                        {loading ? '...' : 'Interpret'}
+                        {loading ? '...' : 'Interpretar'}
                     </button>
                     {patientId && (
                         <button className="btn btn-ghost btn-sm" onClick={(e) => { e.stopPropagation(); detectAnomalies(); }}>
-                            Anomalies
+                            Anomalías
                         </button>
                     )}
                     {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -84,7 +84,7 @@ const AIInsights = ({ scanId, patientId }) => {
                     {/* Risk Score Bar */}
                     <div className="risk-score-container">
                         <div className="risk-label">
-                            <span>Risk Score</span>
+                            <span>Puntuación de Riesgo</span>
                             <span className="risk-value" style={{ color: getSeverityColor(interpretation.severity) }}>
                                 {interpretation.risk_score}/100
                             </span>
@@ -115,7 +115,7 @@ const AIInsights = ({ scanId, patientId }) => {
                     {/* Patterns */}
                     {interpretation.patterns?.length > 0 && (
                         <div className="ai-patterns">
-                            <h4><TrendingUp size={12} /> Patterns</h4>
+                            <h4><TrendingUp size={12} /> Patrones</h4>
                             {interpretation.patterns.map((p, i) => (
                                 <div key={i} className="pattern-item">{p}</div>
                             ))}
@@ -124,7 +124,7 @@ const AIInsights = ({ scanId, patientId }) => {
 
                     {/* Recommendations */}
                     <div className="ai-recommendations">
-                        <h4><Activity size={12} /> Recommendations</h4>
+                        <h4><Activity size={12} /> Recomendaciones</h4>
                         {interpretation.recommendations?.map((r, i) => (
                             <div key={i} className="recommendation-item">• {r}</div>
                         ))}
@@ -134,15 +134,15 @@ const AIInsights = ({ scanId, patientId }) => {
 
             {expanded && anomalies && (
                 <div className="ai-anomalies">
-                    <h4><AlertTriangle size={12} /> Anomaly Detection</h4>
+                    <h4><AlertTriangle size={12} /> Detección de Anomalías</h4>
                     <div className="anomaly-summary">
-                        <span>Scans analyzed: {anomalies.total_scans}</span>
+                        <span>Escaneos analizados: {anomalies.total_scans}</span>
                         <span className={`trend-badge ${anomalies.risk_trend}`}>
-                            Trend: {anomalies.risk_trend}
+                            Tendencia: {anomalies.risk_trend}
                         </span>
                     </div>
                     {anomalies.anomalies?.length === 0 ? (
-                        <p className="no-data">No anomalies detected ✓</p>
+                        <p className="no-data">Sin anomalías detectadas ✓</p>
                     ) : (
                         anomalies.anomalies?.map((a, i) => (
                             <div key={i} className={`anomaly-item ${a.severity}`}>

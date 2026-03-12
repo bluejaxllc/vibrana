@@ -36,13 +36,13 @@ const MacroManager = () => {
             const res = await fetch(`${API}/macros/record/start`, { method: 'POST' });
             const data = await res.json();
             if (data.device_required) {
-                toast.error('Connect NLS device to record macros');
+                toast.error('Conecte dispositivo NLS para grabar macros');
                 return;
             }
             setRecording(true);
-            toast.success('Macro recording started');
+            toast.success('Grabación de macro iniciada');
         } catch {
-            toast.error('Failed to start recording');
+            toast.error('Error al iniciar grabación');
         }
     };
 
@@ -57,39 +57,39 @@ const MacroManager = () => {
             const data = await res.json();
             setRecording(false);
             setMacroName('');
-            toast.success(`Macro "${name}" saved (${data.action_count} actions)`);
+            toast.success(`Macro "${name}" guardado (${data.action_count} acciones)`);
             fetchMacros();
         } catch {
-            toast.error('Failed to stop recording');
+            toast.error('Error al detener grabación');
         }
     };
 
     const playMacro = async (name) => {
-        toast.loading(`Playing macro: ${name}...`, { id: 'macro-play' });
+        toast.loading(`Reproduciendo macro: ${name}...`, { id: 'macro-play' });
         try {
             const res = await fetch(`${API}/macros/${name}/play`, { method: 'POST' });
             const data = await res.json();
             toast.dismiss('macro-play');
             if (data.device_required) {
-                toast.error('Connect NLS device to play macros');
+                toast.error('Conecte dispositivo NLS para reproducir macros');
             } else if (data.status === 'completed') {
-                toast.success(`Macro completed (${data.actions_executed} actions)`);
+                toast.success(`Macro completado (${data.actions_executed} acciones)`);
             } else {
-                toast.error(`Macro failed: ${data.message}`);
+                toast.error(`Macro fallido: ${data.message}`);
             }
         } catch {
             toast.dismiss('macro-play');
-            toast.error('Macro playback failed');
+            toast.error('Reproducción de macro fallida');
         }
     };
 
     const deleteMacro = async (name) => {
         try {
             await fetch(`${API}/macros/${name}`, { method: 'DELETE' });
-            toast.success('Macro deleted');
+            toast.success('Macro eliminado');
             fetchMacros();
         } catch {
-            toast.error('Failed to delete macro');
+            toast.error('Error al eliminar macro');
         }
     };
 
@@ -100,7 +100,7 @@ const MacroManager = () => {
             {deviceRequired ? (
                 <div className="macro-cloud-notice">
                     <Monitor size={20} style={{ opacity: 0.5 }} />
-                    <p>Macros require a local NLS device connection to record and play mouse/keyboard actions.</p>
+                    <p>Los macros requieren una conexión local al dispositivo NLS para grabar y reproducir acciones de mouse/teclado.</p>
                 </div>
             ) : (
                 <>
@@ -108,21 +108,21 @@ const MacroManager = () => {
                     <div className="macro-record-controls">
                         {!recording ? (
                             <button className="btn btn-analyze btn-sm" onClick={startRecording}>
-                                <Circle size={12} style={{ color: '#ff5555' }} /> Record
+                                <Circle size={12} style={{ color: '#ff5555' }} /> Grabar
                             </button>
                         ) : (
                             <>
                                 <input
                                     type="text"
-                                    placeholder="Macro name..."
+                                    placeholder="Nombre del macro..."
                                     value={macroName}
                                     onChange={(e) => setMacroName(e.target.value)}
                                     className="macro-name-input"
                                 />
                                 <button className="btn btn-danger-ghost btn-sm" onClick={stopRecording}>
-                                    <Square size={12} /> Stop
+                                    <Square size={12} /> Detener
                                 </button>
-                                <span className="recording-indicator">● REC</span>
+                                <span className="recording-indicator">● GRAB</span>
                             </>
                         )}
                     </div>
@@ -130,19 +130,19 @@ const MacroManager = () => {
                     {/* Macro List */}
                     <div className="macro-list">
                         {macros.length === 0 ? (
-                            <p className="no-data">No macros saved.</p>
+                            <p className="no-data">Sin macros guardados.</p>
                         ) : (
                             macros.map((m, i) => (
                                 <div key={i} className="macro-item">
                                     <div className="macro-info">
                                         <strong>{m.name}</strong>
-                                        <small>{m.action_count} actions</small>
+                                        <small>{m.action_count} acciones</small>
                                     </div>
                                     <div className="macro-actions">
-                                        <button className="btn btn-ghost btn-sm" onClick={() => playMacro(m.name)} title="Play">
+                                        <button className="btn btn-ghost btn-sm" onClick={() => playMacro(m.name)} title="Reproducir">
                                             <Play size={14} />
                                         </button>
-                                        <button className="btn btn-danger-ghost btn-sm" onClick={() => deleteMacro(m.name)} title="Delete">
+                                        <button className="btn btn-danger-ghost btn-sm" onClick={() => deleteMacro(m.name)} title="Eliminar">
                                             <Trash2 size={14} />
                                         </button>
                                     </div>

@@ -79,7 +79,7 @@ const StatsWidgets = () => {
         {
             icon: <Users size={20} />,
             value: stats?.total_patients ?? 0,
-            label: 'Total Patients',
+            label: 'Pacientes Totales',
             theme: 'accent',
             trend: getTrend('total_patients'),
             isNumeric: true,
@@ -87,7 +87,7 @@ const StatsWidgets = () => {
         {
             icon: <Activity size={20} />,
             value: stats?.total_scans ?? 0,
-            label: 'Total Scans',
+            label: 'Escaneos Totales',
             theme: 'success',
             trend: getTrend('total_scans'),
             isNumeric: true,
@@ -95,15 +95,15 @@ const StatsWidgets = () => {
         {
             icon: <Zap size={20} />,
             value: stats?.scans_today ?? 0,
-            label: 'Scans Today',
+            label: 'Escaneos Hoy',
             theme: 'info',
             trend: getTrend('scans_today'),
             isNumeric: true,
         },
         {
             icon: <Wifi size={20} />,
-            value: stats?.bot_online ? 'Online' : 'Offline',
-            label: 'NLS System',
+            value: stats?.bot_online ? 'En Línea' : 'Fuera de Línea',
+            label: 'Sistema NLS',
             theme: stats?.bot_online ? 'success' : 'warning',
             isNumeric: false,
             statusDot: true,

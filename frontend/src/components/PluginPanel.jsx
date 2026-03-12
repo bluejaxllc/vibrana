@@ -32,12 +32,12 @@ const PluginPanel = ({ token }) => {
             });
             const data = await res.json();
             if (data.status === 'loaded' || data.status === 'metadata_only') {
-                toast.success(`Plugin "${name}" loaded`);
+                toast.success(`Plugin "${name}" cargado`);
             } else {
-                toast.error(data.error || 'Failed to load');
+                toast.error(data.error || 'Error al cargar');
             }
             fetchPlugins();
-        } catch { toast.error('Failed to load plugin'); }
+        } catch { toast.error('Error al cargar plugin'); }
         finally { setLoading(false); }
     };
 
@@ -49,12 +49,12 @@ const PluginPanel = ({ token }) => {
             });
             const data = await res.json();
             if (data.status === 'unloaded') {
-                toast.success(`Plugin "${name}" unloaded`);
+                toast.success(`Plugin "${name}" descargado`);
             } else {
-                toast.error(data.error || 'Failed to unload');
+                toast.error(data.error || 'Error al descargar');
             }
             fetchPlugins();
-        } catch { toast.error('Failed to unload plugin'); }
+        } catch { toast.error('Error al descargar plugin'); }
     };
 
     const getStatusColor = (status) => {
@@ -67,12 +67,12 @@ const PluginPanel = ({ token }) => {
             <div className="plugin-header">
                 <h3><Puzzle size={16} /> Plugins</h3>
                 <button className="btn btn-ghost btn-sm" onClick={fetchPlugins}>
-                    <RefreshCw size={12} /> Refresh
+                    <RefreshCw size={12} /> Actualizar
                 </button>
             </div>
 
             {plugins.length === 0 ? (
-                <p className="no-data">No plugins discovered. Add plugins to <code>backend/plugins/</code></p>
+                <p className="no-data">Sin plugins descubiertos. Agregue plugins a <code>backend/plugins/</code></p>
             ) : (
                 <div className="plugin-list">
                     {plugins.map(p => (
@@ -95,11 +95,11 @@ const PluginPanel = ({ token }) => {
                             <div className="plugin-actions">
                                 {p.status === 'inactive' ? (
                                     <button className="btn btn-analyze btn-sm" onClick={() => loadPlugin(p.name)} disabled={loading}>
-                                        <Power size={12} /> Load
+                                        <Power size={12} /> Cargar
                                     </button>
                                 ) : (
                                     <button className="btn btn-danger-ghost btn-sm" onClick={() => unloadPlugin(p.name)}>
-                                        <PowerOff size={12} /> Unload
+                                        <PowerOff size={12} /> Descargar
                                     </button>
                                 )}
                             </div>

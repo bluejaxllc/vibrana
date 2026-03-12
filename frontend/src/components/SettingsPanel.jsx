@@ -56,12 +56,12 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                 body: JSON.stringify(updates)
             });
             if (res.ok) {
-                toast.success('System configuration updated');
+                toast.success('Configuración del sistema actualizada');
                 fetchConfig();
             } else {
-                toast.error('Failed to update configuration');
+                toast.error('Error al actualizar configuración');
             }
-        } catch { toast.error('Connection error'); }
+        } catch { toast.error('Error de conexión'); }
         finally { setSaving(false); }
     };
 
@@ -72,13 +72,13 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                 headers: authHeaders
             });
             if (res.ok) {
-                toast.success('User status updated');
+                toast.success('Estado de usuario actualizado');
                 fetchUsers();
             } else {
                 const data = await res.json();
-                toast.error(data.error || 'Failed to update user');
+                toast.error(data.error || 'Error al actualizar usuario');
             }
-        } catch { toast.error('Failed to update user'); }
+        } catch { toast.error('Error al actualizar usuario'); }
     };
 
     const getRoleBadge = (role) => {
@@ -94,20 +94,20 @@ const SettingsPanel = ({ user, token, onLogout }) => {
         <div className="settings-panel">
             <div className="settings-tabs">
                 <button className={`cv-tab ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
-                    <Shield size={14} /> Profile
+                    <Shield size={14} /> Perfil
                 </button>
                 {user?.role === 'admin' && (
                     <button className={`cv-tab ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
-                        <Users size={14} /> Users
+                        <Users size={14} /> Usuarios
                     </button>
                 )}
                 {user?.role === 'admin' && (
                     <button className={`cv-tab ${activeTab === 'system' ? 'active' : ''}`} onClick={() => setActiveTab('system')}>
-                        <Settings size={14} /> System
+                        <Settings size={14} /> Sistema
                     </button>
                 )}
                 <button className={`cv-tab ${activeTab === 'audit' ? 'active' : ''}`} onClick={() => setActiveTab('audit')}>
-                    <Clock size={14} /> Audit
+                    <Clock size={14} /> Auditoría
                 </button>
             </div>
 
@@ -123,13 +123,13 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                         </div>
                     </div>
                     <div className="profile-details">
-                        <div className="detail-row"><span>Username</span><span>{user.username}</span></div>
-                        <div className="detail-row"><span>Role</span><span>{user.role}</span></div>
-                        <div className="detail-row"><span>Member since</span><span>{new Date(user.created_at).toLocaleDateString()}</span></div>
-                        <div className="detail-row"><span>Last login</span><span>{user.last_login ? new Date(user.last_login).toLocaleString() : 'N/A'}</span></div>
+                        <div className="detail-row"><span>Usuario</span><span>{user.username}</span></div>
+                        <div className="detail-row"><span>Rol</span><span>{user.role}</span></div>
+                        <div className="detail-row"><span>Miembro desde</span><span>{new Date(user.created_at).toLocaleDateString()}</span></div>
+                        <div className="detail-row"><span>Último acceso</span><span>{user.last_login ? new Date(user.last_login).toLocaleString() : 'N/A'}</span></div>
                     </div>
                     <button className="btn btn-danger-ghost btn-sm" onClick={onLogout} style={{ marginTop: 16 }}>
-                        <LogOut size={14} /> Sign Out
+                        <LogOut size={14} /> Cerrar Sesión
                     </button>
                 </div>
             )}
@@ -149,7 +149,7 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                                     <button
                                         className="btn btn-ghost btn-sm"
                                         onClick={() => toggleUser(u.id)}
-                                        title={u.is_active ? 'Deactivate' : 'Activate'}
+                                        title={u.is_active ? 'Desactivar' : 'Activar'}
                                     >
                                         {u.is_active ? <UserX size={14} /> : <UserCheck size={14} />}
                                     </button>
@@ -165,8 +165,8 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                 <div className="settings-content">
                     <div className="system-settings-grid">
                         <div className="setting-card">
-                            <div className="setting-title"><PlayCircle size={14} /> Simulation Mode</div>
-                            <p className="setting-desc">Enable randomized bioresonance data for testing without a live NLS device.</p>
+                            <div className="setting-title"><PlayCircle size={14} /> Modo Simulación</div>
+                            <p className="setting-desc">Habilitar datos de biorresonancia aleatorizados para pruebas sin dispositivo NLS en vivo.</p>
                             <label className="switch-container">
                                 <input
                                     type="checkbox"
@@ -176,18 +176,18 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                                 />
                                 <span className="slider round"></span>
                                 <span style={{ marginLeft: 35, fontSize: '0.8rem' }}>
-                                    {config.simulation_mode === 'true' ? 'Active' : 'Disabled'}
+                                    {config.simulation_mode === 'true' ? 'Activo' : 'Desactivado'}
                                 </span>
                             </label>
                         </div>
 
                         <div className="setting-card">
-                            <div className="setting-title"><Mail size={14} /> SMTP Configuration</div>
-                            <p className="setting-desc">Outgoing mail server for health reports.</p>
+                            <div className="setting-title"><Mail size={14} /> Configuración SMTP</div>
+                            <p className="setting-desc">Servidor de correo saliente para reportes de salud.</p>
                             <div className="config-form">
                                 <input
                                     type="text"
-                                    placeholder="SMTP Host"
+                                    placeholder="Servidor SMTP"
                                     className="cv-input-field"
                                     value={config.smtp_host || ''}
                                     onChange={(e) => setConfig({ ...config, smtp_host: e.target.value })}
@@ -195,7 +195,7 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                                 <div style={{ display: 'flex', gap: 8 }}>
                                     <input
                                         type="text"
-                                        placeholder="Port"
+                                        placeholder="Puerto"
                                         className="cv-input-field"
                                         style={{ width: 80 }}
                                         value={config.smtp_port || ''}
@@ -226,14 +226,14 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                                     })}
                                     disabled={saving}
                                 >
-                                    {saving ? 'Saving...' : 'Save SMTP Settings'}
+                                    {saving ? 'Guardando...' : 'Guardar Configuración SMTP'}
                                 </button>
                             </div>
                         </div>
 
                         <div className="setting-card">
-                            <div className="setting-title"><MessageCircle size={14} style={{ color: '#25D366' }} /> WhatsApp Integration</div>
-                            <p className="setting-desc">Enter your GoHighLevel Inbound Webhook URL to route messages to patients.</p>
+                            <div className="setting-title"><MessageCircle size={14} style={{ color: '#25D366' }} /> Integración WhatsApp</div>
+                            <p className="setting-desc">Ingrese su URL de Webhook Entrante de GoHighLevel para enrutar mensajes a pacientes.</p>
                             <div className="config-form">
                                 <input
                                     type="text"
@@ -249,7 +249,7 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                                     })}
                                     disabled={saving}
                                 >
-                                    {saving ? 'Saving...' : 'Save Webhook'}
+                                    {saving ? 'Guardando...' : 'Guardar Webhook'}
                                 </button>
                             </div>
                         </div>
@@ -262,7 +262,7 @@ const SettingsPanel = ({ user, token, onLogout }) => {
                 <div className="settings-content">
                     <div className="audit-list">
                         {auditLogs.length === 0 ? (
-                            <p className="no-data">No audit events yet.</p>
+                            <p className="no-data">Sin eventos de auditoría aún.</p>
                         ) : (
                             auditLogs.map(log => (
                                 <div key={log.id} className="audit-item">

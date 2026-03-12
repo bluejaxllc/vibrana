@@ -1,0 +1,17 @@
+{
+  "name": "vibrana-license-server",
+  "version": "1.0.0",
+  "description": "Vibrana Cloud License Server — Remote paywall control + license validation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "uuid": "^9.0.0"
+  }
+}

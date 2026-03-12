@@ -23,7 +23,7 @@ const ComparisonMode = ({ patientId, onClose }) => {
                         setLeftScan(s[0]);
                     }
                 })
-                .catch(() => toast.error('Failed to load scans'));
+                .catch(() => toast.error('Error al cargar escaneos'));
         }
     }, [patientId]);
 
@@ -52,7 +52,7 @@ const ComparisonMode = ({ patientId, onClose }) => {
         <div className="comparison-overlay" onClick={onClose}>
             <div className="comparison-modal" onClick={e => e.stopPropagation()}>
                 <div className="comparison-header">
-                    <h3><ArrowLeftRight size={16} /> Scan Comparison</h3>
+                    <h3><ArrowLeftRight size={16} /> Comparación de Escaneos</h3>
                     <button className="btn btn-ghost btn-sm" onClick={onClose}><X size={14} /></button>
                 </div>
 
@@ -61,25 +61,25 @@ const ComparisonMode = ({ patientId, onClose }) => {
                         value={leftScan}
                         scans={scans}
                         onChange={setLeftScan}
-                        label="Baseline"
+                        label="Línea Base"
                     />
                     <ArrowLeftRight size={16} className="compare-arrow" />
                     <ScanSelector
                         value={rightScan}
                         scans={scans}
                         onChange={setRightScan}
-                        label="Current"
+                        label="Actual"
                     />
                 </div>
 
                 <div className="compare-grid">
-                    <ScanCard scan={leftScan} label="Baseline" getStatusColor={getStatusColor} />
-                    <ScanCard scan={rightScan} label="Current" getStatusColor={getStatusColor} />
+                    <ScanCard scan={leftScan} label="Línea Base" getStatusColor={getStatusColor} />
+                    <ScanCard scan={rightScan} label="Actual" getStatusColor={getStatusColor} />
                 </div>
 
                 {diff && (
                     <div className="compare-diff">
-                        <h4>Change Analysis</h4>
+                        <h4>Análisis de Cambios</h4>
                         <div className="diff-bars">
                             {Object.entries(diff).map(([level, d]) => (
                                 <div key={level} className="diff-row">
@@ -96,11 +96,11 @@ const ComparisonMode = ({ patientId, onClose }) => {
                         </div>
                         <div className="diff-summary">
                             {(rightScan?.total_points || 0) > (leftScan?.total_points || 0) ? (
-                                <span className="diff-trend up">↑ Entropy increased by {(rightScan?.total_points || 0) - (leftScan?.total_points || 0)} points</span>
+                                <span className="diff-trend up">↑ Entropía aumentó en {(rightScan?.total_points || 0) - (leftScan?.total_points || 0)} puntos</span>
                             ) : (rightScan?.total_points || 0) < (leftScan?.total_points || 0) ? (
-                                <span className="diff-trend down">↓ Entropy decreased by {(leftScan?.total_points || 0) - (rightScan?.total_points || 0)} points</span>
+                                <span className="diff-trend down">↓ Entropía disminuyó en {(leftScan?.total_points || 0) - (rightScan?.total_points || 0)} puntos</span>
                             ) : (
-                                <span className="diff-trend">No change in total entropy</span>
+                                <span className="diff-trend">Sin cambios en entropía total</span>
                             )}
                         </div>
                     </div>
@@ -117,7 +117,7 @@ const ScanSelector = ({ value, scans, onChange, label }) => (
             const s = scans.find(s => s.id === e.target.value);
             onChange(s);
         }}>
-            <option value="">Select scan...</option>
+            <option value="">Seleccionar escaneo...</option>
             {scans.map(s => (
                 <option key={s.id} value={s.id}>
                     {s.organ_name} ΓÇö {new Date(s.timestamp).toLocaleDateString()} ({s.status})
@@ -128,7 +128,7 @@ const ScanSelector = ({ value, scans, onChange, label }) => (
 );
 
 const ScanCard = ({ scan, label, getStatusColor }) => {
-    if (!scan) return <div className="compare-card empty"><p>No scan selected</p></div>;
+    if (!scan) return <div className="compare-card empty"><p>Sin escaneo seleccionado</p></div>;
     return (
         <div className="compare-card">
             <div className="compare-card-header">
@@ -139,12 +139,12 @@ const ScanCard = ({ scan, label, getStatusColor }) => {
             <p className="compare-date">{new Date(scan.timestamp).toLocaleString()}</p>
             <div className="compare-stats">
                 <div className="compare-stat">
-                    <span>Total Points</span>
+                    <span>Puntos Totales</span>
                     <strong>{scan.total_points || 0}</strong>
                 </div>
                 {scan.counts && Object.entries(scan.counts).map(([level, count]) => (
                     <div key={level} className="compare-stat">
-                        <span>Level {level}</span>
+                        <span>Nivel {level}</span>
                         <strong>{count}</strong>
                     </div>
                 ))}

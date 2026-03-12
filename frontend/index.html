@@ -38,10 +38,114 @@
 </head>
 
 <body>
-  <div id="google_translate_element" style="position: fixed; top: 0; right: 0; z-index: 9999; background: #fff; padding: 2px;"></div>
+  <div id="google_translate_element"></div>
+  <style>
+    /* ── Google Translate Dark Theme Override ── */
+    #google_translate_element {
+      position: fixed;
+      top: 14px;
+      right: 16px;
+      z-index: 9999;
+      background: rgba(20, 20, 35, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(139, 92, 246, 0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #google_translate_element:hover {
+      border-color: rgba(189, 147, 249, 0.5);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.15);
+    }
+    /* Style the select dropdown */
+    .goog-te-combo {
+      background: transparent !important;
+      color: #e2d9f3 !important;
+      border: none !important;
+      outline: none !important;
+      font-family: 'Inter', -apple-system, sans-serif !important;
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+      cursor: pointer !important;
+      padding: 2px 4px !important;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bd93f9' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 2px center !important;
+      padding-right: 18px !important;
+    }
+    .goog-te-combo option {
+      background: #1a1a2e !important;
+      color: #e2d9f3 !important;
+      padding: 8px !important;
+    }
+    /* Style the SIMPLE layout widget (white box with "Seleccionar idioma") */
+    .goog-te-gadget-simple {
+      background-color: transparent !important;
+      border: none !important;
+      padding: 2px 4px !important;
+      font-size: 0.78rem !important;
+      line-height: 1.4 !important;
+      cursor: pointer !important;
+    }
+    .goog-te-gadget-simple span {
+      color: #e2d9f3 !important;
+      font-family: 'Inter', -apple-system, sans-serif !important;
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.3px !important;
+      border: none !important;
+    }
+    .goog-te-gadget-simple span:hover {
+      color: #fff !important;
+    }
+    /* Hide the Google "G" logo */
+    .goog-te-gadget-simple img {
+      display: none !important;
+    }
+    /* Style the dropdown arrow */
+    .goog-te-gadget-simple .goog-te-menu-value span:last-child {
+      color: #bd93f9 !important;
+    }
+    /* Hide the Google branding / "Powered by" text */
+    .goog-te-gadget > span {
+      display: none !important;
+    }
+    .goog-te-gadget {
+      color: transparent !important;
+      font-size: 0 !important;
+    }
+    /* Hide the top Google Translate bar that appears after selecting a language */
+    .goog-te-banner-frame, .skiptranslate > iframe {
+      display: none !important;
+    }
+    body { top: 0 !important; }
+    /* Add a subtle globe icon before the select */
+    #google_translate_element::before {
+      content: '🌐';
+      font-size: 0.85rem;
+      margin-right: 4px;
+      vertical-align: middle;
+      filter: grayscale(30%);
+    }
+    #google_translate_element .goog-te-gadget {
+      display: inline-flex;
+      align-items: center;
+    }
+  </style>
   <script type="text/javascript">
     function googleTranslateElementInit() {
-      new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'es,en,fr,pt,de,ru'}, 'google_translate_element');
+      new google.translate.TranslateElement({
+        pageLanguage: 'es',
+        includedLanguages: 'es,en,fr,pt,de,ru',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
     }
   </script>
   <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

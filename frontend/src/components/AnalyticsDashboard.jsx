@@ -40,7 +40,7 @@ const AnalyticsDashboard = () => {
     if (loading) {
         return (
             <div className="analytics-dashboard">
-                <h3><TrendingUp size={16} /> Analytics</h3>
+                <h3><TrendingUp size={16} /> Analíticas</h3>
                 <div className="skeleton" style={{ height: 200 }} />
             </div>
         );
@@ -55,7 +55,7 @@ const AnalyticsDashboard = () => {
 
     const entropyData = stats.isTeam
         ? Object.entries(stats.organ_distribution || {}).map(([name, count]) => ({ name, count })) // For team, we show organ distribution instead of raw entropy levels
-        : Object.entries(stats.entropyDistribution || {}).map(([level, count]) => ({ name: `Level ${level}`, count, level: parseInt(level) }));
+        : Object.entries(stats.entropyDistribution || {}).map(([level, count]) => ({ name: `Nivel ${level}`, count, level: parseInt(level) }));
 
     const statusColors = {
         Normal: '#50fa7b',
@@ -81,17 +81,17 @@ const AnalyticsDashboard = () => {
 
     return (
         <div className="analytics-dashboard">
-            <h3><TrendingUp size={16} /> {stats.isTeam ? "Team Population Analytics" : "Global Analytics Dashboard"}</h3>
+            <h3><TrendingUp size={16} /> {stats.isTeam ? "Analíticas Poblacionales del Equipo" : "Panel de Analíticas Global"}</h3>
 
             {/* Team Specific Summary Stats */}
             {stats.isTeam && (
                 <div className="analytics-summary mt-4 mb-4" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                     <div className="analytics-card" style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '8px', flex: 1 }}>
-                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Total Patients</h4>
+                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Pacientes Totales</h4>
                         <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.patient_count}</span>
                     </div>
                     <div className="analytics-card" style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '8px', flex: 1 }}>
-                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Activity Index</h4>
+                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Índice de Actividad</h4>
                         <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.activity_index}</span>
                     </div>
                 </div>
@@ -103,21 +103,21 @@ const AnalyticsDashboard = () => {
                     <CheckCircle size={18} />
                     <div>
                         <span className="analytics-value">{normalRate}%</span>
-                        <span className="analytics-label">Normal Rate</span>
+                        <span className="analytics-label">Tasa Normal</span>
                     </div>
                 </div>
                 <div className="analytics-card warning">
                     <AlertTriangle size={18} />
                     <div>
                         <span className="analytics-value">{pathologyRate}%</span>
-                        <span className="analytics-label">Pathology Rate</span>
+                        <span className="analytics-label">Tasa de Patología</span>
                     </div>
                 </div>
                 <div className="analytics-card info">
                     <Activity size={18} />
                     <div>
                         <span className="analytics-value">{totalScans}</span>
-                        <span className="analytics-label">Total Scans</span>
+                        <span className="analytics-label">Escaneos Totales</span>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ const AnalyticsDashboard = () => {
             <div className="analytics-charts">
                 {/* Status Distribution Pie */}
                 <div className="chart-panel">
-                    <h4>Scan Status Distribution</h4>
+                    <h4>Distribución de Estados de Escaneo</h4>
                     {statusData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={200}>
                             <PieChart>
@@ -155,13 +155,13 @@ const AnalyticsDashboard = () => {
                             </PieChart>
                         </ResponsiveContainer>
                     ) : (
-                        <p className="no-data">No scan data yet.</p>
+                        <p className="no-data">Sin datos de escaneo aún.</p>
                     )}
                 </div>
 
                 {/* Entropy Level Bar Chart */}
                 <div className="chart-panel">
-                    <h4>{stats.isTeam ? "Scanned Organ Distribution" : "Entropy Level Distribution"}</h4>
+                    <h4>{stats.isTeam ? "Distribución de Órganos Escaneados" : "Distribución de Niveles de Entropía"}</h4>
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={entropyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -196,7 +196,7 @@ const AnalyticsDashboard = () => {
             {/* Recent Activity */}
             {stats.recent_activity?.length > 0 && (
                 <div className="recent-activity-panel">
-                    <h4>Recent Activity</h4>
+                    <h4>Actividad Reciente</h4>
                     <div className="activity-list">
                         {stats.recent_activity.map(a => (
                             <div key={a.id} className="activity-item">

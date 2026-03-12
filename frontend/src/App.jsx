@@ -13,6 +13,8 @@ import APIDocsViewer from './components/APIDocsViewer';
 import TeamSettings from './components/TeamSettings';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
 import DiagnosticLog from './components/DiagnosticLog';
+import UpgradeModal from './components/UpgradeModal';
+import { LicenseProvider } from './hooks/useLicense';
 import './App.css';
 
 function App() {
@@ -84,6 +86,7 @@ function App() {
   }
 
   return (
+    <LicenseProvider>
     <Router>
       <KeyboardShortcuts onAction={handleShortcutAction} />
       <Toaster
@@ -124,7 +127,9 @@ function App() {
           <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
         } />
       </Routes>
+      <UpgradeModal />
     </Router>
+    </LicenseProvider>
   );
 }
 

@@ -32,7 +32,7 @@ const PatientProfile = () => {
             const data = await res.json();
             setPatient(data);
         } catch {
-            toast.error('Failed to load patient');
+            toast.error('Error al cargar paciente');
             navigate('/');
         } finally {
             setLoading(false);
@@ -44,13 +44,13 @@ const PatientProfile = () => {
     }, [fetchPatient]);
 
     const handleDeleteScan = async (scanId) => {
-        if (!confirm('Delete this scan result?')) return;
+        if (!confirm('¿Eliminar este resultado de escaneo?')) return;
         try {
             await fetch(`${API}/scans/${scanId}`, { method: 'DELETE' });
-            toast.success('Scan deleted');
+            toast.success('Escaneo eliminado');
             fetchPatient();
         } catch {
-            toast.error('Failed to delete scan');
+            toast.error('Error al eliminar escaneo');
         }
     };
 
@@ -61,11 +61,11 @@ const PatientProfile = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ notes: editingNotes })
             });
-            toast.success('Notes saved');
+            toast.success('Notas guardadas');
             setSelectedScan(null);
             fetchPatient();
         } catch {
-            toast.error('Failed to save notes');
+            toast.error('Error al guardar notas');
         }
     };
 
@@ -73,7 +73,7 @@ const PatientProfile = () => {
         const teamId = localStorage.getItem('vibrana_active_team');
         const url = `${API}/patients/${id}/export/${format}${teamId ? `?team_id=${teamId}` : ''}`;
         window.open(url, '_blank');
-        toast.success(`${format.toUpperCase()} export started`);
+        toast.success(`Exportación ${format.toUpperCase()} iniciada`);
     };
 
     const generateReport = async () => {
@@ -81,9 +81,9 @@ const PatientProfile = () => {
             const res = await fetch(`${API}/patients/${id}/report`);
             const data = await res.json();
             setReport(data);
-            toast.success('Health report generated');
+            toast.success('Reporte de salud generado');
         } catch {
-            toast.error('Failed to generate report');
+            toast.error('Error al generar reporte');
         }
     };
 
@@ -103,7 +103,7 @@ const PatientProfile = () => {
 
     const handleOpenWhatsApp = () => {
         if (!patient.phone_number || !patient.opt_in_whatsapp) {
-            toast.error("Patient has not opted in or missing phone number.");
+            toast.error("El paciente no ha dado consentimiento o falta número de teléfono.");
             return;
         }
         setShowWhatsApp(true);
@@ -123,14 +123,14 @@ const PatientProfile = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                toast.success("WhatsApp message sent!");
+                toast.success("¡Mensaje de WhatsApp enviado!");
                 setWhatsappText('');
                 fetchMessages(); // Refresh log
             } else {
-                toast.error(data.error || "Failed to send message");
+                toast.error(data.error || "Error al enviar mensaje");
             }
         } catch (err) {
-            toast.error("Network error sending message");
+            toast.error("Error de red al enviar mensaje");
         }
     };
 
@@ -148,13 +148,13 @@ const PatientProfile = () => {
         return [...patient.scans].reverse().map((scan, idx) => {
             const counts = scan.counts || {};
             return {
-                name: scan.organ_name?.substring(0, 12) || `Scan ${idx + 1}`,
-                'Level 1': parseInt(counts['1']) || 0,
-                'Level 2': parseInt(counts['2']) || 0,
-                'Level 3': parseInt(counts['3']) || 0,
-                'Level 4': parseInt(counts['4']) || 0,
-                'Level 5': parseInt(counts['5']) || 0,
-                'Level 6': parseInt(counts['6']) || 0,
+                name: scan.organ_name?.substring(0, 12) || `Escaneo ${idx + 1}`,
+                'Nivel 1': parseInt(counts['1']) || 0,
+                'Nivel 2': parseInt(counts['2']) || 0,
+                'Nivel 3': parseInt(counts['3']) || 0,
+                'Nivel 4': parseInt(counts['4']) || 0,
+                'Nivel 5': parseInt(counts['5']) || 0,
+                'Nivel 6': parseInt(counts['6']) || 0,
                 total: scan.total_points || 0,
             };
         });
@@ -179,13 +179,13 @@ const PatientProfile = () => {
             <div className="profile-header">
                 <div className="profile-info">
                     <button className="back-btn" onClick={() => navigate('/')}>
-                        <ArrowLeft size={16} /> Back to Dashboard
+                        <ArrowLeft size={16} /> Volver al Panel
                     </button>
                     <h1>{patient.name}</h1>
                     <div className="profile-meta">
-                        <span><User size={14} /> {patient.age} yrs, {patient.gender}</span>
-                        <span><Calendar size={14} /> Since {new Date(patient.created_at).toLocaleDateString()}</span>
-                        <span><Activity size={14} /> {patient.scan_count} scans</span>
+                        <span><User size={14} /> {patient.age} años, {patient.gender}</span>
+                        <span><Calendar size={14} /> Desde {new Date(patient.created_at).toLocaleDateString()}</span>
+                        <span><Activity size={14} /> {patient.scan_count} escaneos</span>
                     </div>
                 </div>
                 <div className="profile-actions">
@@ -196,7 +196,7 @@ const PatientProfile = () => {
                         <Download size={14} /> PDF
                     </button>
                     <button className="btn btn-analyze btn-sm" onClick={generateReport}>
-                        <ClipboardList size={14} /> Report
+                        <ClipboardList size={14} /> Reporte
                     </button>
                     <button className="btn btn-outline btn-sm" onClick={() => handleExport('dicom')}>
                         🏥 DICOM
@@ -205,25 +205,25 @@ const PatientProfile = () => {
                         🌐 HL7
                     </button>
                     <button className="btn btn-ghost btn-sm" onClick={() => {
-                        const email = prompt('Send report to email:');
+                        const email = prompt('Enviar reporte al correo:');
                         if (email) {
                             fetch(`${API}/patients/${id}/email-report`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ email })
                             }).then(r => r.json()).then(d => {
-                                if (d.status === 'sent') toast.success('Report sent!');
-                                else toast.success(`Report preview generated (SMTP not configured)`);
-                            }).catch(() => toast.error('Failed to send'));
+                                if (d.status === 'sent') toast.success('¡Reporte enviado!');
+                                else toast.success(`Vista previa de reporte generada (SMTP no configurado)`);
+                            }).catch(() => toast.error('Error al enviar'));
                         }
                     }}>
                         ✉️ Email
                     </button>
-                    <button className="btn btn-ghost btn-sm" onClick={handleOpenWhatsApp} title="Send WhatsApp Message">
+                    <button className="btn btn-ghost btn-sm" onClick={handleOpenWhatsApp} title="Enviar Mensaje de WhatsApp">
                         <MessageCircle size={14} style={{ color: patient.opt_in_whatsapp ? '#25D366' : 'inherit' }} /> WhatsApp
                     </button>
                     <button className="btn btn-ghost btn-sm" onClick={() => setShowComparison(true)}>
-                        🔀 Compare
+                        🔀 Comparar
                     </button>
                 </div>
             </div>
@@ -235,14 +235,14 @@ const PatientProfile = () => {
             {/* Health Report */}
             {report && (
                 <div className="health-report">
-                    <h3>Health Report</h3>
+                    <h3>Reporte de Salud</h3>
                     <p className="report-summary">{report.summary}</p>
                     <div className="report-recommendations">
                         {report.recommendations?.map((r, i) => (
                             <div key={i} className="recommendation-item">{r}</div>
                         ))}
                     </div>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setReport(null)} style={{ marginTop: 8 }}>Close Report</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setReport(null)} style={{ marginTop: 8 }}>Cerrar Reporte</button>
                 </div>
             )}
 
@@ -256,7 +256,7 @@ const PatientProfile = () => {
             <div className="profile-content">
                 {/* Entropy Trends Chart */}
                 <div className="profile-section">
-                    <h2><Activity size={18} /> Entropy Trends</h2>
+                    <h2><Activity size={18} /> Tendencias de Entropía</h2>
                     {patient.scans?.length > 0 ? (
                         <div className="chart-container">
                             <ResponsiveContainer width="100%" height="100%">
@@ -284,7 +284,7 @@ const PatientProfile = () => {
                                         <Line
                                             key={level}
                                             type="monotone"
-                                            dataKey={`Level ${level}`}
+                                            dataKey={`Nivel ${level}`}
                                             stroke={chartColors[i]}
                                             strokeWidth={2}
                                             dot={{ r: 3 }}
@@ -295,13 +295,13 @@ const PatientProfile = () => {
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <p className="no-data">No scan data yet. Run a scan from the dashboard.</p>
+                        <p className="no-data">Sin datos de escaneo aún. Ejecute un escaneo desde el panel.</p>
                     )}
                 </div>
 
                 {/* Scan History */}
                 <div className="profile-section">
-                    <h2><FileText size={18} /> Scan History</h2>
+                    <h2><FileText size={18} /> Historial de Escaneos</h2>
                     {patient.scans?.length > 0 ? (
                         <div className="scan-timeline">
                             {patient.scans.map(scan => (
@@ -337,7 +337,7 @@ const PatientProfile = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="no-data">No scan history available.</p>
+                        <p className="no-data">Sin historial de escaneos disponible.</p>
                     )}
                 </div>
             </div>
@@ -349,32 +349,32 @@ const PatientProfile = () => {
                         <button className="modal-close" onClick={() => setSelectedScan(null)}>✕</button>
                         <h3>{selectedScan.organ_name}</h3>
                         <p className="status-text">
-                            {selectedScan.status} • {selectedScan.total_points} points •{' '}
+                            {selectedScan.status} • {selectedScan.total_points} puntos •{' '}
                             {selectedScan.timestamp ? new Date(selectedScan.timestamp).toLocaleString() : ''}
                         </p>
 
                         <div className="entropy-grid" style={{ marginBottom: 16 }}>
                             {Object.entries(selectedScan.counts || {}).map(([lvl, count]) => (
                                 <div key={lvl} className={`entropy-item lvl-${lvl}`}>
-                                    <span>Lvl {lvl}</span>
+                                    <span>Nvl {lvl}</span>
                                     <strong>{count}</strong>
                                 </div>
                             ))}
                         </div>
 
                         <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#8892a4', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <StickyNote size={14} /> Practitioner Notes
+                            <StickyNote size={14} /> Notas del Profesional
                         </h4>
                         <textarea
                             className="scan-notes-textarea"
                             value={editingNotes}
                             onChange={(e) => setEditingNotes(e.target.value)}
-                            placeholder="Add notes about this scan..."
+                            placeholder="Agregar notas sobre este escaneo..."
                         />
                         <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'flex-end' }}>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setSelectedScan(null)}>Cancel</button>
+                            <button className="btn btn-ghost btn-sm" onClick={() => setSelectedScan(null)}>Cancelar</button>
                             <button className="btn btn-analyze btn-sm" onClick={() => handleSaveNotes(selectedScan.id)}>
-                                Save Notes
+                                Guardar Notas
                             </button>
                         </div>
                     </div>
@@ -387,13 +387,13 @@ const PatientProfile = () => {
                     <div className="scan-detail-modal" onClick={(e) => e.stopPropagation()} style={{ width: '400px', display: 'flex', flexDirection: 'column' }}>
                         <button className="modal-close" onClick={() => setShowWhatsApp(false)}>✕</button>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#25D366' }}>
-                            <MessageCircle size={20} /> WhatsApp Log
+                            <MessageCircle size={20} /> Registro WhatsApp
                         </h3>
-                        <p className="status-text mb-4">Chatting with {patient.name} ({patient.phone_number})</p>
+                        <p className="status-text mb-4">Chateando con {patient.name} ({patient.phone_number})</p>
 
                         <div className="whatsapp-log p-2 rounded" style={{ height: '300px', overflowY: 'auto', background: 'rgba(0,0,0,0.2)', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {messages.length === 0 ? (
-                                <div style={{ color: '#8892a4', textAlign: 'center', paddingTop: '2rem' }}>No messages sent yet.</div>
+                                <div style={{ color: '#8892a4', textAlign: 'center', paddingTop: '2rem' }}>Sin mensajes enviados aún.</div>
                             ) : (
                                 messages.map(msg => (
                                     <div key={msg.id} style={{
@@ -419,12 +419,12 @@ const PatientProfile = () => {
                                 type="text"
                                 value={whatsappText}
                                 onChange={(e) => setWhatsappText(e.target.value)}
-                                placeholder="Type a message..."
+                                placeholder="Escribe un mensaje..."
                                 style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '8px', color: 'white' }}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSendWhatsApp()}
                             />
                             <button className="btn btn-analyze" onClick={handleSendWhatsApp} style={{ background: '#25D366', color: 'white' }}>
-                                Send
+                                Enviar
                             </button>
                         </div>
                     </div>
