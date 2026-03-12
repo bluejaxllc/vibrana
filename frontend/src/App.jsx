@@ -92,7 +92,7 @@ const RequireLicense = ({ children }) => {
   if (loading) {
     return (
       <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="vfx-pulse">Verificando suscripción...</div>
+        <div className="vfx-pulse">Verificando licencia...</div>
       </div>
     );
   }

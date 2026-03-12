@@ -729,7 +729,7 @@ def take_snapshot():
 # ──────────────────────────────────────
 # MACROS — Phase 3
 # ──────────────────────────────────────
-@app.route('/macros', methods=['GET'])
+@app.route('/api/macros', methods=['GET'])
 @require_tier('macros')
 def list_macros():
     if not bot:
@@ -737,7 +737,7 @@ def list_macros():
     return jsonify({"macros": bot.list_macros()})
 
 
-@app.route('/macros/record/start', methods=['POST'])
+@app.route('/api/macros/record/start', methods=['POST'])
 @require_tier('macros')
 def start_macro_record():
     if not bot:
@@ -745,7 +745,7 @@ def start_macro_record():
     return jsonify(bot.start_macro_recording())
 
 
-@app.route('/macros/record/stop', methods=['POST'])
+@app.route('/api/macros/record/stop', methods=['POST'])
 @require_tier('macros')
 def stop_macro_record():
     if not bot:
@@ -755,7 +755,7 @@ def stop_macro_record():
     return jsonify(bot.stop_macro_recording(name))
 
 
-@app.route('/macros/<name>/play', methods=['POST'])
+@app.route('/api/macros/<name>/play', methods=['POST'])
 @require_tier('macros')
 def play_macro(name):
     if not bot:
@@ -763,7 +763,7 @@ def play_macro(name):
     return jsonify(bot.play_macro(name))
 
 
-@app.route('/macros/<name>', methods=['DELETE'])
+@app.route('/api/macros/<name>', methods=['DELETE'])
 @require_tier('macros')
 def delete_macro(name):
     if not bot:
@@ -2285,6 +2285,10 @@ def migrate_db():
         return jsonify({"status": "success", "message": "Migrations run successfully"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"Migration error: {str(e)}"})
+
+
+
+
 
 
 # ──────────────────────────────────────

@@ -2530,6 +2530,34 @@ def migrate_db_v2():
         return jsonify({"status": "error", "message": f"Migration error: {str(e)}"})
 
 # ──────────────────────────────────────
+# MACROS ENDPOINTS (STUBS FOR CLOUD)
+# ──────────────────────────────────────
+@app.route('/api/macros', methods=['GET'])
+def list_macros_cloud():
+    """List all saved macros. (Cloud stub)"""
+    return jsonify({
+        "status": "success",
+        "macros": [],
+        "device_required": True
+    })
+
+@app.route('/api/macros/record/start', methods=['POST'])
+def start_macro_recording_cloud():
+    return jsonify({"status": "error", "device_required": True})
+
+@app.route('/api/macros/record/stop', methods=['POST'])
+def stop_macro_recording_cloud():
+    return jsonify({"status": "error", "device_required": True})
+
+@app.route('/api/macros/<name>/play', methods=['POST'])
+def play_macro_endpoint_cloud(name):
+    return jsonify({"status": "error", "device_required": True})
+
+@app.route('/api/macros/<name>', methods=['DELETE'])
+def delete_macro_endpoint_cloud(name):
+    return jsonify({"status": "error", "device_required": True})
+
+# ──────────────────────────────────────
 # MAIN
 # ──────────────────────────────────────
 if __name__ == '__main__':
