@@ -229,7 +229,11 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
     };
 
     const handlePrint = () => {
-        window.print();
+        document.body.classList.add('nls-printing');
+        setTimeout(() => {
+            window.print();
+            document.body.classList.remove('nls-printing');
+        }, 100);
     };
 
     const handleReferenceUpload = async (e) => {

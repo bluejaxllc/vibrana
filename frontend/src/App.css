@@ -7512,25 +7512,36 @@ textarea:focus {
   }
 }
 
-/* ── Print overrides for modal ── */
+/* ── Print overrides for NLS modal ── */
 @media print {
-  .nls-modal-overlay {
-    position: static;
-    background: white !important;
-    backdrop-filter: none;
-    padding: 0;
+  /* Hide EVERYTHING on the page */
+  body.nls-printing #root {
+    display: none !important;
   }
 
-  .nls-modal-container {
+  /* Show ONLY the NLS modal overlay (portaled to body) */
+  body.nls-printing .nls-modal-overlay {
+    display: block !important;
+    position: static !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.nls-printing .nls-modal-container {
     background: white !important;
     border: none !important;
     box-shadow: none !important;
-    border-radius: 0;
-    max-width: 100%;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
-  .nls-modal-body {
-    padding: 16px;
+  body.nls-printing .nls-modal-body {
+    padding: 16px !important;
+    overflow: visible !important;
   }
 
   .no-print { display: none !important; }
@@ -7563,6 +7574,24 @@ textarea:focus {
   .nls-detail-card {
     background: #f9fafb !important;
     border: 1px solid #d1d5db !important;
+  }
+
+  .nls-compound-tag {
+    background: #e5e7eb !important;
+    color: #111 !important;
+    border-color: #d1d5db !important;
+  }
+
+  .nls-metric-label,
+  .nls-detail-label,
+  .nls-tea-label,
+  .nls-time-label,
+  .nls-monitor-label {
+    color: #555 !important;
+  }
+
+  .nls-food-how {
+    color: #166534 !important;
   }
 }
 
