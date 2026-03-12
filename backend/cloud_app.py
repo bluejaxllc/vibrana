@@ -2505,7 +2505,7 @@ TEXTO DEL ESCANEO:
 # DB MIGRATION ENDPOINT (PHASE 15 & 16)
 # ──────────────────────────────────────
 @app.route('/api/migrate-db', methods=['POST'])
-def migrate_db():
+def migrate_db_v2():
     db = get_db()
     from sqlalchemy.sql import text
     try:
