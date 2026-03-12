@@ -7116,6 +7116,8 @@ textarea:focus {
   border-radius: 12px;
   padding: 16px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .nls-food-card:hover {
@@ -7145,6 +7147,8 @@ textarea:focus {
   color: #94a3b8;
   margin: 0 0 8px;
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .nls-food-how {
@@ -7152,6 +7156,8 @@ textarea:focus {
   color: #4ade80;
   font-weight: 500;
   margin: 0 0 8px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .nls-food-compounds {
