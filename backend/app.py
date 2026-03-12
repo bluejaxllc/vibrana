@@ -2004,6 +2004,8 @@ def analyze_nls_pdf_endpoint():
         
         from report_agent import call_gemini_sync
         
+        kb_injection = f"**BASE DE CONOCIMIENTO EXTERNA (OBLIGATORIO):**\nEl profesional ha proporcionado la siguiente literatura de referencia. DEBES basar tu diagnóstico, dosis, remedios y sugerencias en ESTOS documentos primarios:\n{reference_text}" if reference_text else ""
+        
         prompt = f"""Eres un experto intérprete de biorresonancia y diagnóstico por Sistema No Lineal (NLS), entrenado estrictamente en Lógica Cuántico-Entrópica y similitud espectral. Tu propósito es analizar datos de escaneo NLS y generar un plan terapéutico COMPLETO, DETALLADO y ACCIONABLE con un régimen semanal.
 
 IDIOMA: Toda tu respuesta debe estar COMPLETAMENTE en ESPAÑOL.
@@ -2014,7 +2016,7 @@ El usuario ha solicitado ESTRICTAMENTE que las terapias recomendadas se limiten 
 
 SIEMPRE respeta estas disciplinas. No recomiendes suplementos si "Nutrición Funcional" no está listada, no recomiendes hierbas chinas si "MTC" no está listada, etc. Solo genera las categorías requeridas.
 
-{f"**BASE DE CONOCIMIENTO EXTERNA (OBLIGATORIO):**\nEl profesional ha proporcionado la siguiente literatura de referencia. DEBES basar tu diagnóstico, dosis, remedios y sugerencias en ESTOS documentos primarios:\n{reference_text}" if reference_text else ""}
+{kb_injection}
 
 
 Reglas de Interpretación:
