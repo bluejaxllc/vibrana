@@ -50,6 +50,216 @@
 }
 
 /* ============================================
+   LIGHT THEME — Variable Overrides
+   ============================================ */
+[data-theme="light"],
+:root:has([data-theme="light"]) {
+  --bg-dark: #f5f5fa;
+  --bg-panel: #ffffff;
+  --bg-card: #f0f0f8;
+  --bg-elevated: #e8e8f2;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-accent: rgba(139, 92, 246, 0.3);
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --accent: #7c3aed;
+  --accent-light: #8b5cf6;
+  --accent-dark: #6d28d9;
+  --danger: #dc2626;
+  --danger-light: #ef4444;
+  --success: #16a34a;
+  --success-dark: #15803d;
+  --warning: #ca8a04;
+  --info: #0891b2;
+
+  --gradient-accent: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  --gradient-success: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  --gradient-danger: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  --gradient-info: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  --gradient-bg: linear-gradient(180deg, #f5f5fa 0%, #eeeef6 100%);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 16px rgba(124, 58, 237, 0.12);
+}
+
+/* Light theme — Override hardcoded dark backgrounds */
+[data-theme="light"] body,
+[data-theme="light"] .dashboard-container,
+[data-theme="light"] .login-container {
+  background: var(--gradient-bg) !important;
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .dashboard-panel,
+[data-theme="light"] .patient-manager,
+[data-theme="light"] .control-section,
+[data-theme="light"] .data-log,
+[data-theme="light"] .collapsible-section,
+[data-theme="light"] .analysis-card,
+[data-theme="light"] .setting-card,
+[data-theme="light"] .settings-panel,
+[data-theme="light"] .stat-card {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .dashboard-header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] label,
+[data-theme="light"] li {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .btn-ghost {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme form inputs */
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] input[type="email"],
+[data-theme="light"] input[type="number"],
+[data-theme="light"] input[type="tel"],
+[data-theme="light"] input[type="search"],
+[data-theme="light"] textarea,
+[data-theme="light"] select,
+[data-theme="light"] .cv-input-field {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Light theme specific component fixes */
+[data-theme="light"] .status-badge {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .patient-badge {
+  background: rgba(124, 58, 237, 0.08) !important;
+  color: var(--accent) !important;
+}
+
+[data-theme="light"] .profile-card-settings {
+  background: var(--bg-card) !important;
+}
+
+[data-theme="light"] .user-row,
+[data-theme="light"] .audit-item {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .detail-row {
+  border-bottom-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .settings-tabs .cv-tab {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .settings-tabs .cv-tab.active {
+  background: rgba(124, 58, 237, 0.08) !important;
+  color: var(--accent) !important;
+}
+
+/* Light theme NLS overrides */
+[data-theme="light"] .nls-modal-overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="light"] .nls-modal-container {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .nls-section-title,
+[data-theme="light"] .nls-therapy-name,
+[data-theme="light"] .nls-food-name,
+[data-theme="light"] .nls-metric-value {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .nls-metric,
+[data-theme="light"] .nls-therapy-card,
+[data-theme="light"] .nls-food-card,
+[data-theme="light"] .nls-tea-card,
+[data-theme="light"] .nls-detail-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme login page */
+[data-theme="light"] .login-card {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+[data-theme="light"] .login-card input {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme dashboard config panel */
+[data-theme="light"] .dashboard-config-panel {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .config-widget-item {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .config-widget-label {
+  color: var(--text-primary) !important;
+}
+
+/* Hide VFX canvas in light mode */
+[data-theme="light"] .dashboard-vfx-canvas,
+[data-theme="light"] .dashboard-scanline-overlay {
+  display: none !important;
+}
+
+/* Smooth transition on theme switch */
+body, .dashboard-container, .login-container,
+.dashboard-panel, .settings-panel, .stat-card {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ============================================
    PHASE 10 — SYSTEM CONFIGURATION
    ============================================ */
 .system-settings-grid {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ChevronDown, ChevronRight, Wrench, Activity, Settings2, GripVertical, Eye, EyeOff, RotateCcw, X, BarChart3, ClipboardList, Users, Settings } from 'lucide-react';
+import { ChevronDown, ChevronRight, Wrench, Activity, Settings2, GripVertical, Eye, EyeOff, RotateCcw, X, BarChart3, ClipboardList, Users, Settings, Sun, Moon } from 'lucide-react';
 import ControlPanel from './ControlPanel';
 import LiveMonitor from './LiveMonitor';
 import PatientManager from './PatientManager';
@@ -256,6 +256,14 @@ const Dashboard = () => {
     const [teams, setTeams] = useState([]);
     const [currentTeam, setCurrentTeam] = useState(null);
     const [aiReportData, setAiReportData] = useState(null);
+
+    // Theme toggle
+    const [theme, setTheme] = useState(() => localStorage.getItem('vibrana_theme') || 'dark');
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('vibrana_theme', theme);
+    }, [theme]);
+    const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
     // Dashboard customization state
     const [dashConfig, setDashConfig] = useState(() => loadConfig());
@@ -657,6 +665,9 @@ const Dashboard = () => {
                         {isEditing ? 'Listo' : <GripVertical size={16} />}
                     </button>
                     <a href="/settings" className="btn btn-ghost btn-sm" title="Configuracion"><Settings size={16} /></a>
+                    <button className="btn btn-ghost btn-sm" onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}>
+                        {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
                     <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                 </div>
             </header>
