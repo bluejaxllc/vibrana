@@ -6432,6 +6432,301 @@ textarea:focus {
 }
 
 /* ============================================
+   MODULAR DASHBOARD — Widget System
+   ============================================ */
+
+/* Widget wrapper for edit mode */
+.widget-wrapper {
+  position: relative;
+  border: 2px dashed transparent;
+  border-radius: 14px;
+  transition: border-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
+}
+
+.widget-wrapper:active {
+  cursor: grabbing;
+}
+
+.widget-wrapper:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.widget-dragging {
+  opacity: 0.4 !important;
+  border-color: rgba(167, 139, 250, 0.5) !important;
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.15) !important;
+}
+
+.widget-drop-target {
+  border-color: rgba(80, 250, 123, 0.6) !important;
+  box-shadow: 0 0 24px rgba(80, 250, 123, 0.15), inset 0 0 12px rgba(80, 250, 123, 0.05) !important;
+}
+
+.widget-drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  background: rgba(167, 139, 250, 0.15);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a78bfa;
+  cursor: grab;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.widget-wrapper:hover .widget-drag-handle {
+  opacity: 1;
+  background: rgba(167, 139, 250, 0.25);
+}
+
+.widget-container {
+  transition: opacity 0.2s ease;
+}
+
+.widget-hidden-preview {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.widget-hidden-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  pointer-events: none;
+}
+
+/* Editing Banner */
+.editing-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  margin: 0 0 8px;
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), rgba(139, 233, 253, 0.05));
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 12px;
+  color: #a78bfa;
+  font-size: 13px;
+  font-weight: 600;
+  animation: nlsSlideUp 0.3s ease;
+}
+
+.editing-done-btn {
+  background: rgba(80, 250, 123, 0.12);
+  color: #50fa7b;
+  border: 1px solid rgba(80, 250, 123, 0.3);
+  border-radius: 8px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.editing-done-btn:hover {
+  background: rgba(80, 250, 123, 0.2);
+  box-shadow: 0 0 12px rgba(80, 250, 123, 0.2);
+}
+
+.btn-editing-active {
+  background: rgba(167, 139, 250, 0.15) !important;
+  border-color: rgba(167, 139, 250, 0.3) !important;
+  color: #a78bfa !important;
+}
+
+/* Config Panel Overlay */
+.dashboard-config-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dashboard-config-panel {
+  background: linear-gradient(145deg, #13132a, #0f0f1a);
+  border: 1px solid rgba(167, 139, 250, 0.15);
+  border-radius: 20px;
+  padding: 28px;
+  width: min(440px, 95vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(167, 139, 250, 0.08);
+  animation: nlsSlideUp 0.3s ease;
+}
+
+.config-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.config-panel-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.config-close-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-close-btn:hover {
+  background: rgba(255, 85, 85, 0.15);
+  color: #ff7979;
+  border-color: rgba(255, 85, 85, 0.3);
+}
+
+.config-panel-desc {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.config-widget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.config-widget-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+}
+
+.config-widget-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.config-widget-item.hidden-widget {
+  opacity: 0.5;
+}
+
+.config-widget-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.config-widget-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.config-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.config-toggle-btn.on {
+  background: rgba(80, 250, 123, 0.12);
+  color: #50fa7b;
+}
+
+.config-toggle-btn.on:hover {
+  background: rgba(80, 250, 123, 0.2);
+}
+
+.config-toggle-btn.off {
+  background: rgba(255, 85, 85, 0.1);
+  color: #94a3b8;
+}
+
+.config-toggle-btn.off:hover {
+  background: rgba(255, 85, 85, 0.15);
+  color: #f87171;
+}
+
+.config-reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.config-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ============================================
    VFX — Enhanced Stat Card Glow
    ============================================ */
 

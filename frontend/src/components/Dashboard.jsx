@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ChevronDown, ChevronRight, Wrench, Activity } from 'lucide-react';
+import { ChevronDown, ChevronRight, Wrench, Activity, Settings2, GripVertical, Eye, EyeOff, RotateCcw, X } from 'lucide-react';
 import ControlPanel from './ControlPanel';
 import LiveMonitor from './LiveMonitor';
 import PatientManager from './PatientManager';
@@ -41,7 +41,7 @@ const AmbientVFX = () => {
             r: Math.random() * 120 + 60,
             vx: (Math.random() - 0.5) * 0.3,
             vy: (Math.random() - 0.5) * 0.3,
-            hue: Math.random() * 60 + 240, // purple-blue range
+            hue: Math.random() * 60 + 240,
             alpha: Math.random() * 0.04 + 0.02,
         }));
 
@@ -60,7 +60,6 @@ const AmbientVFX = () => {
         const draw = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw orbs
             orbs.forEach(o => {
                 o.x += o.vx;
                 o.y += o.vy;
@@ -78,7 +77,6 @@ const AmbientVFX = () => {
                 ctx.fill();
             });
 
-            // Draw particles
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -133,6 +131,120 @@ const CollapsibleSection = ({ title, icon, children, defaultOpen = false }) => {
     );
 };
 
+/* ── Widget Registry ─────────────────────────── */
+const WIDGET_REGISTRY = [
+    { id: 'organ-map',       label: 'Mapa Corporal',           icon: '🧬', column: 'left',   defaultVisible: true },
+    { id: 'live-monitor',    label: 'Transmisión en Vivo',     icon: '📡', column: 'left',   defaultVisible: true },
+    { id: 'patient-manager', label: 'Gestión de Pacientes',    icon: '👤', column: 'center', defaultVisible: true },
+    { id: 'controls',        label: 'Controles',               icon: '🎛️', column: 'center', defaultVisible: true },
+    { id: 'live-analysis',   label: 'Análisis en Vivo',        icon: '📊', column: 'center', defaultVisible: false },
+    { id: 'advanced-tools',  label: 'Herramientas Avanzadas',  icon: '🔧', column: 'right',  defaultVisible: false },
+    { id: 'nls-analyzer',    label: 'Sistema NLS',             icon: '🔬', column: 'right',  defaultVisible: true },
+    { id: 'scan-log',        label: 'Registro de Escaneo',     icon: '📋', column: 'right',  defaultVisible: true },
+];
+
+const STORAGE_KEY = 'vibrana_dashboard_config';
+
+const getDefaultConfig = () => ({
+    columnOrder: {
+        left:   ['organ-map', 'live-monitor'],
+        center: ['patient-manager', 'controls', 'live-analysis'],
+        right:  ['advanced-tools', 'nls-analyzer', 'scan-log'],
+    },
+    hidden: ['live-analysis', 'advanced-tools'],
+});
+
+const loadConfig = () => {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Validate structure
+            if (parsed.columnOrder && parsed.hidden) {
+                // Add any new widgets that might have been added since last save
+                const allIds = WIDGET_REGISTRY.map(w => w.id);
+                const savedIds = [...parsed.columnOrder.left, ...parsed.columnOrder.center, ...parsed.columnOrder.right];
+                const missing = allIds.filter(id => !savedIds.includes(id));
+                missing.forEach(id => {
+                    const w = WIDGET_REGISTRY.find(r => r.id === id);
+                    if (w) parsed.columnOrder[w.column].push(id);
+                });
+                return parsed;
+            }
+        }
+    } catch (e) { /* ignore corrupt data */ }
+    return getDefaultConfig();
+};
+
+/* ── Draggable Widget Wrapper ─────────────────────────── */
+const WidgetWrapper = ({ id, children, isEditing, onDragStart, onDragOver, onDrop, isDragOver }) => {
+    if (!isEditing) return <>{children}</>;
+
+    return (
+        <div
+            className={`widget-wrapper ${isDragOver ? 'widget-drop-target' : ''}`}
+            draggable
+            onDragStart={(e) => {
+                e.dataTransfer.setData('text/plain', id);
+                e.currentTarget.classList.add('widget-dragging');
+                onDragStart(id);
+            }}
+            onDragEnd={(e) => {
+                e.currentTarget.classList.remove('widget-dragging');
+            }}
+            onDragOver={(e) => {
+                e.preventDefault();
+                onDragOver(id);
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                onDrop(id);
+            }}
+        >
+            <div className="widget-drag-handle">
+                <GripVertical size={14} />
+            </div>
+            {children}
+        </div>
+    );
+};
+
+/* ── Dashboard Config Panel ─────────────────────────── */
+const DashboardConfigPanel = ({ config, onToggle, onReset, onClose }) => {
+    return (
+        <div className="dashboard-config-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+            <div className="dashboard-config-panel">
+                <div className="config-panel-header">
+                    <h3><Settings2 size={18} /> Personalizar Dashboard</h3>
+                    <button className="config-close-btn" onClick={onClose}><X size={18} /></button>
+                </div>
+                <p className="config-panel-desc">Activa o desactiva las secciones del dashboard. Arrastra para reordenar.</p>
+                <div className="config-widget-list">
+                    {WIDGET_REGISTRY.map(w => {
+                        const isVisible = !config.hidden.includes(w.id);
+                        return (
+                            <div key={w.id} className={`config-widget-item ${isVisible ? 'visible' : 'hidden-widget'}`}>
+                                <span className="config-widget-icon">{w.icon}</span>
+                                <span className="config-widget-label">{w.label}</span>
+                                <button
+                                    className={`config-toggle-btn ${isVisible ? 'on' : 'off'}`}
+                                    onClick={() => onToggle(w.id)}
+                                    title={isVisible ? 'Ocultar' : 'Mostrar'}
+                                >
+                                    {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+                <button className="config-reset-btn" onClick={onReset}>
+                    <RotateCcw size={14} /> Restablecer Predeterminado
+                </button>
+            </div>
+        </div>
+    );
+};
+
 /* ── Dashboard ─────────────────────────── */
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -144,6 +256,87 @@ const Dashboard = () => {
     const [teams, setTeams] = useState([]);
     const [currentTeam, setCurrentTeam] = useState(null);
     const [aiReportData, setAiReportData] = useState(null);
+
+    // Dashboard customization state
+    const [dashConfig, setDashConfig] = useState(() => loadConfig());
+    const [isEditing, setIsEditing] = useState(false);
+    const [showConfigPanel, setShowConfigPanel] = useState(false);
+    const [dragOverId, setDragOverId] = useState(null);
+    const dragSourceRef = useRef(null);
+
+    // Persist config changes
+    const saveConfig = useCallback((newConfig) => {
+        setDashConfig(newConfig);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
+    }, []);
+
+    const toggleWidget = useCallback((widgetId) => {
+        setDashConfig(prev => {
+            const newHidden = prev.hidden.includes(widgetId)
+                ? prev.hidden.filter(id => id !== widgetId)
+                : [...prev.hidden, widgetId];
+            const newConfig = { ...prev, hidden: newHidden };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
+            return newConfig;
+        });
+    }, []);
+
+    const resetConfig = useCallback(() => {
+        const def = getDefaultConfig();
+        saveConfig(def);
+        toast.success('Dashboard restablecido');
+    }, [saveConfig]);
+
+    const handleDragStart = useCallback((id) => {
+        dragSourceRef.current = id;
+    }, []);
+
+    const handleDragOver = useCallback((targetId) => {
+        setDragOverId(targetId);
+    }, []);
+
+    const handleDrop = useCallback((targetId) => {
+        const sourceId = dragSourceRef.current;
+        if (!sourceId || sourceId === targetId) {
+            setDragOverId(null);
+            return;
+        }
+
+        setDashConfig(prev => {
+            const newOrder = { ...prev.columnOrder };
+            // Find which column the source is in
+            let sourceCol = null;
+            for (const col of ['left', 'center', 'right']) {
+                if (newOrder[col].includes(sourceId)) {
+                    sourceCol = col;
+                    break;
+                }
+            }
+            // Find which column the target is in
+            let targetCol = null;
+            for (const col of ['left', 'center', 'right']) {
+                if (newOrder[col].includes(targetId)) {
+                    targetCol = col;
+                    break;
+                }
+            }
+
+            if (!sourceCol || !targetCol) return prev;
+
+            // Remove source from its column
+            newOrder[sourceCol] = newOrder[sourceCol].filter(id => id !== sourceId);
+            // Insert source at target position
+            const targetIdx = newOrder[targetCol].indexOf(targetId);
+            newOrder[targetCol].splice(targetIdx, 0, sourceId);
+
+            const newConfig = { ...prev, columnOrder: newOrder };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
+            return newConfig;
+        });
+
+        setDragOverId(null);
+        dragSourceRef.current = null;
+    }, []);
 
     // Fetch Teams and handle selection
     useEffect(() => {
@@ -272,6 +465,139 @@ const Dashboard = () => {
         return 'idle';
     };
 
+    // Widget renderer — maps widget IDs to JSX
+    const renderWidget = (widgetId) => {
+        const isHidden = dashConfig.hidden.includes(widgetId);
+        if (isHidden && !isEditing) return null;
+
+        const widgetContent = (() => {
+            switch (widgetId) {
+                case 'organ-map':
+                    return (
+                        <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.1s' }}>
+                            <OrganMap
+                                patientId={selectedPatient?.id}
+                                scanResults={patientScans}
+                                aiReportData={aiReportData}
+                                onOrganSelect={(organ) => toast.success(`Objetivo adquirido: ${organ.name}`)}
+                            />
+                        </div>
+                    );
+                case 'live-monitor':
+                    return (
+                        <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.15s', flex: 1, minHeight: '350px' }}>
+                            <LiveMonitor activeTeam={currentTeam} />
+                        </div>
+                    );
+                case 'patient-manager':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.2s' }}>
+                            <PatientManager
+                                onSelectPatient={handleSelectPatient}
+                                onViewProfile={handleViewProfile}
+                                selectedPatientId={selectedPatient?.id}
+                                teamId={currentTeam?.team_id}
+                            />
+                        </div>
+                    );
+                case 'controls':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.25s' }}>
+                            <ControlPanel
+                                onStart={handleStartScan}
+                                onStop={handleStopScan}
+                                onAnalyze={handleAnalyze}
+                                status={status}
+                            />
+                            {analysisResult && (
+                                <div className="analysis-card vfx-card-enter" key={analysisResult.id || 'analysis-card-singleton'}>
+                                    <h4>{analysisResult.organ_name}</h4>
+                                    <p className="status-text">{analysisResult.status} • {analysisResult.total_points} puntos</p>
+                                    <div className="entropy-grid">
+                                        {Object.entries(analysisResult.counts).map(([lvl, count]) => (
+                                            <div key={lvl} className={`entropy-item lvl-${lvl}`}>
+                                                <span>Nvl {lvl}</span>
+                                                <strong>{count}</strong>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+                case 'live-analysis':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.3s' }}>
+                            <CollapsibleSection title="Análisis en Vivo" icon={<Activity size={14} />} defaultOpen={false}>
+                                <LiveEntropyCounter patientId={selectedPatient?.id} />
+                                <ScreenWatcherPanel patientId={selectedPatient?.id} />
+                            </CollapsibleSection>
+                        </div>
+                    );
+                case 'advanced-tools':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
+                            <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
+                                <CVTools />
+                                <MacroManager />
+                            </CollapsibleSection>
+                        </div>
+                    );
+                case 'nls-analyzer':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
+                            <NLSAnalyzerPanel
+                                patientId={selectedPatient?.id}
+                                patientScans={patientScans}
+                                onAnalyzeComplete={(data) => {
+                                    setAiReportData(data);
+                                    toast.success("Datos de IA sincronizados con Mapa Corporal");
+                                }}
+                            />
+                        </div>
+                    );
+                case 'scan-log':
+                    return (
+                        <div className="data-log vfx-card-enter" style={{ animationDelay: '0.45s', flex: 1 }}>
+                            <h3>Registro de Escaneo</h3>
+                            <ul>
+                                {scanData.map((log, idx) => <li key={idx}>{log}</li>)}
+                                {scanData.length === 0 && <li className="log-empty">Sin datos aún...</li>}
+                            </ul>
+                        </div>
+                    );
+                default:
+                    return null;
+            }
+        })();
+
+        if (!widgetContent) return null;
+
+        return (
+            <WidgetWrapper
+                key={widgetId}
+                id={widgetId}
+                isEditing={isEditing}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                isDragOver={dragOverId === widgetId}
+            >
+                <div className={`widget-container ${isHidden ? 'widget-hidden-preview' : ''}`}>
+                    {isEditing && isHidden && (
+                        <div className="widget-hidden-badge">Oculto</div>
+                    )}
+                    {widgetContent}
+                </div>
+            </WidgetWrapper>
+        );
+    };
+
+    const renderColumn = (colName) => {
+        const widgetIds = dashConfig.columnOrder[colName] || [];
+        return widgetIds.map(id => renderWidget(id)).filter(Boolean);
+    };
+
     return (
         <div className="dashboard-container">
             {/* Ambient VFX Background */}
@@ -301,6 +627,20 @@ const Dashboard = () => {
                     <a href="/analytics" className="btn btn-ghost btn-sm">📊 Estadísticas</a>
                     <a href="/diagnostic-logs" className="btn btn-ghost btn-sm">📋 Registros</a>
                     <a href="/teams" className="btn btn-ghost btn-sm">👥 Equipo</a>
+                    <button
+                        className={`btn btn-ghost btn-sm ${isEditing ? 'btn-editing-active' : ''}`}
+                        onClick={() => setShowConfigPanel(true)}
+                        title="Personalizar Dashboard"
+                    >
+                        <Settings2 size={16} />
+                    </button>
+                    <button
+                        className={`btn btn-ghost btn-sm ${isEditing ? 'btn-editing-active' : ''}`}
+                        onClick={() => setIsEditing(!isEditing)}
+                        title={isEditing ? 'Terminar edición' : 'Reorganizar widgets'}
+                    >
+                        {isEditing ? '✓ Listo' : '⇅'}
+                    </button>
                     <a href="/settings" className="btn btn-ghost btn-sm">⚙️</a>
                     <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                 </div>
@@ -308,97 +648,40 @@ const Dashboard = () => {
 
             <StatsWidgets />
 
+            {isEditing && (
+                <div className="editing-banner">
+                    <GripVertical size={14} />
+                    Modo de edición — Arrastra los widgets para reordenar
+                    <button onClick={() => setIsEditing(false)} className="editing-done-btn">✓ Listo</button>
+                </div>
+            )}
+
             <main className="dashboard-content three-column-grid">
-                {/* COLUMN 1: Visuals & Map */}
+                {/* COLUMN 1: Left */}
                 <div className="column-left">
-                    <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.1s' }}>
-                        <OrganMap
-                            patientId={selectedPatient?.id}
-                            scanResults={patientScans}
-                            aiReportData={aiReportData}
-                            onOrganSelect={(organ) => toast.success(`Objetivo adquirido: ${organ.name}`)}
-                        />
-                    </div>
-                    <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.15s', flex: 1, minHeight: '350px' }}>
-                        <LiveMonitor activeTeam={currentTeam} />
-                    </div>
+                    {renderColumn('left')}
                 </div>
 
-                {/* COLUMN 2: Patient Flow & Controls */}
+                {/* COLUMN 2: Center */}
                 <div className="column-center">
-                    <div className="vfx-card-enter" style={{ animationDelay: '0.2s' }}>
-                        <PatientManager
-                            onSelectPatient={handleSelectPatient}
-                            onViewProfile={handleViewProfile}
-                            selectedPatientId={selectedPatient?.id}
-                            teamId={currentTeam?.team_id}
-                        />
-                    </div>
-                    <div className="vfx-card-enter" style={{ animationDelay: '0.25s' }}>
-                        <ControlPanel
-                            onStart={handleStartScan}
-                            onStop={handleStopScan}
-                            onAnalyze={handleAnalyze}
-                            status={status}
-                        />
-                    </div>
-
-                    {analysisResult && (
-                        <div className="analysis-card vfx-card-enter" key={analysisResult.id || 'analysis-card-singleton'}>
-                            <h4>{analysisResult.organ_name}</h4>
-                            <p className="status-text">{analysisResult.status} • {analysisResult.total_points} puntos</p>
-                            <div className="entropy-grid">
-                                {Object.entries(analysisResult.counts).map(([lvl, count]) => (
-                                    <div key={lvl} className={`entropy-item lvl-${lvl}`}>
-                                        <span>Nvl {lvl}</span>
-                                        <strong>{count}</strong>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Collapsible: Live Analysis */}
-                    <div className="vfx-card-enter" style={{ animationDelay: '0.3s' }}>
-                        <CollapsibleSection title="Análisis en Vivo" icon={<Activity size={14} />} defaultOpen={false}>
-                            <LiveEntropyCounter patientId={selectedPatient?.id} />
-                            <ScreenWatcherPanel patientId={selectedPatient?.id} />
-                        </CollapsibleSection>
-                    </div>
+                    {renderColumn('center')}
                 </div>
 
-                {/* COLUMN 3: Tools & Logs */}
+                {/* COLUMN 3: Right */}
                 <div className="column-right">
-                    {/* Collapsible: Advanced Tools */}
-                    <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
-                        <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
-                            <CVTools />
-                            <MacroManager />
-                        </CollapsibleSection>
-                    </div>
-
-                    {/* NLS Analyzer Panel */}
-                    <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
-                        <NLSAnalyzerPanel
-                            patientId={selectedPatient?.id}
-                            patientScans={patientScans}
-                            onAnalyzeComplete={(data) => {
-                                setAiReportData(data);
-                                toast.success("Datos de IA sincronizados con Mapa Corporal");
-                            }}
-                        />
-                    </div>
-
-                    {/* Scan Log */}
-                    <div className="data-log vfx-card-enter" style={{ animationDelay: '0.45s', flex: 1 }}>
-                        <h3>Registro de Escaneo</h3>
-                        <ul>
-                            {scanData.map((log, idx) => <li key={idx}>{log}</li>)}
-                            {scanData.length === 0 && <li className="log-empty">Sin datos aún...</li>}
-                        </ul>
-                    </div>
+                    {renderColumn('right')}
                 </div>
             </main>
+
+            {/* Config Panel Modal */}
+            {showConfigPanel && (
+                <DashboardConfigPanel
+                    config={dashConfig}
+                    onToggle={toggleWidget}
+                    onReset={resetConfig}
+                    onClose={() => setShowConfigPanel(false)}
+                />
+            )}
         </div>
     );
 };
