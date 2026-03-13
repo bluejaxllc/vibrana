@@ -245,7 +245,15 @@ const LandingPage = ({ onGetStarted }) => {
     const [visibleSections, setVisibleSections] = useState(new Set());
     const [lang, setLang] = useState(() => localStorage.getItem('vibrana_lang') || 'es');
     const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+    const [theme, setTheme] = useState(() => localStorage.getItem('vibrana_theme') || (window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
     const heroRef = useRef(null);
+
+    const toggleTheme = () => {
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('vibrana_theme', next);
+    };
 
     const t = i18n[lang];
     const heroVisible = visibleSections.has('hero-trigger');
@@ -330,7 +338,12 @@ const LandingPage = ({ onGetStarted }) => {
                         <a href="#installation">{t.nav.install}</a>
                         <button className="btn-lang-toggle" onClick={() => setLang(l => l === 'es' ? 'en' : 'es')}
                             title={lang === 'es' ? 'Switch to English' : 'Cambiar a Español'}>
-                            {lang === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+                            {lang === 'es' ? 'EN' : 'ES'}
+                        </button>
+                        <button className="btn-lang-toggle" onClick={toggleTheme}
+                            title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+                            style={{ fontSize: '1.1rem' }}>
+                            {theme === 'dark' ? '☀' : '☾'}
                         </button>
                         <button className="btn-landing-primary" onClick={onGetStarted}>{t.nav.launch}</button>
                     </div>
