@@ -220,16 +220,53 @@
 }
 
 /* Light theme login page */
+[data-theme="light"] .login-page {
+  background: linear-gradient(135deg, #f0ecf9 0%, #e8e4f5 50%, #f5f5fa 100%) !important;
+}
+
+[data-theme="light"] .login-particles,
+[data-theme="light"] .login-orb {
+  display: none !important;
+}
+
 [data-theme="light"] .login-card {
   background: var(--bg-panel) !important;
   border-color: var(--border-subtle) !important;
   box-shadow: var(--shadow-lg) !important;
 }
 
+[data-theme="light"] .login-card h1,
+[data-theme="light"] .login-card h2 {
+  color: var(--accent) !important;
+}
+
+[data-theme="light"] .login-card p,
+[data-theme="light"] .login-card label,
+[data-theme="light"] .login-card small {
+  color: var(--text-secondary) !important;
+}
+
 [data-theme="light"] .login-card input {
   background: var(--bg-card) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .login-card a {
+  color: var(--accent) !important;
+}
+
+/* Light theme — Google Translate text fix */
+[data-theme="light"] #google_translate_element .goog-te-gadget-simple span,
+[data-theme="light"] #google_translate_element .goog-te-combo {
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Subscription / license required */
+[data-theme="light"] .license-check,
+[data-theme="light"] .subscription-required {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Light theme dashboard config panel */
