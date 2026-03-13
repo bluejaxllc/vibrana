@@ -450,13 +450,13 @@ def call_gemini_sync(prompt: str) -> dict:
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.3,
-            "maxOutputTokens": 16384,
+            "maxOutputTokens": 65536,
             "responseMimeType": "application/json",
         }
     }
 
     try:
-        resp = requests.post(url, json=payload, timeout=90)
+        resp = requests.post(url, json=payload, timeout=120)
         if resp.status_code != 200:
             error_msg = f"Gemini API error ({resp.status_code}): {resp.text[:200]}"
             print(f"[AI Report] {error_msg}")
@@ -466,6 +466,12 @@ def call_gemini_sync(prompt: str) -> dict:
             return fallback
 
         data = resp.json()
+        
+        # Check for truncation via finishReason
+        finish_reason = data.get("candidates", [{}])[0].get("finishReason", "")
+        if finish_reason == "MAX_TOKENS":
+            print(f"[AI Report] WARNING: Gemini response was truncated (MAX_TOKENS)")
+        
         text = data["candidates"][0]["content"]["parts"][0]["text"]
         text = text.strip()
         
@@ -482,13 +488,70 @@ def call_gemini_sync(prompt: str) -> dict:
             if text.startswith("json\n"):
                 text = text[5:]
 
-        return json.loads(text)
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as je:
+            print(f"[AI Report] JSON parse failed: {je}. Attempting repair...")
+            repaired = _repair_truncated_json(text)
+            if repaired:
+                print(f"[AI Report] JSON repair succeeded!")
+                repaired['_repaired'] = True
+                return repaired
+            raise  # re-raise if repair failed
     except Exception as e:
         error_msg = f"Gemini call failed: {type(e).__name__}: {e}"
         print(f"[AI Report] {error_msg}")
         fallback = generate_fallback_report(prompt)
         fallback['_gemini_error'] = error_msg
         return fallback
+
+
+def _repair_truncated_json(text: str) -> dict:
+    """Attempt to repair truncated JSON by closing open structures."""
+    try:
+        # Track nesting
+        in_string = False
+        escape_next = False
+        stack = []
+        
+        for ch in text:
+            if escape_next:
+                escape_next = False
+                continue
+            if ch == '\\' and in_string:
+                escape_next = True
+                continue
+            if ch == '"' and not escape_next:
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if ch in ('{', '['):
+                stack.append(ch)
+            elif ch == '}' and stack and stack[-1] == '{':
+                stack.pop()
+            elif ch == ']' and stack and stack[-1] == '[':
+                stack.pop()
+        
+        # Close the string if we're in one
+        repaired = text
+        if in_string:
+            repaired += '"'
+        
+        # Close any open structures in reverse order
+        for opener in reversed(stack):
+            if opener == '{':
+                # Remove trailing comma if present
+                repaired = repaired.rstrip().rstrip(',')
+                repaired += '}'
+            elif opener == '[':
+                repaired = repaired.rstrip().rstrip(',')
+                repaired += ']'
+        
+        return json.loads(repaired)
+    except Exception as e:
+        print(f"[AI Report] JSON repair also failed: {e}")
+        return None
 
 def call_gemini_sync_text(prompt: str) -> str:
     """Synchronous wrapper for call_gemini returning raw text."""
