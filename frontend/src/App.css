@@ -247,6 +247,201 @@
   color: var(--text-primary) !important;
 }
 
+/* Light theme — LiveMonitor */
+[data-theme="light"] .live-monitor,
+[data-theme="light"] .monitor-feed,
+[data-theme="light"] .monitor-placeholder {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .monitor-header h2,
+[data-theme="light"] .monitor-controls button {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .event-log,
+[data-theme="light"] .event-item {
+  background: var(--bg-card) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — NLS Analyzer Panel (all inner elements) */
+[data-theme="light"] .nls-analyzer-panel,
+[data-theme="light"] .nls-upload-section,
+[data-theme="light"] .nls-therapy-filters,
+[data-theme="light"] .nls-protocol-card,
+[data-theme="light"] .nls-checkbox-group,
+[data-theme="light"] .nls-file-info,
+[data-theme="light"] .nls-progress-bar,
+[data-theme="light"] .nls-detail-protocol {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .nls-therapy-action,
+[data-theme="light"] .nls-therapy-desc,
+[data-theme="light"] .nls-food-desc {
+  color: var(--text-secondary) !important;
+}
+
+/* Light theme — OrganMap */
+[data-theme="light"] .organ-map-container,
+[data-theme="light"] .organ-map-panel,
+[data-theme="light"] .organ-map-legend,
+[data-theme="light"] .organ-tooltip {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — CV Tools & MacroManager */
+[data-theme="light"] .cv-tools,
+[data-theme="light"] .macro-manager {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .cv-tools h3,
+[data-theme="light"] .macro-manager h3 {
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Control Panel */
+[data-theme="light"] .control-panel,
+[data-theme="light"] .automation-section {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Patient Manager */
+[data-theme="light"] .patient-list,
+[data-theme="light"] .patient-row,
+[data-theme="light"] .patient-card {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .patient-row:hover,
+[data-theme="light"] .patient-card:hover {
+  background: var(--bg-elevated) !important;
+}
+
+/* Light theme — Analytics */
+[data-theme="light"] .analytics-dashboard,
+[data-theme="light"] .analytics-card,
+[data-theme="light"] .chart-container {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Data log */
+[data-theme="light"] .data-log {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .data-log h3 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .data-log li {
+  color: var(--text-secondary) !important;
+  border-bottom-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Buttons */
+[data-theme="light"] .btn-accent {
+  background: var(--gradient-accent) !important;
+  color: #fff !important;
+}
+
+[data-theme="light"] .btn-danger-ghost {
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
+}
+
+/* Light theme — Global catch-all for text on dark backgrounds */
+[data-theme="light"] [class*="glass"],
+[data-theme="light"] [class*="Glass"] {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Landing page */
+[data-theme="light"] .landing-container,
+[data-theme="light"] .landing-hero {
+  background: var(--gradient-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Switch / toggle */
+[data-theme="light"] .switch-container .slider {
+  background: #cbd5e1 !important;
+}
+
+[data-theme="light"] .switch-container input:checked + .slider {
+  background: var(--accent) !important;
+}
+
+/* Light theme — Diagnostic logs page */
+[data-theme="light"] .diagnostic-log-container,
+[data-theme="light"] .diagnostic-entry {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Screen capture area */
+[data-theme="light"] .screen-watcher-panel,
+[data-theme="light"] .live-entropy-counter {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Entropy items */
+[data-theme="light"] .entropy-grid .entropy-item {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light theme — Plugin, API docs, Team settings */
+[data-theme="light"] .plugin-panel,
+[data-theme="light"] .api-docs-viewer,
+[data-theme="light"] .team-settings-container {
+  background: var(--bg-panel) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Upgrade/paywall modal */
+[data-theme="light"] .upgrade-modal,
+[data-theme="light"] .upgrade-card {
+  background: var(--bg-panel) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme — Scrollbars */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--bg-card) !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #c4b5fd !important;
+}
+
+/* Light theme — Google Translate widget */
+[data-theme="light"] #google_translate_element {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(124, 58, 237, 0.2) !important;
+}
+
 /* Hide VFX canvas in light mode */
 [data-theme="light"] .dashboard-vfx-canvas,
 [data-theme="light"] .dashboard-scanline-overlay {

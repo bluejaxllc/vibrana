@@ -58,13 +58,30 @@ function App() {
   });
   const [token, setToken] = useState(() => localStorage.getItem('vibrana_token') || null);
   const [showLogin, setShowLogin] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('vibrana_theme') || 'dark');
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('vibrana_theme');
+    if (saved) return saved;
+    // Auto-detect from system preference
+    return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  });
 
-  // Apply theme
+  // Apply theme + listen for OS-level changes
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('vibrana_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const handler = (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem('vibrana_theme')) {
+        setTheme(e.matches ? 'light' : 'dark');
+      }
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const handleLogin = (userData, tokenStr) => {
     setUser(userData);
