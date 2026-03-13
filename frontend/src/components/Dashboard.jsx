@@ -654,9 +654,9 @@ const Dashboard = () => {
                         onClick={() => setIsEditing(!isEditing)}
                         title={isEditing ? 'Terminar edición' : 'Reorganizar widgets'}
                     >
-                        {isEditing ? '✓ Listo' : '⇅'}
+                        {isEditing ? '✓ Listo' : <GripVertical size={16} />}
                     </button>
-                    <a href="/settings" className="btn btn-ghost btn-sm">⚙️</a>
+                    <a href="/settings" className="btn btn-ghost btn-sm" title="Configuración">⚙️</a>
                     <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                 </div>
             </header>
