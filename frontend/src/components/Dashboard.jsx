@@ -613,14 +613,29 @@ const Dashboard = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {teams.length > 0 && (
-                        <div className="team-switcher glass px-2 py-1 rounded flex items-center gap-2 border border-accent/20">
-                            <span className="text-[10px] opacity-40 uppercase font-bold">Equipo</span>
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            background: 'rgba(255,255,255,0.04)',
+                            border: '1px solid rgba(167,139,250,0.2)',
+                            borderRadius: 10,
+                            padding: '4px 12px',
+                        }}>
+                            <span style={{ fontSize: 10, opacity: 0.5, textTransform: 'uppercase', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>Equipo</span>
                             <select
                                 value={currentTeam?.team_id || ''}
                                 onChange={(e) => handleTeamChange(e.target.value)}
-                                className="bg-transparent border-none text-xs font-medium focus:ring-0 cursor-pointer text-accent"
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: '#a78bfa',
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    outline: 'none',
+                                    fontFamily: 'inherit',
+                                }}
                             >
-                                {teams.map(t => <option key={t.team_id} value={t.team_id} className="bg-bg-panel">{t.team_name}</option>)}
+                                {teams.map(t => <option key={t.team_id} value={t.team_id} style={{ background: '#13132a', color: '#e2e8f0' }}>{t.team_name}</option>)}
                             </select>
                         </div>
                     )}

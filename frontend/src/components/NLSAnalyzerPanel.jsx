@@ -109,8 +109,8 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
         "Nutrición Funcional y Suplementos": true,
         "Fitoterapia y Herbolaria": true,
         "Homeopatía y Terapia Frecuencial": true,
-        "Medicina Tradicional China (TCM/Acupuntura)": false,
-        "Terapia Emocional y Energética": false,
+        "Medicina Tradicional China (TCM/Acupuntura)": true,
+        "Terapia Emocional y Energética": true,
         "Terapia Física y Ejercicio": true
     });
     
