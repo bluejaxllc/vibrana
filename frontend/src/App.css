@@ -7004,10 +7004,11 @@ textarea:focus {
   background: rgba(139, 233, 253, 0.06);
   padding: 5px 12px;
   border-radius: 8px;
-  max-width: 260px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 360px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  text-align: right;
 }
 
 .nls-therapy-body {
