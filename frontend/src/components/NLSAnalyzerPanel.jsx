@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
-import { FileText, UploadCloud, Activity, Printer, X, Shield, Target, Zap, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { FileText, UploadCloud, Activity, Printer, Download, X, Shield, Target, Zap, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { LOCAL_API as API } from '../config.js';
 import OrganMap from './OrganMap';
 
@@ -234,6 +234,38 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
             window.print();
             document.body.classList.remove('nls-printing');
         }, 100);
+    };
+
+    const handleDownloadPdf = async () => {
+        if (!reportData) return;
+        const toastId = toast.loading('Generando PDF...');
+        try {
+            const res = await fetch(`${API}/api/nls-report-pdf`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ report_data: reportData }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || `Error ${res.status}`);
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            // Extract filename from Content-Disposition or use default
+            const disposition = res.headers.get('Content-Disposition');
+            const match = disposition && disposition.match(/filename="?(.+?)"?$/);
+            a.download = match ? match[1] : `Vibrana_Reporte_NLS_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast.success('PDF descargado correctamente', { id: toastId });
+        } catch (err) {
+            console.error('[NLS PDF]', err);
+            toast.error(`Error al generar PDF: ${err.message}`, { id: toastId });
+        }
     };
 
     const handleReferenceUpload = async (e) => {
@@ -520,6 +552,9 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                                 </div>
                             </div>
                             <div className="nls-modal-actions">
+                                <button className="nls-btn-icon nls-btn-download" onClick={handleDownloadPdf} title="Descargar PDF">
+                                    <Download size={18} />
+                                </button>
                                 <button className="nls-btn-icon" onClick={handlePrint} title="Imprimir reporte">
                                     <Printer size={18} />
                                 </button>
@@ -539,28 +574,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                             {/* Right Side: Report */}
                             <div className="nls-modal-report" style={{ flex: '2 1 600px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-                            {/* DEBUG: Remove after testing */}
-                            <div style={{ background: '#1e1e3a', border: '1px solid #a78bfa', borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '12px', color: '#8be9fd', maxHeight: '150px', overflow: 'auto' }}>
-                                <strong style={{ color: '#f1fa8c' }}>🔍 DEBUG — reportData keys:</strong> {JSON.stringify(Object.keys(reportData || {}))}
-                                <br />
-                                <strong style={{ color: '#f1fa8c' }}>📊 entropic_analysis:</strong> {JSON.stringify(reportData?.entropic_analysis)}
-                                <br />
-                                <strong style={{ color: '#f1fa8c' }}>🩺 scan_metadata:</strong> {JSON.stringify(reportData?.scan_metadata)}
-                                <br />
-                                <strong style={{ color: '#f1fa8c' }}>📝 has clinical_synthesis:</strong> {String(!!reportData?.clinical_synthesis)} | <strong>therapies:</strong> {reportData?.recommended_etalons?.length ?? 0} | <strong>foods:</strong> {reportData?.foods_to_eat?.length ?? 0}
-                                {reportData?._gemini_error && (
-                                    <>
-                                        <br />
-                                        <strong style={{ color: '#ff5555' }}>❌ GEMINI ERROR:</strong> <span style={{ color: '#ff5555' }}>{reportData._gemini_error}</span>
-                                    </>
-                                )}
-                                {reportData?._fallback && (
-                                    <>
-                                        <br />
-                                        <strong style={{ color: '#ffb86c' }}>⚠️ USING FALLBACK REPORT</strong> (Gemini API did not return real data)
-                                    </>
-                                )}
-                            </div>
+
 
                             {/* ── Entropic Metrics ── */}
                             <div className="nls-section">

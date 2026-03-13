@@ -2583,9 +2583,44 @@ def delete_macro_endpoint_cloud(name):
     return jsonify({"status": "error", "device_required": True})
 
 # ──────────────────────────────────────
+# NLS REPORT PDF DOWNLOAD
+# ──────────────────────────────────────
+@app.route('/api/nls-report-pdf', methods=['POST'])
+def nls_report_pdf():
+    """Generate a downloadable PDF from the NLS scan report data."""
+    try:
+        data = request.json
+        if not data or 'report_data' not in data:
+            return jsonify({"error": "Missing report_data in request body"}), 400
+
+        from nls_pdf_generator import generate_nls_pdf
+        pdf_bytes = generate_nls_pdf(data['report_data'])
+
+        buffer = io.BytesIO(pdf_bytes)
+        buffer.seek(0)
+
+        organ = data['report_data'].get('scan_metadata', {}).get('organ_or_tissue', 'NLS')
+        safe_name = organ.replace(' ', '_').replace(',', '')[:40]
+        filename = f'Vibrana_Reporte_{safe_name}_{datetime.now().strftime("%Y%m%d")}.pdf'
+
+        return send_file(
+            buffer,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        print(f"[NLS PDF] Error generating PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": f"Error generating PDF: {str(e)}"}), 500
+
+
+# ──────────────────────────────────────
 # MAIN
 # ──────────────────────────────────────
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     print(f"Starting Vibrana Cloud Backend on port {port}...")
     app.run(host='0.0.0.0', port=port, debug=False)
+
