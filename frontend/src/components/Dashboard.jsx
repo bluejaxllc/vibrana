@@ -137,6 +137,7 @@ const WIDGET_REGISTRY = [
     { id: 'live-monitor',    label: 'Transmisión en Vivo',     icon: '📡', column: 'left',   defaultVisible: true },
     { id: 'patient-manager', label: 'Gestión de Pacientes',    icon: '👤', column: 'center', defaultVisible: true },
     { id: 'controls',        label: 'Controles',               icon: '🎛️', column: 'center', defaultVisible: true },
+    { id: 'macros',          label: 'Macros',                  icon: '⌨️', column: 'center', defaultVisible: true },
     { id: 'live-analysis',   label: 'Análisis en Vivo',        icon: '📊', column: 'center', defaultVisible: false },
     { id: 'advanced-tools',  label: 'Herramientas Avanzadas',  icon: '🔧', column: 'right',  defaultVisible: false },
     { id: 'nls-analyzer',    label: 'Sistema NLS',             icon: '🔬', column: 'right',  defaultVisible: true },
@@ -148,7 +149,7 @@ const STORAGE_KEY = 'vibrana_dashboard_config';
 const getDefaultConfig = () => ({
     columnOrder: {
         left:   ['organ-map', 'live-monitor'],
-        center: ['patient-manager', 'controls', 'live-analysis'],
+        center: ['patient-manager', 'controls', 'macros', 'live-analysis'],
         right:  ['advanced-tools', 'nls-analyzer', 'scan-log'],
     },
     hidden: ['live-analysis', 'advanced-tools'],
@@ -542,12 +543,17 @@ const Dashboard = () => {
                             </CollapsibleSection>
                         </div>
                     );
+                case 'macros':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.32s' }}>
+                            <MacroManager />
+                        </div>
+                    );
                 case 'advanced-tools':
                     return (
                         <div className="vfx-card-enter" style={{ animationDelay: '0.35s' }}>
                             <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
                                 <CVTools />
-                                <MacroManager />
                             </CollapsibleSection>
                         </div>
                     );
