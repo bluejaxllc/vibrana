@@ -732,19 +732,16 @@ def take_snapshot():
 from macro_engine import macro_engine
 
 @app.route('/api/macros', methods=['GET'])
-@require_tier('macros')
 def list_macros():
     return jsonify({"macros": macro_engine.list_macros()})
 
 
 @app.route('/api/macros/record/start', methods=['POST'])
-@require_tier('macros')
 def start_macro_record():
     return jsonify(macro_engine.start_recording())
 
 
 @app.route('/api/macros/record/stop', methods=['POST'])
-@require_tier('macros')
 def stop_macro_record():
     data = request.json or {}
     name = data.get('name', f"macro_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
@@ -752,15 +749,14 @@ def stop_macro_record():
 
 
 @app.route('/api/macros/<name>/play', methods=['POST'])
-@require_tier('macros')
 def play_macro(name):
     return jsonify(macro_engine.play_macro(name))
 
 
 @app.route('/api/macros/<name>', methods=['DELETE'])
-@require_tier('macros')
 def delete_macro(name):
     return jsonify(macro_engine.delete_macro(name))
+
 
 
 
