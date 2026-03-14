@@ -727,48 +727,41 @@ def take_snapshot():
 
 
 # ──────────────────────────────────────
-# MACROS — Phase 3
+# MACROS — Universal (Phase 3 upgraded)
 # ──────────────────────────────────────
+from macro_engine import macro_engine
+
 @app.route('/api/macros', methods=['GET'])
 @require_tier('macros')
 def list_macros():
-    if not bot:
-        return jsonify({"error": "Bot not initialized"}), 500
-    return jsonify({"macros": bot.list_macros()})
+    return jsonify({"macros": macro_engine.list_macros()})
 
 
 @app.route('/api/macros/record/start', methods=['POST'])
 @require_tier('macros')
 def start_macro_record():
-    if not bot:
-        return jsonify({"error": "Bot not initialized"}), 500
-    return jsonify(bot.start_macro_recording())
+    return jsonify(macro_engine.start_recording())
 
 
 @app.route('/api/macros/record/stop', methods=['POST'])
 @require_tier('macros')
 def stop_macro_record():
-    if not bot:
-        return jsonify({"error": "Bot not initialized"}), 500
-    data = request.json
+    data = request.json or {}
     name = data.get('name', f"macro_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    return jsonify(bot.stop_macro_recording(name))
+    return jsonify(macro_engine.stop_recording(name))
 
 
 @app.route('/api/macros/<name>/play', methods=['POST'])
 @require_tier('macros')
 def play_macro(name):
-    if not bot:
-        return jsonify({"error": "Bot not initialized"}), 500
-    return jsonify(bot.play_macro(name))
+    return jsonify(macro_engine.play_macro(name))
 
 
 @app.route('/api/macros/<name>', methods=['DELETE'])
 @require_tier('macros')
 def delete_macro(name):
-    if not bot:
-        return jsonify({"error": "Bot not initialized"}), 500
-    return jsonify(bot.delete_macro(name))
+    return jsonify(macro_engine.delete_macro(name))
+
 
 
 # ──────────────────────────────────────

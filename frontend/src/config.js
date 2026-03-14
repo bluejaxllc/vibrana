@@ -1,11 +1,12 @@
 // Centralized API configuration
-// All routes served from a single cloud backend (Railway) by default
-// Use local backend for device-dependent features (MJPEG stream, OCR capture)
+// Cloud API (Railway) for most features
+// Local API (localhost:5001) for device-dependent features (macros record/play, MJPEG stream)
 
-const USE_LOCAL = false; // Toggle to true if running backend locally on port 5001
+const USE_LOCAL = false; // Toggle to true to route ALL traffic through local backend
 
 export const API = USE_LOCAL
     ? 'http://localhost:5001'
     : (import.meta.env.VITE_API_URL || 'https://fabulous-embrace-production-1e4f.up.railway.app');
 
-export const LOCAL_API = API;
+// LOCAL_API always points to the local backend — used for device-dependent features
+export const LOCAL_API = 'http://localhost:5001';

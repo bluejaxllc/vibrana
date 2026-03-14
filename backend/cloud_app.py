@@ -2555,32 +2555,34 @@ def migrate_db_v2():
         return jsonify({"status": "error", "message": f"Migration error: {str(e)}"})
 
 # ──────────────────────────────────────
-# MACROS ENDPOINTS (STUBS FOR CLOUD)
+# MACROS — Universal (works for list/delete, device needed for record/play)
 # ──────────────────────────────────────
+from macro_engine import macro_engine
+
 @app.route('/api/macros', methods=['GET'])
 def list_macros_cloud():
-    """List all saved macros. (Cloud stub)"""
-    return jsonify({
-        "status": "success",
-        "macros": [],
-        "device_required": True
-    })
+    """List all saved macros — fully functional on cloud."""
+    return jsonify({"macros": macro_engine.list_macros()})
 
 @app.route('/api/macros/record/start', methods=['POST'])
 def start_macro_recording_cloud():
-    return jsonify({"status": "error", "device_required": True})
+    """Recording requires a local machine with display/input devices."""
+    return jsonify({"status": "error", "device_required": True, "message": "Recording requires a local machine with keyboard/mouse access"})
 
 @app.route('/api/macros/record/stop', methods=['POST'])
 def stop_macro_recording_cloud():
-    return jsonify({"status": "error", "device_required": True})
+    return jsonify({"status": "error", "device_required": True, "message": "Recording requires a local machine"})
 
 @app.route('/api/macros/<name>/play', methods=['POST'])
 def play_macro_endpoint_cloud(name):
-    return jsonify({"status": "error", "device_required": True})
+    """Playback requires a local machine with display/input devices."""
+    return jsonify({"status": "error", "device_required": True, "message": "Playback requires a local machine with keyboard/mouse access"})
 
 @app.route('/api/macros/<name>', methods=['DELETE'])
 def delete_macro_endpoint_cloud(name):
-    return jsonify({"status": "error", "device_required": True})
+    """Deleting macros — fully functional on cloud."""
+    return jsonify(macro_engine.delete_macro(name))
+
 
 # ──────────────────────────────────────
 # NLS REPORT PDF DOWNLOAD
