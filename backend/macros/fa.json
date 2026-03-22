@@ -1,0 +1,6152 @@
+{
+  "name": "fa",
+  "created": "2026-03-21T02:06:52.204988",
+  "duration_seconds": 354.5,
+  "actions": [
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 7.44
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3851,
+        "y": 484,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 5.34
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3889,
+        "y": 4,
+        "button": "middle"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 4.52
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2419,
+        "y": 437,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.09
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "w"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.47
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.36
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.19
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "p"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.68
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "v"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "?"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.31
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.44
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "'"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "v"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.38
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "b"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "v"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "y"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.86
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.43
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.13
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.21
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.38
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "enter"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 17.98
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2488,
+        "y": 916,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 4.83
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2653,
+        "y": 69,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 8.29
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3240,
+        "y": 518,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3240,
+        "y": 518,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 9.98
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2696,
+        "y": 740,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.49
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3050,
+        "y": 731,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3052,
+        "y": 731,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3052,
+        "y": 731,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3052,
+        "y": 731,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3052,
+        "y": 731,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 7.06
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4073,
+        "y": 461,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.54
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4112,
+        "y": 567,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4113,
+        "y": 579,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4113,
+        "y": 584,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4114,
+        "y": 586,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4114,
+        "y": 589,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4114,
+        "y": 592,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4123,
+        "y": 612,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4131,
+        "y": 623,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4139,
+        "y": 631,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4142,
+        "y": 632,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4142,
+        "y": 632,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4145,
+        "y": 632,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4150,
+        "y": 634,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4155,
+        "y": 635,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4163,
+        "y": 639,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.54
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2820,
+        "y": 434,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.31
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2813,
+        "y": 446,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.43
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3960,
+        "y": 493,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3961,
+        "y": 493,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3961,
+        "y": 493,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3961,
+        "y": 493,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.42
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4078,
+        "y": 500,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4081,
+        "y": 501,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4082,
+        "y": 502,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4082,
+        "y": 502,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4082,
+        "y": 502,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4082,
+        "y": 502,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4082,
+        "y": 502,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4093,
+        "y": 513,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4059,
+        "y": 529,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 10
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.44
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.28
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.39
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.5
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.31
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3836,
+        "y": 516,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.4
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.33
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3846,
+        "y": 544,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3849,
+        "y": 550,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.9
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2337,
+        "y": 433,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 3.86
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "y"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.32
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.7
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2393,
+        "y": 939,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.46
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.29
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "y"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "p"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.65
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.51
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "y"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.34
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "p"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.79
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.19
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "?"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.26
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": ","
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.4
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "w"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.04
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "b"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.4
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.43
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "'"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "k"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.29
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "y"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.32
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "w"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "w"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "k"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "g"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "enter"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 3.8
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3035,
+        "y": 775,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3049,
+        "y": 773,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3076,
+        "y": 773,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3091,
+        "y": 772,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3104,
+        "y": 771,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3108,
+        "y": 771,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.25
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3118,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3118,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3118,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3118,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3119,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3119,
+        "y": 766,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3120,
+        "y": 763,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3121,
+        "y": 753,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3121,
+        "y": 752,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.55
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2909,
+        "y": 593,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.43
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2922,
+        "y": 544,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.57
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2838,
+        "y": 535,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2838,
+        "y": 535,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2868,
+        "y": 550,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2882,
+        "y": 554,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2977,
+        "y": 595,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2980,
+        "y": 595,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2983,
+        "y": 595,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2984,
+        "y": 595,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2985,
+        "y": 595,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3007,
+        "y": 591,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4102,
+        "y": 545,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4102,
+        "y": 545,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4102,
+        "y": 545,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4102,
+        "y": 545,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.26
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4202,
+        "y": 574,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4202,
+        "y": 574,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4202,
+        "y": 574,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 3.19
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4865,
+        "y": 154,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 6.9
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2383,
+        "y": 804,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2382,
+        "y": 811,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2380,
+        "y": 815,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2379,
+        "y": 817,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.77
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2332,
+        "y": 800,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2328,
+        "y": 802,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.5
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2284,
+        "y": 796,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 7.07
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.64
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3064,
+        "y": 873,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 10
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3858,
+        "y": 663,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.8
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4183,
+        "y": 501,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 7.47
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4434,
+        "y": 503,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4434,
+        "y": 503,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4434,
+        "y": 503,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.32
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.17
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4428,
+        "y": 527,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 8.8
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2336,
+        "y": 308,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 4.52
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2326,
+        "y": 443,
+        "button": "left"
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2326,
+        "y": 443,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.49
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2326,
+        "y": 443,
+        "button": "left"
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2326,
+        "y": 443,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 10.84
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2470,
+        "y": 929,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.6
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2476,
+        "y": 917,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.18
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.61
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.85
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.83
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.83
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2390,
+        "y": 249,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 4.07
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3558,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.29
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3559,
+        "y": 556,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 5.48
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3580,
+        "y": 282,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 3.47
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2954,
+        "y": 257,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.31
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2333,
+        "y": 954,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.75
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "l"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.21
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.21
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.73
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "b"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.32
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "u"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.59
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.96
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "c"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "p"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "t"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "space"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.89
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.18
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "e"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.88
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "backspace"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.34
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.16
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "s"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "h"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.21
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "b"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "o"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "r"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "enter"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 25.07
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2441,
+        "y": 196,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.88
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2441,
+        "y": 219,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2442,
+        "y": 223,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.62
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 2444,
+        "y": 236,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 5.22
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 2429,
+        "y": 235,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.6
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "\u0003"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.87
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3798,
+        "y": 36,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.43
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3799,
+        "y": 21,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.34
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "\u0016"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.34
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "enter"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.61
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4343,
+        "y": 161,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.05
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3823,
+        "y": 550,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.18
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3811,
+        "y": 665,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.03
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3812,
+        "y": 691,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.13
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3730,
+        "y": 638,
+        "button": "left"
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3730,
+        "y": 638,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.33
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "d"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.81
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "m"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "i"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "n"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.2
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "1"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "2"
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "3"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.22
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "enter"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.82
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3986,
+        "y": 368,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.43
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4091,
+        "y": 633,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 4087,
+        "y": 634,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.39
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3961,
+        "y": 668,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.53
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3118,
+        "y": 945,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.75
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3967,
+        "y": 321,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.58
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4018,
+        "y": 583,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 1.47
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3868,
+        "y": 856,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.02
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3961,
+        "y": 910,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.48
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "f"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.64
+      }
+    },
+    {
+      "type": "key",
+      "params": {
+        "key": "a"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.77
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 4311,
+        "y": 896,
+        "button": "left"
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 6.67
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.24
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3954,
+        "y": 743,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 9.96
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.62
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.34
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.27
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.28
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 745,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.23
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 744,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 744,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 744,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3952,
+        "y": 744,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.39
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 693,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": 1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.33
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 692,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.37
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 690,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 690,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 690,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 690,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "scroll",
+      "params": {
+        "x": 3947,
+        "y": 690,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 0.65
+      }
+    },
+    {
+      "type": "click",
+      "params": {
+        "x": 3872,
+        "y": 502,
+        "button": "left"
+      }
+    }
+  ]
+}

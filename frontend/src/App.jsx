@@ -136,47 +136,7 @@ function App() {
     );
   }
 
-const RequireLicense = ({ children }) => {
-  const { paywall_enabled, tier, loading } = useLicense();
-
-  if (loading) {
-    return (
-      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="vfx-pulse">Verificando licencia...</div>
-      </div>
-    );
-  }
-
-  // If paywall is ON and tier is free, block access
-  if (paywall_enabled && tier === 'free') {
-    return (
-      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-        <div className="glass p-8 rounded-xl max-w-md w-full border border-accent/30 vfx-fade-in">
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#bd93f9' }}>Suscripción Requerida</h2>
-          <p className="text-sm opacity-80 mb-6">
-            Para acceder a Vibrana, necesita una suscripción activa vinculada a su cuenta de correo electrónico.
-          </p>
-          <div className="flex flex-col gap-4">
-            <a href="https://vibrana.com/pricing" target="_blank" rel="noreferrer" className="btn btn-primary w-full">
-              Ver Planes y Suscribirse
-            </a>
-            <button className="btn btn-ghost w-full" onClick={() => {
-              localStorage.removeItem('vibrana_token');
-              localStorage.removeItem('vibrana_user');
-              window.location.reload();
-            }}>
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return children;
-};
-
-// ... inside App component return:
+  // ... inside App component return:
   return (
     <LicenseProvider>
       <Router>
@@ -200,34 +160,34 @@ const RequireLicense = ({ children }) => {
         <Routes>
           {/* Public Routes */}
           <Route path="/report/:token" element={<WebReport />} />
-          
+
           {/* Protected Routes */}
           <Route path="*" element={
             <RequireLicense>
-            <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/patients/:id" element={<PatientProfile />} />
-                <Route path="/analytics" element={
-                  <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
-                } />
-                <Route path="/settings" element={
-                  <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
-                } />
-                <Route path="/api-docs" element={
-                  <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
-                } />
-                <Route path="/plugins" element={
-                  <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
-                } />
-                <Route path="/diagnostic-logs" element={
-                  <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
-                } />
-                <Route path="/teams" element={
-                  <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
-                } />
-              </Routes>
-            </ErrorBoundary>
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/patients/:id" element={<PatientProfile />} />
+                  <Route path="/analytics" element={
+                    <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
+                  } />
+                  <Route path="/settings" element={
+                    <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
+                  } />
+                  <Route path="/api-docs" element={
+                    <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
+                  } />
+                  <Route path="/plugins" element={
+                    <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
+                  } />
+                  <Route path="/diagnostic-logs" element={
+                    <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
+                  } />
+                  <Route path="/teams" element={
+                    <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
+                  } />
+                </Routes>
+              </ErrorBoundary>
             </RequireLicense>
           } />
         </Routes>
@@ -251,5 +211,31 @@ const PageWrapper = ({ children, title, theme, toggleTheme }) => (
     {children}
   </div>
 );
+
+const RequireLicense = ({ children }) => {
+  const { paywall_enabled, tier, loading } = useLicense();
+
+  if (loading) {
+    return (
+      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="vfx-pulse">Verificando licencia...</div>
+      </div>
+    );
+  }
+
+  // If paywall is ON and tier is free, show landing page instead of blocking
+  if (paywall_enabled && tier === 'free') {
+    return (
+      <LandingPage onGetStarted={() => {
+        // Log out and show login page for re-auth
+        localStorage.removeItem('vibrana_token');
+        localStorage.removeItem('vibrana_user');
+        window.location.reload();
+      }} />
+    );
+  }
+
+  return children;
+};
 
 export default App;

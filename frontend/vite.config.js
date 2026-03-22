@@ -9,6 +9,7 @@ export default defineConfig({
   },
   preview: {
     host: '0.0.0.0',
+    // eslint-disable-next-line no-undef
     port: parseInt(process.env.PORT) || 4173,
     allowedHosts: 'all'
   }

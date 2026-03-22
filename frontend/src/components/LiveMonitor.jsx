@@ -2,23 +2,30 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Maximize, MonitorUp } from 'lucide-react';
 
 
-const LiveMonitor = ({ activeTeam }) => {
+const LiveMonitor = () => {
     const [isSharing, setIsSharing] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
     const [uptime, setUptime] = useState(0);
     const [resolution, setResolution] = useState('—');
     const [remoteMode, setRemoteMode] = useState(false); // Repurposed as "Auto-Detect" mode
-    const [remoteFrame, setRemoteFrame] = useState(null);
     const [remoteStatus, setRemoteStatus] = useState('offline');
     const [latestEvent, setLatestEvent] = useState(null);
     const [lastEventId, setLastEventId] = useState(0);
     const [shareError, setShareError] = useState(null);
 
+    // Setup Session States
+    const [setupActive, setSetupActive] = useState(false);
+    const [setupData, setSetupData] = useState(null);
+    const [setupLoading, setSetupLoading] = useState(false);
+    const [isAutoExploring, setIsAutoExploring] = useState(false);
+    const [ignoredTexts, setIgnoredTexts] = useState([]);
+    const [ignoreInput, setIgnoreInput] = useState('');
+    const [windows, setWindows] = useState([]);
+    const [selectedWindow, setSelectedWindow] = useState('');
+
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const containerRef = useRef(null);
 
-    const [sendingCmd, setSendingCmd] = useState(false);
     const API = "http://localhost:5001"; // Make sure to point to local backend for ScreenWatcher
 
     // Polling for ScreenWatcher events
@@ -40,7 +47,7 @@ const LiveMonitor = ({ activeTeam }) => {
                         setResolution(`NLS: ${event.organ_detected}`);
                     }
                 }
-            } catch (err) {
+            } catch {
                 // Silent fail for polling
             }
         };
@@ -145,38 +152,155 @@ const LiveMonitor = ({ activeTeam }) => {
         };
     }, []);
 
+    const toggleSetupSession = async () => {
+        if (setupActive) {
+            setSetupLoading(true);
+            try {
+                await fetch(`${API}/api/setup/stop`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                    body: JSON.stringify({ save: true })
+                });
+            } catch (e) {
+                console.error(e);
+            }
+            setSetupActive(false);
+            setSetupData(null);
+            setSetupLoading(false);
+        } else {
+            // Immediately switch to setup mode with placeholder
+            setSetupActive(true);
+            setSetupLoading(true);
+            if (isSharing) stopScreenShare();
+            if (remoteMode) toggleAutoDetect();
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const res = await fetch(`${API}/api/setup/start`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                const data = await res.json();
+                if (data.initial_state) {
+                    setSetupData(data.initial_state);
+                }
+            } catch (e) {
+                console.error('Setup start error:', e);
+                if (e.name === 'AbortError') {
+                    console.warn('Setup timed out — use Refresh or select a window');
+                }
+            }
+            setSetupLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchWindows = async () => {
+            try {
+                const res = await fetch(`${API}/api/system/windows`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                });
+                const data = await res.json();
+                if (data.windows) setWindows(data.windows);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        if (setupActive) fetchWindows();
+    }, [setupActive]);
+
+    const handleWindowChange = async (e) => {
+        const val = e.target.value;
+        setSelectedWindow(val);
+        try {
+            await fetch(`${API}/api/setup/target_window`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: JSON.stringify({ target_window: val || null })
+            });
+
+            setSetupLoading(true);
+            const refreshRes = await fetch(`${API}/api/setup/refresh`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            const refreshData = await refreshRes.json();
+            if (refreshData.new_state && !refreshData.new_state.error) {
+                setSetupData(refreshData.new_state);
+            }
+            setSetupLoading(false);
+        } catch (e) {
+            console.error(e);
+            setSetupLoading(false);
+        }
+    };
+
+    const handleSetupClick = async (btn) => {
+        if (!setupData || setupLoading) return;
+        setSetupLoading(true);
+        try {
+            const res = await fetch(`${API}/api/setup/click`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: JSON.stringify({
+                    x: Math.floor(btn.x + (btn.w / 2)),
+                    y: Math.floor(btn.y + (btn.h / 2)),
+                    text: btn.text,
+                    node_id: setupData.node_id
+                })
+            });
+            const data = await res.json();
+            if (data.new_state && !data.error) {
+                setSetupData(data.new_state);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        setSetupLoading(false);
+    };
+
+    const handleAutoExplore = async () => {
+        if (!setupActive || setupLoading || isAutoExploring) return;
+        setIsAutoExploring(true);
+        try {
+            const res = await fetch(`${API}/api/setup/auto_explore`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: JSON.stringify({ max_steps: 10, ignored_texts: ignoredTexts })
+            });
+            const data = await res.json();
+            console.log('[AutoExplore] Response:', data.status, 'steps:', data.steps_taken, 'edges:', data.tree?.edges?.length);
+            if (data.new_state) {
+                // new_state already contains the tree
+                setSetupData(data.new_state);
+            } else if (data.tree && setupData) {
+                // Fallback: merge tree into existing setupData
+                setSetupData(prev => ({ ...prev, tree: data.tree }));
+            }
+        } catch (e) {
+            console.error('Auto-explore error:', e);
+        }
+        setIsAutoExploring(false);
+    };
+
+    const stopAutoExplore = async () => {
+        try {
+            await fetch(`${API}/api/setup/auto_explore_stop`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const formatUptime = (s) => {
         const h = Math.floor(s / 3600);
         const m = Math.floor((s % 3600) / 60);
         const sec = s % 60;
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-    };
-
-    const sendControlCommand = async (command, params = {}) => {
-        if (!activeTeam || sendingCmd) return;
-        setSendingCmd(true);
-        try {
-            const res = await fetch(`${API}/live/control`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}`
-                },
-                body: JSON.stringify({
-                    team_id: activeTeam.team_id,
-                    command,
-                    params
-                })
-            });
-            if (!res.ok) {
-                const err = await res.json();
-                alert(err.error || 'Failed to send command');
-            }
-        } catch (err) {
-            console.error('Remote control error:', err);
-        } finally {
-            setSendingCmd(false);
-        }
     };
 
     const toggleFullscreen = () => {
@@ -193,15 +317,56 @@ const LiveMonitor = ({ activeTeam }) => {
         <div
             className="live-monitor"
             ref={containerRef}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="monitor-header">
                 <h2>
-                    <span className={`monitor-live-dot${isSharing || remoteStatus === 'online' ? '' : ' offline'}`} />
-                    {remoteMode ? 'Monitor Auto-Detectado' : 'Transmisión Local en Vivo'}
+                    <span className={`monitor-live-dot${isSharing || remoteStatus === 'online' || setupActive ? '' : ' offline'}`} />
+                    {setupActive ? 'Mapeo de UI (OCR)' : remoteMode ? 'Monitor Auto-Detectado' : 'Transmisión Local en Vivo'}
                 </h2>
                 <div className="monitor-meta flex items-center gap-2">
+                    {setupActive && (
+                        <select
+                            className="btn-xs border border-white/10 bg-[#0a0f18] text-white px-2 h-5 rounded transition-all focus:border-purple-500/50 outline-none w-32 truncate"
+                            value={selectedWindow}
+                            onChange={handleWindowChange}
+                            title="Seleccionar ventana específica para restringir el OCR"
+                            disabled={setupLoading || isAutoExploring}
+                        >
+                            <option value="">Pantalla Completa</option>
+                            {windows.map((w, i) => (
+                                <option key={i} value={w}>{w}</option>
+                            ))}
+                        </select>
+                    )}
+                    {setupActive && !isAutoExploring && (
+                        <button
+                            className={`btn-xs border px-2 h-5 rounded transition-all ${selectedWindow
+                                ? 'border-blue-400 bg-blue-500/20 text-blue-300 opacity-80 hover:opacity-100 cursor-pointer'
+                                : 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed'
+                                }`}
+                            onClick={handleAutoExplore}
+                            disabled={setupLoading || !selectedWindow}
+                            title={selectedWindow ? `Explorar automáticamente: ${selectedWindow}` : '🔒 Selecciona una ventana primero para desbloquear'}
+                        >
+                            {selectedWindow ? '🔓' : '🔒'} Auto-Explorar
+                        </button>
+                    )}
+                    {setupActive && isAutoExploring && (
+                        <button
+                            className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-2 h-5 rounded transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                            onClick={stopAutoExplore}
+                            title="Detener la exploración automática"
+                        >
+                            Detener Exploración
+                        </button>
+                    )}
+                    <button
+                        className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${setupActive ? 'border-purple-400 bg-purple-500/20 text-purple-300' : 'border-white/10 hover:border-purple-400/50'}`}
+                        onClick={toggleSetupSession}
+                        disabled={setupLoading || isAutoExploring}
+                    >
+                        {setupLoading ? 'Cargando...' : setupActive ? 'Terminar Mapeo' : 'Mapear UI'}
+                    </button>
                     <button
                         className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${remoteMode ? 'border-accent bg-accent/20 text-accent' : 'border-white/10 hover:border-accent/50'}`}
                         onClick={toggleAutoDetect}
@@ -215,13 +380,148 @@ const LiveMonitor = ({ activeTeam }) => {
                     >
                         <Maximize size={12} />
                     </button>
-                    {(isSharing || (remoteMode && remoteFrame)) && <span className="monitor-uptime">{formatUptime(uptime)}</span>}
+                    {(isSharing || remoteMode) && <span className="monitor-uptime">{formatUptime(uptime)}</span>}
                     <span className="monitor-res">{resolution}</span>
                 </div>
             </div>
 
-            <div className="monitor-screen">
-                {(!isSharing && !remoteMode) ? (
+            <div className={`monitor-screen${setupActive ? ' mapping-mode' : ''}`}>
+                {setupActive && setupData ? (
+                    <>
+                        {/* LEFT: Screen Capture with OCR Overlay */}
+                        <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden group">
+                            <div className="relative" style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%' }}>
+                                <img
+                                    src={`data:image/jpeg;base64,${setupData.screen}`}
+                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50"
+                                    alt="Screen State"
+                                />
+                                {/* HUD overlay */}
+                                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="bg-black/80 text-white px-4 py-2 rounded text-sm mb-2 border border-purple-500/50">
+                                        Modo Aprendizaje OCR Activo
+                                    </span>
+                                    <span className="bg-black/60 text-white/70 px-3 py-1 rounded text-xs">
+                                        Haz clic en los botones resaltados para mapear el flujo
+                                    </span>
+                                </div>
+                                {/* Bounding boxes */}
+                                {setupData.buttons.map(b => (
+                                    <div key={b.id}
+                                        className="absolute border border-purple-500/50 bg-purple-500/10 cursor-pointer transition-all hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:z-10"
+                                        style={{
+                                            left: `${(b.x / setupData.screen_width) * 100}%`,
+                                            top: `${(b.y / setupData.screen_height) * 100}%`,
+                                            width: `${(b.w / setupData.screen_width) * 100}%`,
+                                            height: `${(b.h / setupData.screen_height) * 100}%`
+                                        }}
+                                        onClick={() => handleSetupClick(b)}
+                                    >
+                                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-black/80 text-white px-1 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
+                                            {b.text} ({b.conf}%)
+                                        </span>
+                                    </div>
+                                ))}
+                                {(setupLoading || isAutoExploring) && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="animate-spin h-6 w-6 border-2 border-purple-500 border-t-transparent rounded-full" />
+                                            <span className="text-white/80 text-sm">{isAutoExploring ? "Exploración automática en curso..." : "Navegando y escaneando..."}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* RIGHT: Logic Tree Tracker (replaces old side panel) */}
+                        <div className="border-l border-white/10 bg-[#0a0f18] p-4 flex flex-col h-full overflow-hidden">
+                            <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                                <h3 className="text-sm font-bold text-purple-400 flex items-center gap-2">
+                                    🌳 Árbol Lógico
+                                </h3>
+                                <span className="bg-purple-500/20 text-purple-300 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
+                                    En Vivo
+                                </span>
+                            </div>
+
+                            {/* Ignore List */}
+                            <div className="mb-3 bg-black/40 rounded-lg p-2.5 border border-red-500/10">
+                                <label className="block text-[10px] uppercase text-red-400/80 font-bold mb-1.5">Saltar Ramas</label>
+                                <div className="flex gap-1.5 mb-1.5">
+                                    <input
+                                        type="text"
+                                        className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-red-500/50 transition-colors"
+                                        placeholder="Ej: Cancelar, Salir..."
+                                        value={ignoreInput}
+                                        onChange={e => setIgnoreInput(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && ignoreInput.trim()) {
+                                                setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
+                                                setIgnoreInput('');
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 text-[10px] px-2 rounded transition-colors"
+                                        onClick={() => {
+                                            if (ignoreInput.trim()) {
+                                                setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
+                                                setIgnoreInput('');
+                                            }
+                                        }}
+                                    >+</button>
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                    {ignoredTexts.length === 0 && (
+                                        <span className="text-[9px] text-white/30 italic">Sin filtros.</span>
+                                    )}
+                                    {ignoredTexts.map((txt, i) => (
+                                        <span key={i} className="bg-red-500/20 border border-red-500/30 text-red-300 text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                            {txt}
+                                            <button onClick={() => setIgnoredTexts(ignoredTexts.filter((_, idx) => idx !== i))} className="hover:text-white transition-colors">×</button>
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Tree Timeline */}
+                            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                                <div className="text-[10px] uppercase text-white/40 font-bold mb-2">Secuencia de Mapeo</div>
+                                {setupData.tree && setupData.tree.edges && setupData.tree.edges.length > 0 ? (
+                                    setupData.tree.edges.map((edge, i) => (
+                                        <div key={i} className="mb-3 relative pl-4 border-l-2 border-purple-500/30 ml-1">
+                                            <div className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></div>
+                                            <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">
+                                                Paso {edge.step || i + 1}
+                                            </div>
+                                            <div className="bg-white/5 border border-white/10 rounded-lg p-2 shadow-lg">
+                                                <span className="text-[10px] text-white/40 block">Click →</span>
+                                                <span className="font-semibold text-xs text-purple-300">
+                                                    "{edge.text || `(${edge.x}, ${edge.y})`}"
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="h-full flex flex-col items-center justify-center opacity-50 p-4 text-center">
+                                        <div className="w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-2">
+                                            <span className="text-purple-400 font-mono text-lg">/</span>
+                                        </div>
+                                        <p className="text-[11px] text-white/60">
+                                            Árbol vacío. Haz clic en un botón OCR o usa Auto-Explorar.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Stats footer */}
+                            <div className="mt-2 pt-2 border-t border-white/10 flex justify-between text-[9px] text-white/30">
+                                <span>Nodos: {setupData.tree?.nodes?.length || 0}</span>
+                                <span>Acciones: {setupData.tree?.edges?.length || 0}</span>
+                            </div>
+                        </div>
+                    </>
+                ) : (!isSharing && !remoteMode) ? (
                     <div className="monitor-offline" onClick={startScreenShare}>
                         <div className="monitor-offline-icon">
                             <MonitorUp size={48} strokeWidth={1.5} />

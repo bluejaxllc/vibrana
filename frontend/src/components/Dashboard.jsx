@@ -12,7 +12,6 @@ import LiveEntropyCounter from './LiveEntropyCounter';
 import ScreenWatcherPanel from './ScreenWatcherPanel';
 import OrganMap from './OrganMap';
 import NLSAnalyzerPanel from './NLSAnalyzerPanel';
-import { useLicense } from '../hooks/useLicense';
 import '../App.css';
 
 import { LOCAL_API as API } from '../config.js';
@@ -133,24 +132,24 @@ const CollapsibleSection = ({ title, icon, children, defaultOpen = false }) => {
 
 /* ── Widget Registry ─────────────────────────── */
 const WIDGET_REGISTRY = [
-    { id: 'organ-map',       label: 'Mapa Corporal',           icon: '🧬', column: 'left',   defaultVisible: true },
-    { id: 'live-monitor',    label: 'Transmisión en Vivo',     icon: '📡', column: 'left',   defaultVisible: true },
-    { id: 'patient-manager', label: 'Gestión de Pacientes',    icon: '👤', column: 'center', defaultVisible: true },
-    { id: 'controls',        label: 'Controles',               icon: '🎛️', column: 'center', defaultVisible: true },
-    { id: 'macros',          label: 'Macros',                  icon: '⌨️', column: 'center', defaultVisible: true },
-    { id: 'live-analysis',   label: 'Análisis en Vivo',        icon: '📊', column: 'center', defaultVisible: false },
-    { id: 'advanced-tools',  label: 'Herramientas Avanzadas',  icon: '🔧', column: 'right',  defaultVisible: false },
-    { id: 'nls-analyzer',    label: 'Sistema NLS',             icon: '🔬', column: 'right',  defaultVisible: true },
-    { id: 'scan-log',        label: 'Registro de Escaneo',     icon: '📋', column: 'right',  defaultVisible: true },
+    { id: 'organ-map', label: 'Mapa Corporal', icon: '🧬', column: 'left', defaultVisible: true },
+    { id: 'live-monitor', label: 'Transmisión en Vivo', icon: '📡', column: 'left', defaultVisible: true },
+    { id: 'patient-manager', label: 'Gestión de Pacientes', icon: '👤', column: 'center', defaultVisible: true },
+    { id: 'controls', label: 'Controles', icon: '🎛️', column: 'center', defaultVisible: true },
+    { id: 'macros', label: 'Macros', icon: '⌨️', column: 'center', defaultVisible: true },
+    { id: 'live-analysis', label: 'Análisis en Vivo', icon: '📊', column: 'center', defaultVisible: false },
+    { id: 'advanced-tools', label: 'Herramientas Avanzadas', icon: '🔧', column: 'right', defaultVisible: false },
+    { id: 'nls-analyzer', label: 'Sistema NLS', icon: '🔬', column: 'right', defaultVisible: true },
+    { id: 'scan-log', label: 'Registro de Escaneo', icon: '📋', column: 'right', defaultVisible: true },
 ];
 
 const STORAGE_KEY = 'vibrana_dashboard_config';
 
 const getDefaultConfig = () => ({
     columnOrder: {
-        left:   ['organ-map', 'live-monitor'],
+        left: ['organ-map', 'live-monitor'],
         center: ['patient-manager', 'controls', 'macros', 'live-analysis'],
-        right:  ['advanced-tools', 'nls-analyzer', 'scan-log'],
+        right: ['advanced-tools', 'nls-analyzer', 'scan-log'],
     },
     hidden: ['live-analysis', 'advanced-tools'],
 });
@@ -173,7 +172,7 @@ const loadConfig = () => {
                 return parsed;
             }
         }
-    } catch (e) { /* ignore corrupt data */ }
+    } catch { /* ignore corrupt data */ }
     return getDefaultConfig();
 };
 
@@ -388,6 +387,7 @@ const Dashboard = () => {
                 .then(data => setPatientScans(data))
                 .catch(err => console.error("Failed to fetch scans:", err));
         } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setPatientScans([]);
         }
     }, [selectedPatient]);

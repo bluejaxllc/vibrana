@@ -4,7 +4,7 @@ import '../App.css';
 // ═══ TRANSLATIONS ═══
 const i18n = {
     es: {
-        nav: { features: 'Funciones', workflow: 'Cómo Funciona', entropy: 'Entropía', tech: 'Tecnología', install: 'Instalación', launch: 'Iniciar App →' },
+        nav: { features: 'Funciones', workflow: 'Cómo Funciona', entropy: 'Entropía', tech: 'Tecnología', install: 'Instalación', guide: 'Guía de Uso', launch: 'Iniciar App →' },
         hero: {
             badge: 'Plataforma de Análisis Biorresonancia NLS',
             title1: 'Visión más allá del',
@@ -85,7 +85,7 @@ const i18n = {
             title2: 'Instancia',
             desc: '¿Por qué instalar localmente? El Monitoreo en Vivo ocular necesita capturar la pantalla de tu dispositivo NLS. Si solo deseas subir y analizar reportes PDF, ¡puedes usar la versión web sin instalar nada!',
             prereqTitle: 'Requisitos Previos Básicos',
-            prereqs: ['Python 3.10+ (Para el motor de visión y OCR)', 'Node.js 18+ (Para la interfaz web)', 'Git (Para descargar el código)', 'Clave API de Google Gemini (Para el análisis de IA)'],
+            prereqs: ['Python 3.10+ (Para el motor de visión y OCR)', 'Tesseract OCR (Debe instalarse en Windows para extraer texto)', 'Node.js 18+ (Para la interfaz web)', 'Git (Para descargar el código)', 'Clave API de Google Gemini (Para el análisis de IA)'],
             steps: [
                 { num: '1', title: 'Descargar el Código', explanation: 'Primero, descargamos todo el código fuente desde GitHub a tu computadora y entramos a la carpeta del proyecto.', cmd: 'git clone https://github.com/bluejaxllc/vibrana.git\ncd vibrana' },
                 { num: '2', title: 'Preparar el Cerebro (Backend)', explanation: 'El backend en Python maneja el procesamiento de imágenes (OpenCV) y la IA. Creamos un "entorno virtual" aislado para instalar las librerías necesarias sin afectar tu sistema.', cmd: 'cd backend\npython -m venv venv\nvenv\\Scripts\\activate    # En Windows\n# source venv/bin/activate  # En Mac/Linux\npip install -r requirements.txt' },
@@ -97,11 +97,77 @@ const i18n = {
             note: '💡 Credenciales de administrador por defecto: admin / admin123',
             cloudNote: '☁️ Versión Web: Para subir PDFs puedes visitar vibrana.bluejax.ai directamente. La instalación local es solo para capturar video en vivo.',
         },
+        guideSection: {
+            tag: 'Guía de Uso',
+            title1: 'Cómo Usar',
+            title2: 'Cada Función',
+            desc: 'Instrucciones detalladas para aprovechar todas las herramientas que Vibrana ofrece.',
+        },
+        guideItems: [
+            {
+                icon: '👥', title: 'Gestión de Pacientes', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', steps: [
+                    'Haz clic en "Pacientes" en la barra lateral izquierda',
+                    'Presiona "+ Nuevo Paciente" para crear un registro',
+                    'Completa nombre, edad, género y notas clínicas',
+                    'El paciente aparecerá en tu lista — haz clic en su nombre para ver su perfil',
+                    'Desde el perfil puedes agregar escaneos, ver historial y generar reportes',
+                ]
+            },
+            {
+                icon: '🔬', title: 'Monitor NLS en Vivo', gradient: 'linear-gradient(135deg, #50fa7b, #2dd4bf)', steps: [
+                    'Requiere instalación local (backend corriendo en tu PC)',
+                    'Conecta tu dispositivo NLS y abre su software',
+                    'En Vibrana, ve a "Monitor en Vivo" en la barra lateral',
+                    'Selecciona el monitor donde está tu software NLS',
+                    'Vibrana captura la pantalla a 30fps y detecta cambios automáticamente',
+                    'Cuando cambia el órgano, el OCR lee los datos y los almacena',
+                ]
+            },
+            {
+                icon: '🤖', title: 'Grabador de Macros', gradient: 'linear-gradient(135deg, #ff5555, #ef4444)', steps: [
+                    'Ve al panel de "Macros" en la barra lateral',
+                    'Escribe un nombre para tu macro en el campo de texto',
+                    'Presiona "Grabar" — cada clic, tecla y scroll se registra',
+                    'El historial completo de eventos aparece en tiempo real debajo',
+                    'Puedes eliminar eventos individuales con el ícono 🗑️',
+                    'Agrega eventos manualmente (clic, tecla, espera, mover) con "+ Agregar Evento"',
+                    'Presiona "Detener" para guardar el macro',
+                    'Para editar un macro guardado, presiona el ícono ✏️ de lápiz',
+                    'Reproduce macros con el botón ▶️',
+                ]
+            },
+            {
+                icon: '🧠', title: 'Análisis con IA (Gemini)', gradient: 'linear-gradient(135deg, #8be9fd, #3b82f6)', steps: [
+                    'Sube una imagen o PDF de escaneo NLS desde el dashboard',
+                    'La IA de Gemini analiza los puntos nidales y niveles de entropía',
+                    'Recibe un reporte clínico con diagnóstico automático',
+                    'Los reportes se guardan en el historial del paciente',
+                    'Exporta a PDF para compartir con el paciente',
+                ]
+            },
+            {
+                icon: '📊', title: 'Panel de Analíticas', gradient: 'linear-gradient(135deg, #ff79c6, #ec4899)', steps: [
+                    'Accede desde "Analíticas" en la barra lateral',
+                    'Ve tendencias de entropía por paciente a lo largo del tiempo',
+                    'Compara escaneos anteriores con el actual',
+                    'Filtra por rango de fecha, órgano o nivel de entropía',
+                    'Exporta datos a CSV para análisis externo',
+                ]
+            },
+            {
+                icon: '🔍', title: 'Modo Comparación', gradient: 'linear-gradient(135deg, #f1fa8c, #f59e0b)', steps: [
+                    'Desde el perfil del paciente, selecciona dos escaneos',
+                    'Activa "Modo Comparación" para ver ambos lado a lado',
+                    'Las diferencias en entropía se resaltan visualmente',
+                    'Útil para evaluar progreso terapéutico entre sesiones',
+                ]
+            },
+        ],
         cta: { title1: '¿Listo para Transformar tu', title2: 'Flujo de Trabajo NLS?', desc: 'Comienza a capturar, analizar y reportar en minutos.', btn: 'Lanzar Vibrana' },
         footer: { tagline: 'Plataforma NLS Overseer', copy: `© ${new Date().getFullYear()} Vibrana. Hecho para profesionales de biorresonancia.` },
     },
     en: {
-        nav: { features: 'Features', workflow: 'How It Works', entropy: 'Entropy', tech: 'Technology', install: 'Install', launch: 'Launch App →' },
+        nav: { features: 'Features', workflow: 'How It Works', entropy: 'Entropy', tech: 'Technology', install: 'Install', guide: 'User Guide', launch: 'Launch App →' },
         hero: {
             badge: 'NLS Bioresonance Analysis Platform',
             title1: 'See Beyond the',
@@ -172,7 +238,7 @@ const i18n = {
             title2: 'Instance',
             desc: 'Why install locally? Live Monitor requires the application to run on the same computer as your NLS hardware to capture its screen. If you only want to upload and analyze PDF reports, you can just use the web version without installing anything!',
             prereqTitle: 'Core Prerequisites',
-            prereqs: ['Python 3.10+ (For the vision engine & OCR)', 'Node.js 18+ (For the web interface)', 'Git (To download the code)', 'Google Gemini API Key (For AI clinical analysis)'],
+            prereqs: ['Python 3.10+ (For the vision engine & OCR)', 'Tesseract OCR (Must be installed on Windows to extract text)', 'Node.js 18+ (For the web interface)', 'Git (To download the code)', 'Google Gemini API Key (For AI clinical analysis)'],
             steps: [
                 { num: '1', title: 'Download Source Code', explanation: 'First, we download the entire project from GitHub to your computer and navigate into the folder.', cmd: 'git clone https://github.com/bluejaxllc/vibrana.git\ncd vibrana' },
                 { num: '2', title: 'Prepare the Brain (Backend)', explanation: 'The Python server handles image processing and AI. We create an isolated "virtual environment" to safely install required libraries.', cmd: 'cd backend\npython -m venv venv\nvenv\\Scripts\\activate    # On Windows\n# source venv/bin/activate  # On Mac/Linux\npip install -r requirements.txt' },
@@ -184,6 +250,72 @@ const i18n = {
             note: '💡 Default administrator credentials: admin / admin123',
             cloudNote: '☁️ Web Version: For simple PDF uploads, just visit vibrana.bluejax.ai. Local installation is only required for live video capture features.',
         },
+        guideSection: {
+            tag: 'User Guide',
+            title1: 'How to Use',
+            title2: 'Every Feature',
+            desc: 'Detailed instructions to get the most out of every tool Vibrana offers.',
+        },
+        guideItems: [
+            {
+                icon: '👥', title: 'Patient Management', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', steps: [
+                    'Click "Patients" in the left sidebar',
+                    'Press "+ New Patient" to create a record',
+                    'Fill in name, age, gender, and clinical notes',
+                    'The patient appears in your list — click their name to view their profile',
+                    'From the profile you can add scans, view history, and generate reports',
+                ]
+            },
+            {
+                icon: '🔬', title: 'Live NLS Monitor', gradient: 'linear-gradient(135deg, #50fa7b, #2dd4bf)', steps: [
+                    'Requires local installation (backend running on your PC)',
+                    'Connect your NLS device and open its software',
+                    'In Vibrana, go to "Live Monitor" in the sidebar',
+                    'Select the monitor where your NLS software is displayed',
+                    'Vibrana captures the screen at 30fps and auto-detects changes',
+                    'When the organ changes, OCR reads the data and stores it',
+                ]
+            },
+            {
+                icon: '🤖', title: 'Macro Recorder', gradient: 'linear-gradient(135deg, #ff5555, #ef4444)', steps: [
+                    'Go to the "Macros" panel in the sidebar',
+                    'Type a name for your macro in the text field',
+                    'Press "Record" — every click, keystroke and scroll is captured',
+                    'The full event history appears in real-time below',
+                    'You can delete individual events with the 🗑️ trash icon',
+                    'Manually add events (click, key, wait, move) with "+ Add Event"',
+                    'Press "Stop" to save the macro',
+                    'To edit a saved macro, click the ✏️ pencil icon',
+                    'Replay macros with the ▶️ play button',
+                ]
+            },
+            {
+                icon: '🧠', title: 'AI Analysis (Gemini)', gradient: 'linear-gradient(135deg, #8be9fd, #3b82f6)', steps: [
+                    'Upload an NLS scan image or PDF from the dashboard',
+                    'Gemini AI analyzes nidal points and entropy levels',
+                    'Receive a clinical report with automatic diagnosis',
+                    'Reports are saved in the patient\'s history',
+                    'Export to PDF to share with the patient',
+                ]
+            },
+            {
+                icon: '📊', title: 'Analytics Dashboard', gradient: 'linear-gradient(135deg, #ff79c6, #ec4899)', steps: [
+                    'Access from "Analytics" in the sidebar',
+                    'View entropy trends per patient over time',
+                    'Compare previous scans with the current one',
+                    'Filter by date range, organ, or entropy level',
+                    'Export data to CSV for external analysis',
+                ]
+            },
+            {
+                icon: '🔍', title: 'Comparison Mode', gradient: 'linear-gradient(135deg, #f1fa8c, #f59e0b)', steps: [
+                    'From the patient profile, select two scans',
+                    'Activate "Comparison Mode" to see both side by side',
+                    'Entropy differences are visually highlighted',
+                    'Useful for evaluating therapeutic progress between sessions',
+                ]
+            },
+        ],
         cta: { title1: 'Ready to Transform Your', title2: 'NLS Workflow?', desc: 'Start capturing, analyzing, and reporting in minutes.', btn: 'Launch Vibrana' },
         footer: { tagline: 'NLS Overseer Platform', copy: `© ${new Date().getFullYear()} Vibrana. Built for bioresonance professionals.` },
     },
@@ -336,6 +468,7 @@ const LandingPage = ({ onGetStarted }) => {
                         <a href="#entropy">{t.nav.entropy}</a>
                         <a href="#technology">{t.nav.tech}</a>
                         <a href="#installation">{t.nav.install}</a>
+                        <a href="#guide">{t.nav.guide}</a>
                         <button className="btn-lang-toggle" onClick={() => setLang(l => l === 'es' ? 'en' : 'es')}
                             title={lang === 'es' ? 'Switch to English' : 'Cambiar a Español'}>
                             {lang === 'es' ? 'EN' : 'ES'}
@@ -586,6 +719,32 @@ const LandingPage = ({ onGetStarted }) => {
                     <div className="install-notes">
                         <p className="install-note">{t.installSection.note}</p>
                         <p className="install-note install-note-cloud">{t.installSection.cloudNote}</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══ USER GUIDE ═══ */}
+            <section id="guide" className={`landing-section reveal-section ${isVisible('guide') ? 'visible' : ''}`}>
+                <div className="section-inner">
+                    <div className="section-header">
+                        <span className="section-tag">{t.guideSection.tag}</span>
+                        <h2>{t.guideSection.title1} <span className="text-accent">{t.guideSection.title2}</span></h2>
+                        <p className="section-desc">{t.guideSection.desc}</p>
+                    </div>
+                    <div className="guide-cards">
+                        {t.guideItems.map((item, i) => (
+                            <div key={i} className="guide-card" style={{ animationDelay: `${i * 0.08}s` }}>
+                                <div className="guide-card-header">
+                                    <div className="feature-icon" style={{ background: item.gradient }}>{item.icon}</div>
+                                    <h3>{item.title}</h3>
+                                </div>
+                                <ol className="guide-steps">
+                                    {item.steps.map((step, j) => (
+                                        <li key={j}>{step}</li>
+                                    ))}
+                                </ol>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>

@@ -13,6 +13,16 @@ import numpy as np
 import pyautogui
 import pytesseract
 from datetime import datetime
+import ctypes
+
+# Fix for multi-monitor / DPI scaling input coordinate mismatches on Windows
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(2) # Per monitor DPI aware
+except Exception:
+    try:
+        ctypes.windll.user32.SetProcessDPIAware()
+    except Exception:
+        pass
 
 
 class NLSAutomation:

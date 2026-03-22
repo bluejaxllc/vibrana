@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Monitor, Crosshair, Flame, Camera, Palette, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -14,18 +14,22 @@ const CVTools = () => {
     const [snapshots, setSnapshots] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const getAuthHeaders = useCallback(() => ({
+        'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}`
+    }), []);
+
     useEffect(() => {
         if (activeTab === 'monitors') fetchMonitors();
         if (activeTab === 'roi') fetchROI();
         if (activeTab === 'colors') fetchColors();
         if (activeTab === 'snapshots') fetchSnapshots();
-    }, [activeTab]);
+    }, [activeTab, fetchMonitors, fetchROI, fetchColors, fetchSnapshots]);
 
     // ── Heatmap ──
     const generateHeatmap = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API}/cv/heatmap`);
+            const res = await fetch(`${API}/cv/heatmap`, { headers: getAuthHeaders() });
             const data = await res.json();
             if (data.heatmap) {
                 setHeatmapSrc(`data:image/jpeg;base64,${data.heatmap}`);
@@ -36,37 +40,37 @@ const CVTools = () => {
     };
 
     // ── Monitors ──
-    const fetchMonitors = async () => {
+    const fetchMonitors = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/cv/monitors`);
+            const res = await fetch(`${API}/cv/monitors`, { headers: getAuthHeaders() });
             const data = await res.json();
             setMonitors(data.monitors || []);
         } catch { console.error("Failed to fetch monitors"); }
-    };
+    }, [getAuthHeaders]);
 
     const switchMonitor = async (idx) => {
         try {
-            await fetch(`${API}/cv/monitors/${idx}`, { method: 'POST' });
+            await fetch(`${API}/cv/monitors/${idx}`, { method: 'POST', headers: getAuthHeaders() });
             toast.success(`Cambiado a monitor ${idx}`);
             fetchMonitors();
         } catch { toast.error('Error al cambiar monitor'); }
     };
 
     // ── ROI ──
-    const fetchROI = async () => {
+    const fetchROI = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/cv/roi`);
+            const res = await fetch(`${API}/cv/roi`, { headers: getAuthHeaders() });
             const data = await res.json();
             setRoi(data.roi);
             if (data.roi) setRoiInput(data.roi);
         } catch { console.error("Failed to fetch ROI"); }
-    };
+    }, [getAuthHeaders]);
 
     const saveROI = async () => {
         try {
             await fetch(`${API}/cv/roi`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
                 body: JSON.stringify(roiInput)
             });
             setRoi(roiInput);
@@ -76,34 +80,34 @@ const CVTools = () => {
 
     const clearROI = async () => {
         try {
-            await fetch(`${API}/cv/roi`, { method: 'DELETE' });
+            await fetch(`${API}/cv/roi`, { method: 'DELETE', headers: getAuthHeaders() });
             setRoi(null);
             toast.success('ROI eliminado');
         } catch { toast.error('Error al eliminar ROI'); }
     };
 
     // ── Colors ──
-    const fetchColors = async () => {
+    const fetchColors = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/cv/colors`);
+            const res = await fetch(`${API}/cv/colors`, { headers: getAuthHeaders() });
             const data = await res.json();
             setColors(data.colors || {});
         } catch { console.error("Failed to fetch colors"); }
-    };
+    }, [getAuthHeaders]);
 
     // ── Snapshots ──
-    const fetchSnapshots = async () => {
+    const fetchSnapshots = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/cv/snapshots`);
+            const res = await fetch(`${API}/cv/snapshots`, { headers: getAuthHeaders() });
             const data = await res.json();
             setSnapshots(data.snapshots || []);
         } catch { console.error("Failed to fetch snapshots"); }
-    };
+    }, [getAuthHeaders]);
 
     const takeSnapshot = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API}/cv/snapshots`, { method: 'POST' });
+            const res = await fetch(`${API}/cv/snapshots`, { method: 'POST', headers: getAuthHeaders() });
             const data = await res.json();
             if (data.status === 'success') {
                 toast.success('Captura guardada');

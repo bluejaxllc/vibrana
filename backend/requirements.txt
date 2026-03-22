@@ -10,3 +10,8 @@ gunicorn
 requests
 pypdf
 google-generativeai
+opencv-python
+mss
+pyautogui
+pytesseract
+pynput

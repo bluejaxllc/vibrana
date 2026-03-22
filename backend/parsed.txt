@@ -1,0 +1,20 @@
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+[SQL: ALTER TABLE patients ADD COLUMN team_id VARCHAR(36)]
+team_id error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+[SQL: ALTER TABLE patients ADD COLUMN opt_in_whatsapp BOOLEAN DEFAULT FALSE]
+opt_in_whatsapp error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+(Background on this error at: https://sqlalche.me/e/20/f405)
+[SQL: ALTER TABLE patients ADD COLUMN phone_number VARCHAR(20)]
+phone_number error: (psycopg2.errors.DuplicateColumn) column "phone_number" of relation "patients" already exists
+Connected to: postgresql://postgres:***@/postgres?host=%2Fcloudsql%2Fautonomous-key-454803-m2%3Aus-central1%3Avibrana-pg-db-1
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+[SQL: ALTER TABLE patients ADD COLUMN team_id VARCHAR(36)]
+team_id error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+[SQL: ALTER TABLE patients ADD COLUMN opt_in_whatsapp BOOLEAN DEFAULT FALSE]
+opt_in_whatsapp error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+(Background on this error at: https://sqlalche.me/e/20/f405)
+[SQL: ALTER TABLE patients ADD COLUMN phone_number VARCHAR(20)]
+phone_number error: (psycopg2.errors.DuplicateColumn) column "phone_number" of relation "patients" already exists
+Connected to: postgresql://postgres:***@/postgres?host=%2Fcloudsql%2Fautonomous-key-454803-m2%3Aus-central1%3Avibrana-pg-db-1

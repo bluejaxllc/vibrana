@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import fs from 'fs';
+
 import path from 'path';
 
 const svgPath = path.resolve('public', 'favicon.svg');

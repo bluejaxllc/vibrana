@@ -1,0 +1,13 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\edgar\OneDrive\Desktop\Vibrana\frontend\generate_icons.js
+  2:8  error  'fs' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\edgar\OneDrive\Desktop\Vibrana\frontend\src\components\MacroManager.jsx
+  558:13  error  'setScanSize' is not defined  no-undef
+
+Γ£û 2 problems (2 errors, 0 warnings)
+

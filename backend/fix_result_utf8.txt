@@ -1,0 +1,6 @@
+﻿Current patients columns: ['id', 'name', 'age', 'gender', 'notes', 'phone_number', 'opt_in_whatsapp', 'team_id', 'created_at', 'updated_at']
+  [SKIP] team_id already exists
+  [SKIP] phone_number already exists
+  [SKIP] opt_in_whatsapp already exists
+
+Final patients columns: ['id', 'name', 'age', 'gender', 'notes', 'phone_number', 'opt_in_whatsapp', 'team_id', 'created_at', 'updated_at']
