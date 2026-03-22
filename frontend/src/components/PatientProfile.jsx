@@ -27,7 +27,9 @@ const PatientProfile = () => {
 
     const fetchPatient = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/patients/${id}`);
+            const res = await fetch(`${API}/patients/${id}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             if (!res.ok) throw new Error('Patient not found');
             const data = await res.json();
             setPatient(data);
@@ -46,7 +48,10 @@ const PatientProfile = () => {
     const handleDeleteScan = async (scanId) => {
         if (!confirm('¿Eliminar este resultado de escaneo?')) return;
         try {
-            await fetch(`${API}/scans/${scanId}`, { method: 'DELETE' });
+            await fetch(`${API}/scans/${scanId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             toast.success('Escaneo eliminado');
             fetchPatient();
         } catch {
@@ -58,7 +63,7 @@ const PatientProfile = () => {
         try {
             await fetch(`${API}/scans/${scanId}/notes`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ notes: editingNotes })
             });
             toast.success('Notas guardadas');
@@ -69,16 +74,31 @@ const PatientProfile = () => {
         }
     };
 
-    const handleExport = (format) => {
+    const handleExport = async (format) => {
         const teamId = localStorage.getItem('vibrana_active_team');
-        const url = `${API}/patients/${id}/export/${format}${teamId ? `?team_id=${teamId}` : ''}`;
-        window.open(url, '_blank');
-        toast.success(`Exportación ${format.toUpperCase()} iniciada`);
+        try {
+            const res = await fetch(`${API}/patients/${id}/export/${format}${teamId ? `?team_id=${teamId}` : ''}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            if (!res.ok) throw new Error('Export failed');
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `patient_${id}.${format}`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            toast.success(`Exportación ${format.toUpperCase()} iniciada`);
+        } catch {
+            toast.error(`Error al exportar ${format.toUpperCase()}`);
+        }
     };
 
     const generateReport = async () => {
         try {
-            const res = await fetch(`${API}/patients/${id}/report`);
+            const res = await fetch(`${API}/patients/${id}/report`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             const data = await res.json();
             setReport(data);
             toast.success('Reporte de salud generado');
@@ -113,8 +133,7 @@ const PatientProfile = () => {
             } else {
                 toast.error(data.error || 'Error al generar enlace compartible');
             }
-        } catch (err) {
-            console.error(err);
+        } catch {
             toast.error('Error de red al compartir');
         }
     };
@@ -147,7 +166,7 @@ const PatientProfile = () => {
             } else {
                 toast.error(data.error || "Error al enviar mensaje");
             }
-        } catch (err) {
+        } catch {
             toast.error("Error de red al enviar mensaje");
         }
     };
@@ -227,7 +246,7 @@ const PatientProfile = () => {
                         if (email) {
                             fetch(`${API}/patients/${id}/email-report`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                                 body: JSON.stringify({ email })
                             }).then(r => r.json()).then(d => {
                                 if (d.status === 'sent') toast.success('¡Reporte enviado!');

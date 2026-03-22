@@ -8,7 +8,6 @@ const LiveEntropyCounter = ({ patientId }) => {
     const [liveData, setLiveData] = useState(null);
     const [isRunning, setIsRunning] = useState(false);
     const [audioEnabled, setAudioEnabled] = useState(false);
-    const [intervalId, setIntervalId] = useState(null);
     const [history, setHistory] = useState([]);
 
     const playAlertSound = useCallback((level) => {
@@ -35,7 +34,7 @@ const LiveEntropyCounter = ({ patientId }) => {
             const body = { patient_id: patientId || null };
             const res = await fetch(`${API}/analyze`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify(body)
             });
             const data = await res.json();
@@ -68,24 +67,25 @@ const LiveEntropyCounter = ({ patientId }) => {
 
     const startLiveMonitoring = () => {
         setIsRunning(true);
-        fetchLiveAnalysis();
-        const id = setInterval(fetchLiveAnalysis, 3000);
-        setIntervalId(id);
         toast.success('Monitoreo en vivo iniciado');
     };
 
     const stopLiveMonitoring = () => {
         setIsRunning(false);
-        if (intervalId) clearInterval(intervalId);
-        setIntervalId(null);
         toast.success('Monitoreo en vivo detenido');
     };
 
     useEffect(() => {
+        let id;
+        if (isRunning) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchLiveAnalysis(); // Initial call
+            id = setInterval(fetchLiveAnalysis, 3000);
+        }
         return () => {
-            if (intervalId) clearInterval(intervalId);
+            if (id) clearInterval(id);
         };
-    }, [intervalId]);
+    }, [isRunning, fetchLiveAnalysis]);
 
     const getBarWidth = (count, total) => {
         if (!total || total === 0) return 0;

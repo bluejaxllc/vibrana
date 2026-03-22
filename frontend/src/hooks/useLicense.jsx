@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { API } from '../config.js';
 
@@ -34,6 +35,7 @@ export function LicenseProvider({ children }) {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchLicense();
     }, [fetchLicense]);
 
@@ -55,7 +57,7 @@ export function LicenseProvider({ children }) {
         try {
             const res = await fetch(`${API}/license/activate`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ license_key: key }),
             });
             const data = await res.json();
@@ -71,7 +73,10 @@ export function LicenseProvider({ children }) {
 
     const deactivateLicense = useCallback(async () => {
         try {
-            await fetch(`${API}/license/deactivate`, { method: 'POST' });
+            await fetch(`${API}/license/deactivate`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             await fetchLicense();
         } catch (err) {
             console.error('[License] Deactivation failed:', err);

@@ -27,7 +27,7 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
     const [showHeatmap, setShowHeatmap] = useState(false);
 
     // Build a map of organ status from scan results or AI PDF
-    const getOrganStatus = (organName) => {
+    const getOrganStatus = (organ) => {
         // Priority 1: Semantic match from AI PDF Analysis
         if (aiReportData?.scan_metadata?.organ_or_tissue) {
             const target = aiReportData.scan_metadata.organ_or_tissue.toLowerCase();
@@ -49,13 +49,13 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
                 'prostate': ['próstata', 'prostata'],
             };
 
-            const organId = organName.toLowerCase();
+            const organId = organ.id;
             const isMatch = matchMap[organId]?.some(kw => target.includes(kw)) ||
-                target.includes(organId);
+                target.includes(organ.name.toLowerCase());
 
             if (isMatch) {
                 const level = aiReportData.entropic_analysis?.fleindler_entropy_level;
-                console.log(`[OrganMap] MATCH: ${organName} matched AI target "${target}" with Fleindler level ${level}`);
+                console.log(`[OrganMap] MATCH: ${organ.name} matched AI target "${target}" with Fleindler level ${level}`);
                 if (level >= 5) return 'pathology';
                 if (level >= 3) return 'compromised';
                 if (level <= 2) return 'normal';
@@ -65,7 +65,7 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
         // Priority 2: Database scan results
         if (!scanResults?.length) return null;
         const latestScan = scanResults.find(s =>
-            s.organ_name?.toLowerCase().includes(organName.toLowerCase())
+            s.organ_name?.toLowerCase().includes(organ.name.toLowerCase())
         );
         if (!latestScan) return null;
 
@@ -112,7 +112,7 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
         try {
             const res = await fetch(`${API}/scan/auto-sequence`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ patientId, organs: organCoords })
             });
             const data = await res.json();
@@ -191,24 +191,29 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
                         {aiReportData?.scan_metadata?.organ_or_tissue && ORGANS.map(organ => {
                             const target = aiReportData.scan_metadata.organ_or_tissue.toLowerCase();
                             const matchMap = {
-                                'liver': ['hígado', 'biliar', 'hepátic'],
-                                'brain': ['cerebro', 'neuronal', 'cabeza', 'meninges'],
-                                'lungs_l': ['pulmón', 'respiratorio'],
-                                'lungs_r': ['pulmón', 'respiratorio'],
-                                'heart': ['corazón', 'cardiac', 'vascul'],
-                                'stomach': ['estómago', 'gástrico'],
-                                'kidney_l': ['riñón', 'renal'],
-                                'kidney_r': ['riñón', 'renal'],
-                                'intestines': ['digerir', 'intestino', 'colon']
+                                'liver': ['hígado', 'higado', 'biliar', 'hepátic', 'hepatic'],
+                                'brain': ['cerebro', 'neuronal', 'cabeza', 'meninges', 'encéfalo', 'encefalo'],
+                                'lungs_l': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
+                                'lungs_r': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
+                                'heart': ['corazón', 'corazon', 'cardiac', 'vascul', 'cardíaco', 'cardiaco'],
+                                'stomach': ['estómago', 'estomago', 'gástrico', 'gastric'],
+                                'kidney_l': ['riñón', 'rinon', 'renal'],
+                                'kidney_r': ['riñón', 'rinon', 'renal'],
+                                'intestines': ['digerir', 'intestino', 'colon', 'digestiv'],
+                                'thyroid': ['tiroides', 'thyroid'],
+                                'spleen': ['bazo', 'esplénic', 'esplenic'],
+                                'pancreas': ['páncreas', 'pancreas', 'pancreátic', 'pancreatic'],
+                                'bladder': ['vejiga', 'vesic'],
+                                'prostate': ['próstata', 'prostata'],
                             };
-                            const isMatch = matchMap[organ.name.toLowerCase()]?.some(kw => target.includes(kw)) || target.includes(organ.name.toLowerCase());
+                            const isMatch = matchMap[organ.id]?.some(kw => target.includes(kw)) || target.includes(organ.name.toLowerCase());
 
                             if (!isMatch) return null;
 
                             // Generate a simulated cluster of entropy points based on the level
                             // The offset previously used for raw points is not needed here; we position relative to the pure organ center.
                             const level = aiReportData.entropic_analysis?.fleindler_entropy_level || 1;
-                            const points = Array.from({ length: level * 8 }, (_, i) => ({
+                            const points = Array.from({ length: 40 }).map(() => ({
                                 x: organ.cx + (Math.random() - 0.5) * organ.r * 1.5,
                                 y: organ.cy + (Math.random() - 0.5) * organ.r * 1.5,
                                 level: Math.random() > 0.3 ? level : Math.max(1, level - 1)
@@ -236,7 +241,7 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
 
                 {/* Organ circles */}
                 {ORGANS.map(organ => {
-                    const status = getOrganStatus(organ.name);
+                    const status = getOrganStatus(organ);
                     const statusColor = getStatusColor(status);
                     const isHovered = hoveredOrgan === organ.id;
                     const isSelected = selectedOrgan === organ.id;

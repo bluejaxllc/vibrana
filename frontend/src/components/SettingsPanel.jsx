@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Shield, Clock, LogOut, UserCheck, UserX, Settings, Mail, PlayCircle, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -11,48 +11,47 @@ const SettingsPanel = ({ user, token, onLogout }) => {
     const [activeTab, setActiveTab] = useState('profile');
     const [saving, setSaving] = useState(false);
 
-    const authHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    };
 
-    const fetchUsers = async () => {
+
+    const fetchUsers = useCallback(async () => {
         try {
+            const authHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
             const res = await fetch(`${API}/users`, { headers: authHeaders });
             const data = await res.json();
-            setUsers(data);
+            setUsers(Array.isArray(data) ? data : []);
         } catch { console.error('Failed to fetch users'); }
-    };
+    }, [token]);
 
-    const fetchAuditLogs = async () => {
+    const fetchAuditLogs = useCallback(async () => {
         try {
+            const authHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
             const res = await fetch(`${API}/audit?limit=30`, { headers: authHeaders });
             const data = await res.json();
-            setAuditLogs(data);
+            setAuditLogs(Array.isArray(data) ? data : []);
         } catch { console.error('Failed to fetch audit logs'); }
-    };
+    }, [token]);
 
-    const fetchConfig = async () => {
+    const fetchConfig = useCallback(async () => {
         try {
+            const authHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
             const res = await fetch(`${API}/api/config`, { headers: authHeaders });
             const data = await res.json();
             setConfig(data);
         } catch { console.error('Failed to fetch config'); }
-    };
+    }, [token]);
 
     useEffect(() => {
         if (activeTab === 'users') fetchUsers();
         if (activeTab === 'audit') fetchAuditLogs();
         if (activeTab === 'system') fetchConfig();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab]);
+    }, [activeTab, fetchUsers, fetchAuditLogs, fetchConfig]);
 
     const updateConfig = async (updates) => {
         setSaving(true);
         try {
             const res = await fetch(`${API}/api/config`, {
                 method: 'POST',
-                headers: authHeaders,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(updates)
             });
             if (res.ok) {
@@ -69,7 +68,7 @@ const SettingsPanel = ({ user, token, onLogout }) => {
         try {
             const res = await fetch(`${API}/users/${userId}/toggle`, {
                 method: 'POST',
-                headers: authHeaders
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
                 toast.success('Estado de usuario actualizado');
