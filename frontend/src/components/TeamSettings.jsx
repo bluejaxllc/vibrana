@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { API } from '../config';
 
-const TeamSettings = ({ user }) => {
+const TeamSettings = () => {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newTeamName, setNewTeamName] = useState('');
@@ -10,18 +10,15 @@ const TeamSettings = ({ user }) => {
     const [inviteUsername, setInviteUsername] = useState('');
     const [inviting, setInviting] = useState(false);
 
-    useEffect(() => {
-        fetchTeams();
-    }, []);
-
-    const fetchTeams = async () => {
+    const fetchTeams = useCallback(async () => {
         try {
             const res = await fetch(`${API}/teams`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
             });
             const data = await res.json();
-            setTeams(data);
-            if (data.length > 0 && !activeTeam) {
+            const teamsList = Array.isArray(data) ? data : [];
+            setTeams(teamsList);
+            if (teamsList.length > 0 && !activeTeam) {
                 setActiveTeam(data[0]);
                 fetchMembers(data[0].team_id);
             }
@@ -30,15 +27,18 @@ const TeamSettings = ({ user }) => {
             console.error('Error fetching teams:', err);
             setLoading(false);
         }
-    };
+    }, [activeTeam]);
 
+    useEffect(() => {
+        fetchTeams();
+    }, [fetchTeams]);
     const fetchMembers = async (teamId) => {
         try {
             const res = await fetch(`${API}/teams/${teamId}/members`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
             });
             const data = await res.json();
-            setMembers(data);
+            setMembers(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Error fetching members:', err);
         }
@@ -79,7 +79,7 @@ const TeamSettings = ({ user }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}`
                 },
                 body: JSON.stringify({ name: newTeamName })
             });
