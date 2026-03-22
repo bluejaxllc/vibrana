@@ -76,14 +76,29 @@ export default function DiagnosticLog() {
         return () => clearInterval(interval);
     }, [autoRefresh, fetchLogs, fetchStats]);
 
-    const handleExport = () => {
-        window.open(`${API}/diagnostic-logs/export`, '_blank');
+    const handleExport = async () => {
+        try {
+            const res = await fetch(`${API}/diagnostic-logs/export`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diagnostic_logs_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Failed to export logs:', err);
+        }
     };
 
     const handleClear = async () => {
         if (!confirm('¿Limpiar todos los registros de diagnóstico? Esta acción no se puede deshacer.')) return;
         try {
-            await fetch(`${API}/diagnostic-logs/clear`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+            await fetch(`${API}/diagnostic-logs/clear`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }, body: JSON.stringify({}) });
             fetchLogs();
             fetchStats();
         } catch (err) {

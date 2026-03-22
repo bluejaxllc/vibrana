@@ -103,7 +103,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
     const [reportData, setReportData] = useState(null);
     const [selectedDay, setSelectedDay] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    
+
     // Therapy selection state
     const [selectedTherapies, setSelectedTherapies] = useState({
         "Nutrición Funcional y Suplementos": true,
@@ -113,7 +113,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
         "Terapia Emocional y Energética": true,
         "Terapia Física y Ejercicio": true
     });
-    
+
     // Knowledge Base Reference Documents State
     const [referenceDocs, setReferenceDocs] = useState([]);
     const [selectedReferences, setSelectedReferences] = useState({});
@@ -173,11 +173,11 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
 
         const formData = new FormData();
         formData.append('file', file);
-        
+
         // Append selected therapies as a comma-separated string
         const activeTherapies = Object.keys(selectedTherapies).filter(k => selectedTherapies[k]);
         formData.append('therapies', activeTherapies.join('|'));
-        
+
         // Append selected reference document IDs
         const activeRefs = Object.keys(selectedReferences).filter(k => selectedReferences[k]);
         formData.append('reference_ids', activeRefs.join(','));
@@ -192,6 +192,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
 
             const res = await fetch(`${API}/api/analyze-nls-scan`, {
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: formData,
                 signal: controller.signal
             });
@@ -242,7 +243,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
         try {
             const res = await fetch(`${API}/api/nls-report-pdf`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ report_data: reportData }),
             });
             if (!res.ok) {
@@ -256,7 +257,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
             // Extract filename from Content-Disposition or use default
             const disposition = res.headers.get('Content-Disposition');
             const match = disposition && disposition.match(/filename="?(.+?)"?$/);
-            a.download = match ? match[1] : `Vibrana_Reporte_NLS_${new Date().toISOString().slice(0,10)}.pdf`;
+            a.download = match ? match[1] : `Vibrana_Reporte_NLS_${new Date().toISOString().slice(0, 10)}.pdf`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -407,7 +408,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                         )}
                         {status === 'analyzing' && <div className="scanning-laser"></div>}
                     </label>
-                    
+
                     {/* ── Diagnostic Resources Selector ── */}
                     <div style={{ marginTop: 24, padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(139,233,253,0.1)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
@@ -417,8 +418,8 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                             {Object.keys(selectedTherapies).map(therapy => (
                                 <label key={therapy} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#e2e8f0', cursor: 'pointer', opacity: status === 'analyzing' ? 0.5 : 1 }}>
-                                    <input 
-                                        type="checkbox" 
+                                    <input
+                                        type="checkbox"
                                         checked={selectedTherapies[therapy]}
                                         disabled={status === 'analyzing'}
                                         onChange={(e) => setSelectedTherapies(prev => ({ ...prev, [therapy]: e.target.checked }))}
@@ -429,7 +430,7 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                                 </label>
                             ))}
                         </div>
-                        
+
                         {/* ── Knowledge Base References ── */}
                         <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(139,233,253,0.1)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -438,10 +439,10 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                                     <h4 style={{ margin: 0, fontSize: 13, color: '#f1f5f9' }}>Base de Conocimiento (PDFs)</h4>
                                 </div>
                                 <label style={{ cursor: 'pointer', opacity: uploadingRef || status === 'analyzing' ? 0.5 : 1 }}>
-                                    <input 
-                                        type="file" 
-                                        accept="application/pdf" 
-                                        className="hidden" 
+                                    <input
+                                        type="file"
+                                        accept="application/pdf"
+                                        className="hidden"
                                         onChange={handleReferenceUpload}
                                         disabled={uploadingRef || status === 'analyzing'}
                                     />
@@ -450,15 +451,15 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                                     </div>
                                 </label>
                             </div>
-                            
+
                             {referenceDocs.length === 0 ? (
                                 <p style={{ margin: 0, fontSize: 11, color: '#64748b', fontStyle: 'italic' }}>No hay documentos de referencia subidos.</p>
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '100px', overflowY: 'auto' }}>
                                     {referenceDocs.map(doc => (
                                         <label key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#e2e8f0', cursor: 'pointer', opacity: status === 'analyzing' ? 0.5 : 1 }}>
-                                            <input 
-                                                type="checkbox" 
+                                            <input
+                                                type="checkbox"
                                                 checked={!!selectedReferences[doc.id]}
                                                 disabled={status === 'analyzing'}
                                                 onChange={(e) => setSelectedReferences(prev => ({ ...prev, [doc.id]: e.target.checked }))}
@@ -570,181 +571,181 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                             <div className="nls-modal-map no-print" style={{ flex: '1 1 400px', maxWidth: '500px', background: 'rgba(15,15,30,0.5)', borderRadius: '12px', overflow: 'hidden' }}>
                                 <OrganMap patientId={patientId} scanResults={patientScans} aiReportData={reportData} />
                             </div>
-                            
+
                             {/* Right Side: Report */}
                             <div className="nls-modal-report" style={{ flex: '2 1 600px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
 
 
-                            {/* ── Entropic Metrics ── */}
-                            <div className="nls-section">
-                                <div className="nls-metrics-grid">
-                                    <div className="nls-metric nls-metric-danger">
-                                        <span className="nls-metric-label">Nivel Fleindler</span>
-                                        <span className="nls-metric-value">{reportData.entropic_analysis?.fleindler_entropy_level ?? '—'}<span className="nls-metric-unit">/6</span></span>
-                                    </div>
-                                    <div className="nls-metric nls-metric-warning">
-                                        <span className="nls-metric-label">Brecha Rojo/Azul</span>
-                                        <span className="nls-metric-value-sm">{reportData.entropic_analysis?.red_blue_dissociation ?? '—'}</span>
-                                    </div>
-                                    <div className="nls-metric nls-metric-info">
-                                        <span className="nls-metric-label">CSS (Valor-D)</span>
-                                        <span className="nls-metric-value">{reportData.entropic_analysis?.css_d_value ?? '—'}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* ── Clinical Synthesis ── */}
-                            {reportData.clinical_synthesis && (
+                                {/* ── Entropic Metrics ── */}
                                 <div className="nls-section">
-                                    <div className="nls-synthesis">
-                                        <h3 className="nls-section-title">
-                                            <Activity size={16} /> Síntesis Clínica
-                                        </h3>
-                                        <p className="nls-synthesis-text">{reportData.clinical_synthesis}</p>
+                                    <div className="nls-metrics-grid">
+                                        <div className="nls-metric nls-metric-danger">
+                                            <span className="nls-metric-label">Nivel Fleindler</span>
+                                            <span className="nls-metric-value">{reportData.entropic_analysis?.fleindler_entropy_level ?? '—'}<span className="nls-metric-unit">/6</span></span>
+                                        </div>
+                                        <div className="nls-metric nls-metric-warning">
+                                            <span className="nls-metric-label">Brecha Rojo/Azul</span>
+                                            <span className="nls-metric-value-sm">{reportData.entropic_analysis?.red_blue_dissociation ?? '—'}</span>
+                                        </div>
+                                        <div className="nls-metric nls-metric-info">
+                                            <span className="nls-metric-label">CSS (Valor-D)</span>
+                                            <span className="nls-metric-value">{reportData.entropic_analysis?.css_d_value ?? '—'}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* ── Recommended Therapies ── */}
-                            <div className="nls-section">
-                                <h3 className="nls-section-title">
-                                    <Target size={16} /> Terapias Recomendadas
-                                </h3>
-                                {reportData.recommended_etalons && reportData.recommended_etalons.length > 0 ? (
-                                    <div className="nls-therapy-list">
-                                        {reportData.recommended_etalons.map((etalon, idx) => (
-                                            <TherapyCard key={idx} etalon={etalon} />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>El PDF no contenía datos de escaneo de paciente. Suba un reporte NLS con resultados de Fleindler, CSS y disociación para obtener un plan terapéutico completo.</p>
-                                )}
-                            </div>
-
-                            {/* ── Foods Grid ── */}
-                            <div className="nls-section nls-foods-section">
-                                {/* Foods to Eat */}
-                                {reportData.foods_to_eat && reportData.foods_to_eat.length > 0 && (
-                                    <div>
-                                        <h3 className="nls-section-title nls-green">🥗 Alimentos Recomendados</h3>
-                                        <div className="nls-food-grid">
-                                            {reportData.foods_to_eat.map((f, idx) => (
-                                                <div key={idx} className="nls-food-card nls-food-good">
-                                                    <h6 className="nls-food-name">{f.food}</h6>
-                                                    <p className="nls-food-benefit">{f.benefit}</p>
-                                                    <p className="nls-food-how">📋 {f.how_to_consume}</p>
-                                                    {f.active_compounds && (
-                                                        <div className="nls-food-compounds">
-                                                            {f.active_compounds.map((c, ci) => (
-                                                                <span key={ci} className="nls-compound-tag">{c}</span>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
+                                {/* ── Clinical Synthesis ── */}
+                                {reportData.clinical_synthesis && (
+                                    <div className="nls-section">
+                                        <div className="nls-synthesis">
+                                            <h3 className="nls-section-title">
+                                                <Activity size={16} /> Síntesis Clínica
+                                            </h3>
+                                            <p className="nls-synthesis-text">{reportData.clinical_synthesis}</p>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Foods to Avoid */}
-                                {reportData.foods_to_avoid && reportData.foods_to_avoid.length > 0 && (
-                                    <div style={{ marginTop: 28 }}>
-                                        <h3 className="nls-section-title nls-red">🚫 Alimentos a Evitar</h3>
-                                        <div className="nls-food-grid">
-                                            {reportData.foods_to_avoid.map((f, idx) => (
-                                                <div key={idx} className="nls-food-card nls-food-bad">
-                                                    <div className="nls-food-bad-header">
-                                                        <span className="nls-food-x">✕</span>
+                                {/* ── Recommended Therapies ── */}
+                                <div className="nls-section">
+                                    <h3 className="nls-section-title">
+                                        <Target size={16} /> Terapias Recomendadas
+                                    </h3>
+                                    {reportData.recommended_etalons && reportData.recommended_etalons.length > 0 ? (
+                                        <div className="nls-therapy-list">
+                                            {reportData.recommended_etalons.map((etalon, idx) => (
+                                                <TherapyCard key={idx} etalon={etalon} />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>El PDF no contenía datos de escaneo de paciente. Suba un reporte NLS con resultados de Fleindler, CSS y disociación para obtener un plan terapéutico completo.</p>
+                                    )}
+                                </div>
+
+                                {/* ── Foods Grid ── */}
+                                <div className="nls-section nls-foods-section">
+                                    {/* Foods to Eat */}
+                                    {reportData.foods_to_eat && reportData.foods_to_eat.length > 0 && (
+                                        <div>
+                                            <h3 className="nls-section-title nls-green">🥗 Alimentos Recomendados</h3>
+                                            <div className="nls-food-grid">
+                                                {reportData.foods_to_eat.map((f, idx) => (
+                                                    <div key={idx} className="nls-food-card nls-food-good">
                                                         <h6 className="nls-food-name">{f.food}</h6>
+                                                        <p className="nls-food-benefit">{f.benefit}</p>
+                                                        <p className="nls-food-how">📋 {f.how_to_consume}</p>
+                                                        {f.active_compounds && (
+                                                            <div className="nls-food-compounds">
+                                                                {f.active_compounds.map((c, ci) => (
+                                                                    <span key={ci} className="nls-compound-tag">{c}</span>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <p className="nls-food-reason">{f.reason}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* ── Herbal Teas ── */}
-                            {reportData.herbal_teas && reportData.herbal_teas.length > 0 && (
-                                <div className="nls-section">
-                                    <h3 className="nls-section-title nls-amber">🍵 Infusiones Herbales</h3>
-                                    <div className="nls-tea-grid">
-                                        {reportData.herbal_teas.map((t, idx) => (
-                                            <div key={idx} className="nls-tea-card">
-                                                <h6 className="nls-tea-name">{t.herb}</h6>
-                                                <p className="nls-tea-benefit">{t.benefit}</p>
-                                                <div className="nls-tea-details">
-                                                    <div className="nls-tea-detail">
-                                                        <span className="nls-tea-label">Preparación</span>
-                                                        <p>{t.preparation}</p>
-                                                    </div>
-                                                    <div className="nls-tea-detail">
-                                                        <span className="nls-tea-label">Cuándo Tomar</span>
-                                                        <p>{t.when}</p>
-                                                    </div>
-                                                </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                        </div>
+                                    )}
 
-                            {/* ── Weekly Regime ── */}
-                            {reportData.weekly_regime && reportData.weekly_regime.length > 0 && (
-                                <div className="nls-section">
-                                    <h3 className="nls-section-title nls-cyan">📅 Régimen Semanal</h3>
-                                    <div className="nls-day-tabs">
-                                        {reportData.weekly_regime.map((dayData, idx) => (
-                                            <button
-                                                key={idx}
-                                                onClick={() => setSelectedDay(idx)}
-                                                className={`nls-day-tab ${selectedDay === idx ? 'active' : ''}`}
-                                            >
-                                                {dayData.day}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    {reportData.weekly_regime[selectedDay] && (
-                                        <div className="nls-day-content">
-                                            <TimeSlot label="Mañana" emoji="☀️" color="morning" data={reportData.weekly_regime[selectedDay].morning} />
-                                            <TimeSlot label="Mediodía" emoji="🌤️" color="midday" data={reportData.weekly_regime[selectedDay].midday} />
-                                            <TimeSlot label="Noche" emoji="🌙" color="evening" data={reportData.weekly_regime[selectedDay].evening} />
+                                    {/* Foods to Avoid */}
+                                    {reportData.foods_to_avoid && reportData.foods_to_avoid.length > 0 && (
+                                        <div style={{ marginTop: 28 }}>
+                                            <h3 className="nls-section-title nls-red">🚫 Alimentos a Evitar</h3>
+                                            <div className="nls-food-grid">
+                                                {reportData.foods_to_avoid.map((f, idx) => (
+                                                    <div key={idx} className="nls-food-card nls-food-bad">
+                                                        <div className="nls-food-bad-header">
+                                                            <span className="nls-food-x">✕</span>
+                                                            <h6 className="nls-food-name">{f.food}</h6>
+                                                        </div>
+                                                        <p className="nls-food-reason">{f.reason}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
-                            )}
 
-                            {/* ── Next Scan ── */}
-                            {reportData.next_scan && (
-                                <div className="nls-section">
-                                    <div className="nls-next-scan">
-                                        <h3 className="nls-section-title">📋 Próximo Escaneo Recomendado</h3>
-                                        <div className="nls-next-scan-body">
-                                            <span className={`nls-urgency-badge ${urgencyClass(reportData.next_scan.timeframe)}`}>
-                                                {reportData.next_scan.timeframe}
-                                            </span>
-                                            <p className="nls-next-scan-reason">{reportData.next_scan.reason}</p>
-                                            {reportData.next_scan.what_to_monitor && (
-                                                <div className="nls-monitor-list">
-                                                    <span className="nls-monitor-label">Qué Monitorear</span>
-                                                    <ul>
-                                                        {reportData.next_scan.what_to_monitor.map((item, idx) => (
-                                                            <li key={idx}><span className="nls-monitor-arrow">→</span> {item}</li>
-                                                        ))}
-                                                    </ul>
+                                {/* ── Herbal Teas ── */}
+                                {reportData.herbal_teas && reportData.herbal_teas.length > 0 && (
+                                    <div className="nls-section">
+                                        <h3 className="nls-section-title nls-amber">🍵 Infusiones Herbales</h3>
+                                        <div className="nls-tea-grid">
+                                            {reportData.herbal_teas.map((t, idx) => (
+                                                <div key={idx} className="nls-tea-card">
+                                                    <h6 className="nls-tea-name">{t.herb}</h6>
+                                                    <p className="nls-tea-benefit">{t.benefit}</p>
+                                                    <div className="nls-tea-details">
+                                                        <div className="nls-tea-detail">
+                                                            <span className="nls-tea-label">Preparación</span>
+                                                            <p>{t.preparation}</p>
+                                                        </div>
+                                                        <div className="nls-tea-detail">
+                                                            <span className="nls-tea-label">Cuándo Tomar</span>
+                                                            <p>{t.when}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            )}
+                                            ))}
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+
+                                {/* ── Weekly Regime ── */}
+                                {reportData.weekly_regime && reportData.weekly_regime.length > 0 && (
+                                    <div className="nls-section">
+                                        <h3 className="nls-section-title nls-cyan">📅 Régimen Semanal</h3>
+                                        <div className="nls-day-tabs">
+                                            {reportData.weekly_regime.map((dayData, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => setSelectedDay(idx)}
+                                                    className={`nls-day-tab ${selectedDay === idx ? 'active' : ''}`}
+                                                >
+                                                    {dayData.day}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {reportData.weekly_regime[selectedDay] && (
+                                            <div className="nls-day-content">
+                                                <TimeSlot label="Mañana" emoji="☀️" color="morning" data={reportData.weekly_regime[selectedDay].morning} />
+                                                <TimeSlot label="Mediodía" emoji="🌤️" color="midday" data={reportData.weekly_regime[selectedDay].midday} />
+                                                <TimeSlot label="Noche" emoji="🌙" color="evening" data={reportData.weekly_regime[selectedDay].evening} />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* ── Next Scan ── */}
+                                {reportData.next_scan && (
+                                    <div className="nls-section">
+                                        <div className="nls-next-scan">
+                                            <h3 className="nls-section-title">📋 Próximo Escaneo Recomendado</h3>
+                                            <div className="nls-next-scan-body">
+                                                <span className={`nls-urgency-badge ${urgencyClass(reportData.next_scan.timeframe)}`}>
+                                                    {reportData.next_scan.timeframe}
+                                                </span>
+                                                <p className="nls-next-scan-reason">{reportData.next_scan.reason}</p>
+                                                {reportData.next_scan.what_to_monitor && (
+                                                    <div className="nls-monitor-list">
+                                                        <span className="nls-monitor-label">Qué Monitorear</span>
+                                                        <ul>
+                                                            {reportData.next_scan.what_to_monitor.map((item, idx) => (
+                                                                <li key={idx}><span className="nls-monitor-arrow">→</span> {item}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div> {/* End Right Side */}
-                        </div> 
+                        </div>
                     </div>
                 </div>
-            , document.body)}
+                , document.body)}
 
             {/* ── Animations ── */}
             <style jsx="true">{`
