@@ -149,7 +149,7 @@ const ScanCard = ({ scan, label, getStatusColor }) => {
                     </div>
                 ))}
             </div>
-            {scan.notes && <p className="compare-notes">≡ƒô¥ {scan.notes}</p>}
+            {(scan.practitioner_notes || scan.notes) && <p className="compare-notes">📝 {scan.practitioner_notes || scan.notes}</p>}
         </div>
     );
 };

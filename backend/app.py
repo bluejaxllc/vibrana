@@ -20,7 +20,7 @@ import os
 
 app = Flask(__name__)
 CORS(app, origins=os.environ.get('CORS_ORIGINS',
-    'http://localhost:5173,http://localhost:5176,http://localhost:5177,https://vibrana.vercel.app,https://vibrana.bluejax.ai').split(','))
+    'http://localhost:5173,http://localhost:5176,http://localhost:5177,https://vibrana.vercel.app,https://vibrana.bluejax.ai,https://vibrana-frontend-181276091615.us-central1.run.app').split(','))
 
 # Initialize database
 init_db()
@@ -730,6 +730,79 @@ def take_snapshot():
 # MACROS — Universal (Phase 3 upgraded)
 # ──────────────────────────────────────
 from macro_engine import macro_engine
+from logic_mapper import mapper as logic_mapper
+
+@app.route('/api/setup/start', methods=['POST'])
+def start_logic_setup():
+    res = logic_mapper.start_session(bot)
+    if "error" in res:
+        return jsonify(res), 500
+    
+    # Do an initial detection (may be slow on large screens)
+    try:
+        first_state = logic_mapper.detect_buttons()
+    except Exception as e:
+        print(f"[Setup] Initial detection failed: {e}")
+        first_state = {"status": "pending", "buttons": [], "screen_width": 1920, "screen_height": 1080, "screen": "", "tree": logic_mapper.tree}
+    return jsonify({**res, "initial_state": first_state})
+
+@app.route('/api/setup/click', methods=['POST'])
+def logic_setup_click():
+    data = request.json or {}
+    x = data.get('x')
+    y = data.get('y')
+    text = data.get('text', '')
+    node_id = data.get('node_id')
+    
+    if x is None or y is None or not node_id:
+        return jsonify({"error": "Missing parameters"}), 400
+        
+    res = logic_mapper.execute_click(x, y, text, node_id)
+    return jsonify(res)
+
+@app.route('/api/setup/stop', methods=['POST'])
+def stop_logic_setup():
+    data = request.json or {}
+    save = data.get('save', True)
+    res = logic_mapper.stop_session()
+    if save:
+        logic_mapper.save_tree()
+    return jsonify(res)
+
+@app.route('/api/setup/tree', methods=['GET'])
+def get_logic_tree():
+    return jsonify(logic_mapper.get_tree())
+
+@app.route('/api/setup/refresh', methods=['GET'])
+def refresh_logic_setup():
+    return jsonify({"new_state": logic_mapper.detect_buttons()})
+
+@app.route('/api/system/windows', methods=['GET'])
+def get_windows():
+    return jsonify({"windows": logic_mapper.get_windows()})
+
+@app.route('/api/setup/target_window', methods=['POST'])
+def set_target_window():
+    title = (request.json or {}).get("target_window")
+    return jsonify(logic_mapper.set_target_window(title))
+
+@app.route('/api/setup/auto_explore', methods=['POST'])
+def auto_explore_ui():
+    data = request.json or {}
+    max_steps = data.get('max_steps', 10)
+    ignored_texts = data.get('ignored_texts', [])
+    res = logic_mapper.auto_explore(max_steps, ignored_texts)
+    return jsonify(res)
+
+@app.route('/api/setup/auto_explore_stop', methods=['POST'])
+def auto_explore_stop():
+    return jsonify(logic_mapper.stop_auto_explore())
+
+@app.route('/api/setup/convert_macro', methods=['POST'])
+def convert_logic_tree_to_macro():
+    name = (request.json or {}).get('name', f"auto_map_{int(time.time())}")
+    res = logic_mapper.create_macro_from_tree(name, macro_engine)
+    return jsonify(res)
 
 @app.route('/api/macros', methods=['GET'])
 def list_macros():
@@ -748,6 +821,45 @@ def stop_macro_record():
     return jsonify(macro_engine.stop_recording(name))
 
 
+@app.route('/api/macros/record/events', methods=['GET'])
+def get_macro_events():
+    events = macro_engine.macro_actions if macro_engine.macro_recording else []
+    return jsonify({"events": events, "recording": macro_engine.macro_recording})
+
+
+@app.route('/api/macros/record/events/<int:index>', methods=['DELETE'])
+def delete_macro_event(index):
+    if not macro_engine.macro_recording:
+        return jsonify({"error": "No active recording"}), 400
+    if 0 <= index < len(macro_engine.macro_actions):
+        removed = macro_engine.macro_actions.pop(index)
+        return jsonify({"status": "deleted", "removed": removed, "remaining": len(macro_engine.macro_actions)})
+    return jsonify({"error": "Index out of range"}), 400
+
+
+@app.route('/api/macros/record/events', methods=['POST'])
+def add_macro_event():
+    if not macro_engine.macro_recording:
+        return jsonify({"error": "No active recording"}), 400
+    data = request.json or {}
+    event = {
+        "type": data.get("type", "click"),
+        "params": data.get("params", {}),
+        "timestamp": time.time()
+    }
+    insert_at = data.get("insert_at")
+    if insert_at is not None and 0 <= insert_at <= len(macro_engine.macro_actions):
+        macro_engine.macro_actions.insert(insert_at, event)
+    else:
+        macro_engine.macro_actions.append(event)
+    return jsonify({"status": "added", "event": event, "total": len(macro_engine.macro_actions)})
+
+
+@app.route('/api/macros/<name>', methods=['GET'])
+def get_macro_detail(name):
+    return jsonify(macro_engine.get_macro(name))
+
+
 @app.route('/api/macros/<name>/play', methods=['POST'])
 def play_macro(name):
     return jsonify(macro_engine.play_macro(name))
@@ -758,6 +870,82 @@ def delete_macro(name):
     return jsonify(macro_engine.delete_macro(name))
 
 
+@app.route('/api/macros/<name>', methods=['PUT'])
+def update_macro(name):
+    data = request.json or {}
+    actions = data.get('actions', [])
+    return jsonify(macro_engine.save_macro(name, actions))
+
+
+# MACROS — Smart Playback (Phase 4)
+
+@app.route('/api/macros/<name>/play-smart', methods=['POST'])
+def play_macro_smart(name):
+    return jsonify(macro_engine.play_macro_smart(name))
+
+@app.route('/api/macros/playback/status', methods=['GET'])
+def macro_playback_status():
+    return jsonify(macro_engine.get_playback_status())
+
+@app.route('/api/macros/playback/abort', methods=['POST'])
+def macro_playback_abort():
+    return jsonify(macro_engine.abort_playback())
+
+@app.route('/api/macros/verify-region', methods=['POST'])
+def macro_verify_region():
+    """One-shot OCR of a screen region — used by the UI to preview text."""
+    data = request.json or {}
+    region = data.get('region', {'x': 0, 'y': 0, 'w': 400, 'h': 100})
+    try:
+        from macro_verifier import ocr_region
+        return jsonify(ocr_region(region))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# MACROS — Element Detection (Phase 4b)
+
+@app.route('/api/macros/detect-elements', methods=['GET'])
+def macro_detect_elements():
+    """Capture screen, detect all interactive elements, return annotated screenshot."""
+    monitor_idx = request.args.get('monitor', 1, type=int)
+    try:
+        from element_detector import detect_elements
+        return jsonify(detect_elements(monitor_idx=monitor_idx))
+    except Exception as e:
+        return jsonify({"error": str(e), "elements": []}), 500
+
+@app.route('/api/macros/monitors', methods=['GET'])
+def macro_list_monitors():
+    """List available monitors for element detection."""
+    try:
+        from element_detector import list_monitors
+        return jsonify(list_monitors())
+    except Exception as e:
+        return jsonify({"error": str(e), "monitors": []}), 500
+
+@app.route('/api/macros/detect-elements/region', methods=['POST'])
+def macro_detect_elements_region():
+    """Detect elements in a specific screen region."""
+    data = request.json or {}
+    region = data.get('region', {'x': 0, 'y': 0, 'w': 800, 'h': 600})
+    try:
+        from element_detector import detect_elements_in_region
+        return jsonify(detect_elements_in_region(region))
+    except Exception as e:
+        return jsonify({"error": str(e), "elements": []}), 500
+
+@app.route('/api/macros/save-template', methods=['POST'])
+def macro_save_template():
+    """Save a screen region as a button template for matching."""
+    data = request.json or {}
+    region = data.get('region', {'x': 0, 'y': 0, 'w': 100, 'h': 40})
+    name = data.get('name', f"template_{int(time.time())}")
+    try:
+        from element_detector import capture_element_template
+        return jsonify(capture_element_template(region, name))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ──────────────────────────────────────
@@ -2185,7 +2373,7 @@ TEXTO DEL ESCANEO:
 # ──────────────────────────────────────
 @app.route('/api/references', methods=['GET'])
 @require_auth
-def list_reference_documents(current_user):
+def list_reference_documents():
     """List all uploaded reference documents."""
     db = get_db()
     from models import ReferenceDocument
@@ -2197,8 +2385,9 @@ def list_reference_documents(current_user):
 
 @app.route('/api/references/upload', methods=['POST'])
 @require_auth
-def upload_reference_document(current_user):
+def upload_reference_document():
     """Upload and extract text from a new reference PDF."""
+    current_user_id = g.current_user_dict.get('id')
     if 'file' not in request.files:
         return jsonify({"status": "error", "message": "No file uploaded"}), 400
         
@@ -2232,7 +2421,7 @@ def upload_reference_document(current_user):
         new_doc = ReferenceDocument(
             filename=file.filename,
             extracted_text=text,
-            uploaded_by=current_user.id
+            uploaded_by=current_user_id
         )
         db.add(new_doc)
         db.commit()
@@ -2254,6 +2443,7 @@ def upload_reference_document(current_user):
 def migrate_db():
     db = get_db()
     from sqlalchemy.sql import text
+    from database import engine
     try:
         # Phase 15
         with engine.connect() as conn:

@@ -377,3 +377,9 @@ class ScreenWatcher:
                     db.rollback()
             except:
                 pass
+        finally:
+            try:
+                if db:
+                    db.close()
+            except:
+                pass

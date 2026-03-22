@@ -25,6 +25,7 @@ CORS(app, resources={r"/*": {"origins": [
     "https://vibrana.bluejax.ai",
     "https://www.bluejax.ai",
     "https://bluejax.ai",
+    "https://vibrana-frontend-181276091615.us-central1.run.app"
 ]}})
 
 
@@ -222,6 +223,7 @@ def create_patient():
 
 
 @app.route('/patients/<patient_id>', methods=['GET'])
+@require_auth
 def get_patient(patient_id):
     db = get_db()
     try:
@@ -234,6 +236,7 @@ def get_patient(patient_id):
 
 
 @app.route('/patients/<patient_id>', methods=['PUT'])
+@require_auth
 def update_patient(patient_id):
     db = get_db()
     try:
@@ -260,6 +263,7 @@ def update_patient(patient_id):
 
 
 @app.route('/patients/<patient_id>', methods=['DELETE'])
+@require_auth
 def delete_patient(patient_id):
     db = get_db()
     try:
@@ -277,6 +281,7 @@ def delete_patient(patient_id):
 # SCANS — History & Management
 # ──────────────────────────────────────
 @app.route('/patients/<patient_id>/scans', methods=['GET'])
+@require_auth
 def get_patient_scans(patient_id):
     db = get_db()
     try:
@@ -289,6 +294,7 @@ def get_patient_scans(patient_id):
 
 
 @app.route('/scans/<scan_id>', methods=['GET'])
+@require_auth
 def get_scan(scan_id):
     db = get_db()
     try:
@@ -301,6 +307,7 @@ def get_scan(scan_id):
 
 
 @app.route('/scans/<scan_id>', methods=['DELETE'])
+@require_auth
 def delete_scan(scan_id):
     db = get_db()
     try:
@@ -315,6 +322,7 @@ def delete_scan(scan_id):
 
 
 @app.route('/scans/<scan_id>/notes', methods=['PUT'])
+@require_auth
 def update_scan_notes(scan_id):
     db = get_db()
     try:
@@ -336,6 +344,7 @@ def update_scan_notes(scan_id):
 # EXPORT — PDF & CSV
 # ──────────────────────────────────────
 @app.route('/patients/<patient_id>/export/csv', methods=['GET'])
+@require_auth
 def export_csv(patient_id):
     db = get_db()
     try:
@@ -380,6 +389,7 @@ def export_csv(patient_id):
 
 
 @app.route('/patients/<patient_id>/export/pdf', methods=['GET'])
+@require_auth
 def export_pdf(patient_id):
     """Generate a clinical-grade PDF report with silhouette and trends."""
     db = get_db()
@@ -618,6 +628,7 @@ def get_patient_messages(patient_id):
 # HEALTH REPORT — Phase 5
 # ──────────────────────────────────────
 @app.route('/patients/<patient_id>/report', methods=['GET'])
+@require_auth
 def generate_health_report(patient_id):
     """Auto-generate a comprehensive health report for a patient."""
     db = get_db()
@@ -2534,6 +2545,13 @@ def migrate_db_v2():
     db = get_db()
     from sqlalchemy.sql import text
     try:
+        # Phase 12 - Add team_id to patients
+        with engine.connect() as conn:
+            try:
+                conn.execute(text("ALTER TABLE patients ADD COLUMN team_id VARCHAR(36) REFERENCES teams(id)"))
+                conn.commit()
+            except Exception: pass
+            
         # Phase 15
         with engine.connect() as conn:
             try:

@@ -15,7 +15,7 @@ const PluginPanel = ({ token }) => {
 
     const fetchPlugins = async () => {
         try {
-            const res = await fetch(`${API}/plugins`);
+            const res = await fetch(`${API}/plugins`, { headers: authHeaders });
             const data = await res.json();
             setPlugins(data);
         } catch { console.error('Failed to fetch plugins'); }
