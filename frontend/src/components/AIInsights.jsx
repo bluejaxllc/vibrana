@@ -19,7 +19,7 @@ const AIInsights = ({ scanId, patientId }) => {
         try {
             const res = await fetch(`${API}/ai/interpret`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ scan_id: scanId })
             });
             const data = await res.json();
@@ -39,7 +39,9 @@ const AIInsights = ({ scanId, patientId }) => {
     const detectAnomalies = async () => {
         if (!patientId) return;
         try {
-            const res = await fetch(`${API}/ai/anomalies/${patientId}`);
+            const res = await fetch(`${API}/ai/anomalies/${patientId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             const data = await res.json();
             setAnomalies(data);
         } catch { console.error('Failed to detect anomalies'); }

@@ -11,22 +11,22 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
+        const fetchPatients = async () => {
+            try {
+                const url = teamId ? `${API}/patients?team_id=${teamId}` : `${API}/patients`;
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                });
+                const data = await res.json();
+                setPatients(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error("Failed to fetch patients", err);
+            }
+        };
+
         if (teamId) fetchPatients();
         else setPatients([]);
     }, [teamId]);
-
-    const fetchPatients = async () => {
-        try {
-            const url = teamId ? `${API}/patients?team_id=${teamId}` : `${API}/patients`;
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
-            });
-            const data = await res.json();
-            setPatients(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error("Failed to fetch patients", err);
-        }
-    };
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -42,7 +42,7 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
                 body: JSON.stringify({ ...newPatient, team_id: teamId })
             });
             const created = await res.json();
-            
+
             if (!res.ok) {
                 toast.error(created.message || created.error || 'Error al agregar paciente');
                 return;
@@ -63,7 +63,10 @@ const PatientManager = ({ onSelectPatient, onViewProfile, selectedPatientId, tea
         e.stopPropagation();
         if (!confirm(`¿Eliminar paciente "${patientName}"? Esto también eliminará todos sus escaneos.`)) return;
         try {
-            await fetch(`${API}/patients/${patientId}`, { method: 'DELETE' });
+            await fetch(`${API}/patients/${patientId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
             setPatients(patients.filter(p => p.id !== patientId));
             toast.success(`Paciente "${patientName}" eliminado`);
         } catch {
