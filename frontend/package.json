@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview",
+    "start": "npx serve dist -s -l $PORT",
     "icons": "node generate_icons.js"
   },
   "dependencies": {
@@ -18,7 +18,8 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.0",
-    "recharts": "^3.7.0"
+    "recharts": "^3.7.0",
+    "serve": "^14.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
