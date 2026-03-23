@@ -19,6 +19,9 @@ from flask import request, jsonify, g
 
 # ── Paywall Master Switch ─────────────────────────────────────────
 PAYWALL_ENABLED = os.environ.get('VIBRANA_PAYWALL', '').lower() in ('1', 'true', 'yes')
+# DEMO_MODE: When True, require_tier decorator passes through all requests.
+# Set VIBRANA_DEMO=true env var, or just rely on PAYWALL_ENABLED being False.
+DEMO_MODE = os.environ.get('VIBRANA_DEMO', '').lower() in ('1', 'true', 'yes') or not PAYWALL_ENABLED
 
 # ── Admin Whitelist (always get clinic tier) ─────────────
 ADMIN_WHITELIST = [
@@ -375,6 +378,9 @@ def require_tier(feature: str):
     def decorator(f):
         @wraps(f)
         def decorated(*args, **kwargs):
+            # DEMO_MODE: bypass all tier checks for customer demos
+            if DEMO_MODE:
+                return f(*args, **kwargs)
             if not has_feature(feature):
                 required_tier = FEATURE_TIER_MAP.get(feature, 'pro')
                 tier_label = TIERS.get(required_tier, {}).get('label', required_tier)
