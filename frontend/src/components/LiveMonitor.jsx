@@ -348,7 +348,7 @@ const LiveMonitor = () => {
                             disabled={setupLoading || !selectedWindow}
                             title={selectedWindow ? `Explorar automáticamente: ${selectedWindow}` : '🔒 Selecciona una ventana primero para desbloquear'}
                         >
-                            {selectedWindow ? '🔓' : '🔒'} Auto-Explorar
+                            Auto-Explorar
                         </button>
                     )}
                     {setupActive && isAutoExploring && (

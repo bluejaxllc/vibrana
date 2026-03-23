@@ -40,6 +40,10 @@ export function LicenseProvider({ children }) {
     }, [fetchLicense]);
 
     const isFeatureAvailable = useCallback((feature) => {
+        // DEMO_MODE: all features unlocked for customer demos.
+        // Set to false when paywall goes live.
+        const DEMO_MODE = true;
+        if (DEMO_MODE) return true;
         if (license.paywall_enabled === false) return true;
         return license.features?.includes(feature);
     }, [license.features, license.paywall_enabled]);
