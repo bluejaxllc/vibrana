@@ -45,3 +45,16 @@ nls_training_data/*.txt
 
 # Misc
 *.db
+*.bak
+*.heapsnapshot
+build_error.txt
+
+# Allow .env.example for onboarding
+!**/.env.example
+
+# Docker
+docker-compose.override.yml
+
+# Stale root assets
+frontend_*.png
+telegram-notify.js

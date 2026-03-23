@@ -8,6 +8,8 @@ const ComparisonMode = ({ patientId, onClose }) => {
     const [scans, setScans] = useState([]);
     const [leftScan, setLeftScan] = useState(null);
     const [rightScan, setRightScan] = useState(null);
+    const [aiSummary, setAiSummary] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
 
     useEffect(() => {
         if (patientId) {
@@ -44,6 +46,33 @@ const ComparisonMode = ({ patientId, onClose }) => {
             diff[i] = { left: lv, right: rv, change: rv - lv };
         }
         return diff;
+    };
+
+    const handleAiCompare = async () => {
+        if (!leftScan?.id || !rightScan?.id) {
+            toast.error('Seleccione dos escaneos para comparar');
+            return;
+        }
+        setAiLoading(true);
+        try {
+            const token = localStorage.getItem('vibrana_token');
+            const res = await fetch(`${API}/ai/compare`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ left_scan_id: leftScan.id, right_scan_id: rightScan.id })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setAiSummary(data);
+                toast.success('Comparación IA generada');
+            } else {
+                toast.error(data.error || 'Error en comparación IA');
+            }
+        } catch {
+            toast.error('Error de conexión');
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     const diff = compareCounts(leftScan, rightScan);
@@ -103,6 +132,21 @@ const ComparisonMode = ({ patientId, onClose }) => {
                                 <span className="diff-trend">Sin cambios en entropía total</span>
                             )}
                         </div>
+
+                        <button className="btn btn-analyze btn-sm" onClick={handleAiCompare} disabled={aiLoading} style={{ marginTop: 10 }}>
+                            {aiLoading ? '🧠 Analizando...' : '🧠 Comparar con IA'}
+                        </button>
+
+                        {aiSummary && (
+                            <div className="ai-compare-result" style={{ marginTop: 12, padding: '12px 14px', background: 'rgba(139, 92, 246, 0.08)', borderRadius: 8, border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                                <p style={{ margin: 0, fontSize: '0.85rem', lineHeight: 1.5, color: '#e2e8f0' }}>{aiSummary.summary}</p>
+                                {aiSummary.level_changes?.length > 0 && (
+                                    <div style={{ marginTop: 8, fontSize: '0.75rem', color: '#8892a4' }}>
+                                        {aiSummary.level_changes.map((ch, i) => <div key={i}>{ch}</div>)}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

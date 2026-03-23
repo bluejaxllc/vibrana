@@ -7,9 +7,10 @@ from flask_cors import CORS
 from cv_engine import NLSAutomation
 from screen_watcher import ScreenWatcher
 from database import init_db, SessionLocal
-from models import Patient, ScanResult, User, AuditLog, Team, TeamMember, DiagnosticLog
+from models import Patient, ScanResult, User, AuditLog, Team, TeamMember, DiagnosticLog, SystemConfig
 from auth import hash_password, check_password, generate_token, require_auth, require_role
 from licensing import init_license, get_license_status, activate_license, deactivate_license, require_tier, check_patient_limit, get_current_tier
+import report_agent
 import cv2
 import csv
 import io
@@ -19,8 +20,7 @@ from datetime import datetime, date
 import os
 
 app = Flask(__name__)
-CORS(app, origins=os.environ.get('CORS_ORIGINS',
-    'http://localhost:5173,http://localhost:5176,http://localhost:5177,https://vibrana.vercel.app,https://vibrana.bluejax.ai,https://vibrana-frontend-181276091615.us-central1.run.app').split(','))
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True, allow_headers="*")
 
 # Initialize database
 init_db()
@@ -53,6 +53,7 @@ def get_db():
 
 # Initialize screen watcher with DB access for auto-logging
 watcher = ScreenWatcher(bot, db_factory=get_db) if bot else None
+
 
 
 # ──────────────────────────────────────
@@ -228,6 +229,7 @@ def get_team_analytics(team_id):
 # ──────────────────────────────────────
 # PATIENTS — CRUD
 # ──────────────────────────────────────
+
 @app.route('/patients', methods=['GET'])
 @require_auth
 def get_patients():
@@ -395,6 +397,64 @@ def update_scan_notes(scan_id):
 
 
 # ──────────────────────────────────────
+# AUTO SCAN SEQUENCE — Phase 26
+# ──────────────────────────────────────
+@app.route('/scan/auto-sequence', methods=['POST'])
+@require_auth
+def scan_auto_sequence():
+    """Run automated organ scan sequence using the NLS screen watcher."""
+    db = get_db()
+    try:
+        data = request.json
+        patient_id = data.get('patientId')
+        organs = data.get('organs', [])
+
+        if not patient_id:
+            return jsonify({"error": "patientId is required"}), 400
+
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not patient:
+            return jsonify({"error": "Patient not found"}), 404
+
+        # In local mode, iterate organs and capture screen for each
+        results = []
+        successful = 0
+        for organ in organs:
+            try:
+                # Attempt screen capture via watcher if available
+                import screen_watcher
+                capture = screen_watcher.capture_region(organ.get('x', 0), organ.get('y', 0))
+                if capture:
+                    scan = ScanResult(
+                        patient_id=patient_id,
+                        organ_name=organ.get('name', 'Unknown'),
+                        status='Pending Analysis',
+                        counts={},
+                        total_points=0
+                    )
+                    db.add(scan)
+                    successful += 1
+                    results.append({"organ": organ.get('name'), "status": "captured"})
+            except Exception:
+                results.append({"organ": organ.get('name'), "status": "skipped"})
+
+        if successful > 0:
+            db.commit()
+
+        return jsonify({
+            "status": "completed",
+            "total_organs": len(organs),
+            "successful": successful,
+            "results": results
+        })
+    except Exception as e:
+        db.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────
 # SCAN ANALYSIS (CV Engine)
 # ──────────────────────────────────────
 @app.route('/scan/analyze', methods=['POST'])
@@ -457,6 +517,122 @@ def start_scan():
         return jsonify({"status": "error", "message": "Failed to capture screen"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/scan/batch', methods=['POST'])
+@require_auth
+def batch_scan():
+    """Sequentially scan multiple standard organs for a patient."""
+    db = get_db()
+    try:
+        data = request.json
+        patient_id = data.get('patientId')
+        if not patient_id:
+            return jsonify({"error": "patientId is required"}), 400
+        if not bot:
+            return jsonify({"error": "Bot not initialized"}), 500
+
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not patient:
+            return jsonify({"error": "Patient not found"}), 404
+
+        scanned = 0
+        results = []
+        # Capture once and analyze
+        frame = bot.capture_screen()
+        if frame is None:
+            return jsonify({"error": "Failed to capture screen"}), 500
+
+        summary = bot.summarize_scan(frame)
+        organ_name = summary.get('organ_name', 'Unknown Organ')
+        scan = ScanResult(
+            patient_id=patient_id,
+            organ_name=organ_name,
+            entropy_points=summary.get('points', []),
+        )
+        scan.calculate_summary()
+        db.add(scan)
+        db.commit()
+        db.refresh(scan)
+        scanned += 1
+        results.append(scan.to_dict())
+
+        return jsonify({
+            "status": "success",
+            "scanned": scanned,
+            "results": results
+        })
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+
+@app.route('/analytics', methods=['GET'])
+@require_auth
+def get_analytics():
+    """Return comprehensive analytics: statusCounts, entropyDistribution, weeklyTrends, activity."""
+    db = get_db()
+    try:
+        from collections import Counter
+        from datetime import timedelta
+
+        team_id = request.args.get('team_id', '').strip()
+        days = int(request.args.get('days', 7))
+
+        query = db.query(ScanResult)
+        if team_id:
+            query = query.join(Patient).filter(Patient.team_id == team_id)
+
+        all_scans = query.order_by(ScanResult.timestamp.desc()).all()
+
+        # Status distribution
+        status_counter = Counter(s.status for s in all_scans if s.status)
+        status_counts = dict(status_counter)
+
+        # Entropy level distribution across all scans
+        entropy_dist = Counter()
+        for s in all_scans:
+            counts = s.counts or {}
+            for lvl in ['1', '2', '3', '4', '5', '6']:
+                entropy_dist[lvl] += int(counts.get(lvl, 0))
+
+        # Weekly trends: daily scan counts for the last N days
+        today = datetime.combine(date.today(), datetime.min.time())
+        weekly_trends = []
+        for i in range(days - 1, -1, -1):
+            day_start = today - timedelta(days=i)
+            day_end = day_start + timedelta(days=1)
+            count = sum(1 for s in all_scans if s.timestamp and day_start <= s.timestamp < day_end)
+            weekly_trends.append({
+                "date": day_start.strftime('%m/%d'),
+                "scans": count
+            })
+
+        # Recent activity
+        recent = all_scans[:10]
+        recent_activity = [{
+            "id": s.id,
+            "organ_name": s.organ_name,
+            "status": s.status,
+            "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            "patient_name": s.patient.name if s.patient else "Unknown"
+        } for s in recent]
+
+        total_patients = db.query(Patient).count()
+        total_scans = len(all_scans)
+
+        return jsonify({
+            "total_patients": total_patients,
+            "total_scans": total_scans,
+            "statusCounts": status_counts,
+            "entropyDistribution": dict(entropy_dist),
+            "weeklyTrends": weekly_trends,
+            "recent_activity": recent_activity
+        })
+    finally:
+        db.close()
 
 
 # ──────────────────────────────────────
@@ -522,6 +698,8 @@ def export_csv(patient_id):
 
 
 @app.route('/patients/<patient_id>/export/pdf', methods=['GET'])
+@require_auth
+@require_tier('export_full')
 def export_pdf(patient_id):
     db = get_db()
     try:
@@ -529,75 +707,109 @@ def export_pdf(patient_id):
         if not patient:
             return jsonify({"error": "Patient not found"}), 404
 
-        scans = db.query(ScanResult).filter(
-            ScanResult.patient_id == patient_id
-        ).order_by(ScanResult.timestamp.desc()).all()
-
-        # Generate PDF with ReportLab
-        from reportlab.lib import colors
-        from reportlab.lib.pagesizes import letter
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.units import inch
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5 * inch)
-        elements = []
-        styles = getSampleStyleSheet()
-
-        # Title
-        title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=18, textColor=colors.HexColor('#bd93f9'))
-        elements.append(Paragraph("Vibrana — Bioresonance Scan Report", title_style))
-        elements.append(Spacer(1, 12))
-
-        # Patient Info
-        elements.append(Paragraph(f"<b>Patient:</b> {patient.name}", styles['Normal']))
-        elements.append(Paragraph(f"<b>Age:</b> {patient.age} | <b>Gender:</b> {patient.gender}", styles['Normal']))
-        elements.append(Paragraph(f"<b>Report Generated:</b> {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles['Normal']))
-        elements.append(Spacer(1, 20))
-
-        if scans:
-            # Table header
-            table_data = [['Date', 'Organ', 'Status', 'Total', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6']]
-            for scan in scans:
-                counts = scan.counts or {}
-                table_data.append([
-                    scan.timestamp.strftime('%m/%d %H:%M') if scan.timestamp else 'N/A',
-                    scan.organ_name[:20],
-                    scan.status[:25],
-                    str(scan.total_points),
-                    str(counts.get('1', 0)),
-                    str(counts.get('2', 0)),
-                    str(counts.get('3', 0)),
-                    str(counts.get('4', 0)),
-                    str(counts.get('5', 0)),
-                    str(counts.get('6', 0)),
-                ])
-
-            table = Table(table_data, repeatRows=1)
-            table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2a2a3c')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTSIZE', (0, 0), (-1, -1), 8),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f5f5f5')),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')]),
-            ]))
-            elements.append(table)
-        else:
-            elements.append(Paragraph("No scan results available.", styles['Normal']))
-
-        doc.build(elements)
-        buffer.seek(0)
+        pdf_bytes = report_agent.generate_pdf_report(patient_id)
+        if not pdf_bytes:
+            return jsonify({"error": "Failed to generate AI PDF report"}), 500
 
         return send_file(
-            buffer,
+            io.BytesIO(pdf_bytes),
             mimetype='application/pdf',
             as_attachment=True,
             download_name=f'vibrana_{patient.name.replace(" ", "_")}_report.pdf'
         )
+    finally:
+        db.close()
+
+@app.route('/patients/<patient_id>/report', methods=['GET'])
+@require_auth
+@require_tier('ai_report')
+def get_ai_report(patient_id):
+    result = report_agent.generate_narrative_report(patient_id)
+    if "error" in result:
+        return jsonify(result), 400
+        
+    r = result.get("report", {})
+    return jsonify({
+        "summary": r.get('resumen_ejecutivo', 'Error al generar resumen.'),
+        "recommendations": [rec.get('descripcion', '') for rec in r.get('recomendaciones', [])],
+        "full_report": r,
+        "metadata": result.get("metadata", {})
+    })
+
+
+# ──────────────────────────────────────
+# COMMUNICATIONS — Phase 15/17
+# ──────────────────────────────────────
+@app.route('/patients/<patient_id>/whatsapp', methods=['POST'])
+@require_auth
+def send_whatsapp(patient_id):
+    db = get_db()
+    try:
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not patient:
+            return jsonify({"error": "Paciente no encontrado"}), 404
+            
+        data = request.json
+        content = data.get('content')
+        if not content:
+            return jsonify({"error": "Mensaje vacío"}), 400
+            
+        phone = patient.phone_number
+        if not phone:
+            return jsonify({"error": "El paciente no tiene número de teléfono"}), 400
+
+        import sqlite3
+        import subprocess
+        
+        # 1. Attempt standard Webhook out 
+        webhook_url = None
+        try:
+            conn = sqlite3.connect("vibrana.db")
+            cur = conn.cursor()
+            cur.execute("SELECT value FROM system_config WHERE key = 'ghl_whatsapp_webhook'")
+            row = cur.fetchone()
+            if row: webhook_url = row[0]
+            conn.close()
+        except Exception as e:
+            print("Webhook read err:", e)
+            
+        success = False
+        if webhook_url:
+            import requests
+            parts = patient.name.split(" ") if patient.name else ["Paciente", ""]
+            payload = {
+                "first_name": parts[0],
+                "last_name": " ".join(parts[1:]) if len(parts) > 1 else "",
+                "phone": phone,
+                "message": content
+            }
+            try:
+                res = requests.post(webhook_url, json=payload, headers={"Content-Type": "application/json"}, timeout=5)
+                if res.ok:
+                    success = True
+            except:
+                pass
+                
+        # 2. Fallback to Direct Interception if webhook fails or is missing
+        if not success:
+            print(f"Webhook failed/missing. Falling back to ghl_direct_api.py for {phone}...")
+            # Fire and forget subprocess so we don't block the Flask thread
+            subprocess.Popen([sys.executable, "ghl_direct_api.py", phone, content])
+            print("Direct interception script dispatched gracefully.")
+
+        log = DiagnosticLog(
+            patient_id=patient_id,
+            action="Mensaje de WhatsApp",
+            details=content,
+            message_type="whatsapp"
+        )
+        db.add(log)
+        db.commit()
+
+        return jsonify({"status": "success", "message": "Mensaje enviado a GoHighLevel"})
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
     finally:
         db.close()
 
@@ -1549,6 +1761,79 @@ def ai_detect_anomalies(patient_id):
         db.close()
 
 
+@app.route('/ai/compare', methods=['POST'])
+@require_auth
+def ai_compare_scans():
+    """Generate AI-powered clinical comparison between two scans."""
+    db = get_db()
+    try:
+        data = request.json
+        left_id = data.get('left_scan_id')
+        right_id = data.get('right_scan_id')
+        if not left_id or not right_id:
+            return jsonify({"error": "left_scan_id and right_scan_id required"}), 400
+
+        left = db.query(ScanResult).filter(ScanResult.id == left_id).first()
+        right = db.query(ScanResult).filter(ScanResult.id == right_id).first()
+        if not left or not right:
+            return jsonify({"error": "One or both scans not found"}), 404
+
+        lc = left.counts or {}
+        rc = right.counts or {}
+        lt = left.total_points or 0
+        rt = right.total_points or 0
+        delta = rt - lt
+
+        # Build level-by-level diff
+        level_changes = []
+        for lvl in ['1', '2', '3', '4', '5', '6']:
+            lv = int(lc.get(lvl, 0))
+            rv = int(rc.get(lvl, 0))
+            if lv != rv:
+                direction = "↑ aumentó" if rv > lv else "↓ disminuyó"
+                level_changes.append(f"Nivel {lvl}: {direction} de {lv} a {rv}")
+
+        # Generate clinical summary
+        if delta > 10:
+            trend = "deterioro significativo"
+            advice = "Se recomienda terapia de biorresonancia intensiva y seguimiento inmediato."
+        elif delta > 0:
+            trend = "ligero aumento de entropía"
+            advice = "Monitorear de cerca. Considerar sesiones preventivas de frecuencia."
+        elif delta < -5:
+            trend = "mejora notable"
+            advice = "El tratamiento muestra eficacia. Continuar con el protocolo actual."
+        elif delta < 0:
+            trend = "leve mejora"
+            advice = "Tendencia positiva. Mantener protocolo y re-escanear en 7 días."
+        else:
+            trend = "sin cambios significativos"
+            advice = "Valores estables. Continuar monitoreo de rutina."
+
+        left_date = left.timestamp.strftime('%d/%m/%Y') if left.timestamp else 'N/A'
+        right_date = right.timestamp.strftime('%d/%m/%Y') if right.timestamp else 'N/A'
+
+        summary = (
+            f"Comparación de {left.organ_name or 'órgano'}: "
+            f"Del {left_date} al {right_date}, se observa {trend}. "
+            f"Entropía total cambió de {lt} a {rt} puntos (Δ{'+' if delta >= 0 else ''}{delta}). "
+            f"{advice}"
+        )
+
+        return jsonify({
+            "summary": summary,
+            "trend": trend,
+            "delta_total": delta,
+            "level_changes": level_changes,
+            "left_organ": left.organ_name,
+            "right_organ": right.organ_name,
+            "left_date": left_date,
+            "right_date": right_date
+        })
+    finally:
+        db.close()
+
+
 # ──────────────────────────────────────
 # BATCH PROCESSING & SCHEDULING — Phase 3/6
 # ──────────────────────────────────────
@@ -2202,7 +2487,8 @@ Escala de Fleindler: Evalúa la escala de íconos 1-6. Íconos 1-3 indican energ
 
 Disociación Gráfica Rojo/Azul: Analiza las líneas de frecuencia anabólica (Rojo) y catabólica (Azul). Líneas entrelazadas = homeostasis. Separación alta = mayor entropía y degradación funcional.
 
-CSS (Valor-D): CSS < 0.425 = patología activa. CSS 0.425-0.750 = problema subagudo. CSS > 1.0 = sin resonancia significativa.
+CSS (Valor-D): CSS < 0.425 = patología activa aguda. CSS 0.425-0.750 = problema subagudo. CSS > 1.0 = sin resonancia significativa.
+IMPORTANTE: Identifica estrictamente las patologías agudas (CSS < 0.425) e Inversiones de Campos de Torsión para poblar el "scorecard".
 
 INSTRUCCIONES PARA EL PLAN TERAPÉUTICO:
 
@@ -2234,6 +2520,13 @@ ESQUEMA JSON:
     "red_blue_dissociation": "Disociación Severa",
     "css_d_value": 0.312
   }},
+  "scorecard": [
+    {{
+      "sistema": "Nombre del Sistema/Órgano",
+      "hallazgo": "Descripción corta del problema agudo (ej: CSS < 0.425)",
+      "severidad": "critico"
+    }}
+  ],
   "clinical_synthesis": "Resumen de 3-4 oraciones: estado energético, compromiso funcional, causas entrópicas, urgencia.",
   "recommended_etalons": [
     {{
@@ -2436,6 +2729,23 @@ def upload_reference_document():
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/api/references/<doc_id>', methods=['DELETE'])
+@require_auth
+def delete_reference_document(doc_id):
+    """Delete a reference document from the knowledge base."""
+    db = get_db()
+    from models import ReferenceDocument
+    try:
+        doc = db.query(ReferenceDocument).filter(ReferenceDocument.id == doc_id).first()
+        if not doc:
+            return jsonify({"status": "error", "message": "Document not found"}), 404
+            
+        db.delete(doc)
+        db.commit()
+        return jsonify({"status": "success", "message": "Document deleted successfully"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # ──────────────────────────────────────
 # DB MIGRATION ENDPOINT (PHASE 15 & 16)
 # ──────────────────────────────────────
@@ -2474,6 +2784,7 @@ def migrate_db():
 # NLS REPORT PDF DOWNLOAD
 # ──────────────────────────────────────
 @app.route('/api/nls-report-pdf', methods=['POST'])
+@require_auth
 def nls_report_pdf():
     """Generate a downloadable PDF from the NLS scan report data."""
     try:

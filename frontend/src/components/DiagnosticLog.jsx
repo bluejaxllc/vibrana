@@ -127,7 +127,12 @@ export default function DiagnosticLog() {
                 <div className="diag-header-left">
                     <a href="/" className="btn btn-ghost btn-sm">← Panel Principal</a>
                     <h1>📋 Registro de Diagnóstico</h1>
-                    <span className="diag-subtitle">Cambios auto-detectados catalogados para diagnósticos</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="diag-subtitle">Cambios auto-detectados catalogados para diagnósticos</span>
+                        <span style={{ fontSize: '0.7rem', background: 'rgba(189, 147, 249, 0.1)', color: '#bd93f9', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(189, 147, 249, 0.3)' }}>
+                            ✨ Mejorado con IA
+                        </span>
+                    </div>
                 </div>
                 <div className="diag-header-right">
                     <button

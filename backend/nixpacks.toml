@@ -1,2 +1,0 @@
-# Nixpacks auto-detect: use requirements.txt for Python
-# No custom config needed - Nixpacks handles Python, pip, and venv automatically

@@ -1,22 +1,45 @@
-import { useState, useEffect, Component } from 'react';
+import { useState, useEffect, Component, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
 import Dashboard from './components/Dashboard';
-import PatientProfile from './components/PatientProfile';
-import AnalyticsDashboard from './components/AnalyticsDashboard';
 import LoginPage from './components/LoginPage';
 import LandingPage from './components/LandingPage';
-import SettingsPanel from './components/SettingsPanel';
-import PluginPanel from './components/PluginPanel';
-import APIDocsViewer from './components/APIDocsViewer';
-import TeamSettings from './components/TeamSettings';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
-import DiagnosticLog from './components/DiagnosticLog';
 import UpgradeModal from './components/UpgradeModal';
-import WebReport from './components/WebReport';
 import { LicenseProvider, useLicense } from './hooks/useLicense';
 import './App.css';
+
+// Lazy-loaded route components (reduce initial bundle)
+const PatientProfile = lazy(() => import('./components/PatientProfile'));
+const AnalyticsDashboard = lazy(() => import('./components/AnalyticsDashboard'));
+const SettingsPanel = lazy(() => import('./components/SettingsPanel'));
+const PluginPanel = lazy(() => import('./components/PluginPanel'));
+const APIDocsViewer = lazy(() => import('./components/APIDocsViewer'));
+const TeamSettings = lazy(() => import('./components/TeamSettings'));
+const DiagnosticLog = lazy(() => import('./components/DiagnosticLog'));
+const WebReport = lazy(() => import('./components/WebReport'));
+
+// Shared toast config
+const TOAST_OPTIONS = {
+  duration: 3000,
+  style: {
+    background: '#1f2b47',
+    color: '#e2e8f0',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '8px',
+    fontSize: '0.85rem',
+  },
+  success: { iconTheme: { primary: '#50fa7b', secondary: '#0f0f1a' } },
+  error: { iconTheme: { primary: '#ff5555', secondary: '#0f0f1a' } },
+};
+
+// Suspense fallback
+const RouteLoader = () => (
+  <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+    <div className="vfx-pulse">Cargando...</div>
+  </div>
+);
 
 // Error Boundary to catch render crashes
 class ErrorBoundary extends Component {
@@ -61,7 +84,6 @@ function App() {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('vibrana_theme');
     if (saved) return saved;
-    // Auto-detect from system preference
     return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   });
 
@@ -74,7 +96,6 @@ function App() {
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: light)');
     const handler = (e) => {
-      // Only auto-switch if user hasn't manually set a preference
       if (!localStorage.getItem('vibrana_theme')) {
         setTheme(e.matches ? 'light' : 'dark');
       }
@@ -113,18 +134,10 @@ function App() {
   if (!user) {
     return (
       <>
-        <Toaster position="top-right" toastOptions={{
-          duration: 3000,
-          style: { background: '#1f2b47', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '0.85rem' },
-          success: { iconTheme: { primary: '#50fa7b', secondary: '#0f0f1a' } },
-          error: { iconTheme: { primary: '#ff5555', secondary: '#0f0f1a' } },
-        }} />
+        <Toaster position="top-right" toastOptions={TOAST_OPTIONS} />
         {showLogin ? (
           <div style={{ position: 'relative' }}>
-            <button
-              className="btn-back-to-landing"
-              onClick={() => setShowLogin(false)}
-            >
+            <button className="btn-back-to-landing" onClick={() => setShowLogin(false)}>
               ← Back
             </button>
             <LoginPage onLogin={handleLogin} />
@@ -136,61 +149,49 @@ function App() {
     );
   }
 
-  // ... inside App component return:
   return (
     <LicenseProvider>
       <Router>
         <KeyboardShortcuts onAction={handleShortcutAction} />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            className: 'toast-custom',
-            style: {
-              background: '#1f2b47',
-              color: '#e2e8f0',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-            },
-            success: { iconTheme: { primary: '#50fa7b', secondary: '#0f0f1a' } },
-            error: { iconTheme: { primary: '#ff5555', secondary: '#0f0f1a' } },
-          }}
-        />
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/report/:token" element={<WebReport />} />
+        <Toaster position="top-right" toastOptions={TOAST_OPTIONS} />
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/report/:token" element={<WebReport />} />
 
-          {/* Protected Routes */}
-          <Route path="*" element={
-            <RequireLicense>
-              <ErrorBoundary>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/patients/:id" element={<PatientProfile />} />
-                  <Route path="/analytics" element={
-                    <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
-                  } />
-                  <Route path="/settings" element={
-                    <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
-                  } />
-                  <Route path="/api-docs" element={
-                    <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
-                  } />
-                  <Route path="/plugins" element={
-                    <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
-                  } />
-                  <Route path="/diagnostic-logs" element={
-                    <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
-                  } />
-                  <Route path="/teams" element={
-                    <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
-                  } />
-                </Routes>
-              </ErrorBoundary>
-            </RequireLicense>
-          } />
-        </Routes>
+            {/* Protected Routes */}
+            <Route path="*" element={
+              <RequireLicense>
+                <ErrorBoundary>
+                  <Suspense fallback={<RouteLoader />}>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/patients/:id" element={<PatientProfile />} />
+                      <Route path="/analytics" element={
+                        <PageWrapper theme={theme} toggleTheme={toggleTheme}><AnalyticsDashboard /></PageWrapper>
+                      } />
+                      <Route path="/settings" element={
+                        <PageWrapper theme={theme} toggleTheme={toggleTheme}><SettingsPanel user={user} token={token} onLogout={handleLogout} /></PageWrapper>
+                      } />
+                      <Route path="/api-docs" element={
+                        <PageWrapper title="API Documentation" theme={theme} toggleTheme={toggleTheme}><APIDocsViewer /></PageWrapper>
+                      } />
+                      <Route path="/plugins" element={
+                        <PageWrapper title="Plugin Manager" theme={theme} toggleTheme={toggleTheme}><PluginPanel token={token} /></PageWrapper>
+                      } />
+                      <Route path="/diagnostic-logs" element={
+                        <PageWrapper title="Diagnostic Log" theme={theme} toggleTheme={toggleTheme}><DiagnosticLog /></PageWrapper>
+                      } />
+                      <Route path="/teams" element={
+                        <PageWrapper title="Team Collaboration" theme={theme} toggleTheme={toggleTheme}><TeamSettings user={user} /></PageWrapper>
+                      } />
+                    </Routes>
+                  </Suspense>
+                </ErrorBoundary>
+              </RequireLicense>
+            } />
+          </Routes>
+        </Suspense>
       </Router>
     </LicenseProvider>
   );
@@ -204,7 +205,7 @@ const PageWrapper = ({ children, title, theme, toggleTheme }) => (
         <a href="/" className="btn btn-ghost btn-sm">Dashboard</a>
         <a href="/teams" className="btn btn-ghost btn-sm">Teams</a>
         <button className="btn btn-ghost btn-sm" onClick={toggleTheme} title="Toggle theme">
-          {theme === 'dark' ? 'ΓÿÇ∩╕Å' : '≡ƒîÖ'}
+          {theme === 'dark' ? '☀️' : '🌙'}
         </button>
       </div>
     </header>
@@ -213,25 +214,13 @@ const PageWrapper = ({ children, title, theme, toggleTheme }) => (
 );
 
 const RequireLicense = ({ children }) => {
-  const { paywall_enabled, tier, loading } = useLicense();
+  const { loading } = useLicense();
 
   if (loading) {
     return (
       <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="vfx-pulse">Verificando licencia...</div>
       </div>
-    );
-  }
-
-  // If paywall is ON and tier is free, show landing page instead of blocking
-  if (paywall_enabled && tier === 'free') {
-    return (
-      <LandingPage onGetStarted={() => {
-        // Log out and show login page for re-auth
-        localStorage.removeItem('vibrana_token');
-        localStorage.removeItem('vibrana_user');
-        window.location.reload();
-      }} />
     );
   }
 

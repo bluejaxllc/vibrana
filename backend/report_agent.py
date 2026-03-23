@@ -201,6 +201,11 @@ def gather_patient_data(patient_id: str) -> dict:
             sessions[date_key]["scan_count"] += 1
             sessions[date_key]["organs"].append(scan.organ_name)
 
+        # Fetch Reference Documents
+        from models import ReferenceDocument
+        refs = db.query(ReferenceDocument).all()
+        ref_texts = [r.extracted_text for r in refs]
+
         return {
             "patient": patient.to_dict(),
             "total_scans": len(scans),
@@ -208,6 +213,7 @@ def gather_patient_data(patient_id: str) -> dict:
             "session_count": len(sessions),
             "sessions": list(sessions.values()),
             "systems": systems_data,
+            "reference_texts": ref_texts,
             "diagnostic_logs_summary": [
                 {
                     "date": d.timestamp.isoformat() if d.timestamp else None,
@@ -268,11 +274,21 @@ def build_ai_prompt(patient_data: dict, language: str = "es") -> str:
     else:
         lang_instruction = "Write the complete report in ENGLISH. Use clear but accessible medical terminology."
 
+    # Incorporate Knowledge Base (Reference Documents)
+    ref_texts = patient_data.get("reference_texts", [])
+    kb_context = ""
+    if ref_texts:
+        kb_context = "\n## Contexto Clínico Adicional (Base de Conocimiento)\n"
+        kb_context += "Utiliza la siguiente literatura y guías clínicas para fundamentar tu análisis y recomendaciones:\n"
+        for i, text in enumerate(ref_texts):
+            # Limit each text length to avoid token limit overload (Gemini 2.5 Flash handles large context well, but we cap at 15000 chars per doc)
+            kb_context += f"--- Documento {i+1} ---\n{text[:15000]}\n\n"
+
     prompt = f"""Eres un especialista certificado en biorresonancia y análisis NLS (Non-Linear Systems) Metatron Hunter. 
 Tu tarea es generar un REPORTE DIAGNÓSTICO PROFESIONAL completo basado en los datos de escaneo del paciente.
 
 {lang_instruction}
-
+{kb_context}
 ## Datos del Paciente
 - **Nombre:** {patient["name"]}
 - **Edad:** {patient["age"]} años

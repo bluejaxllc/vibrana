@@ -6,20 +6,32 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Use DATABASE_URL from env (PostgreSQL on Render) or fall back to local SQLite
+# Use DATABASE_URL from env (PostgreSQL on Railway/Render) or fall back to local SQLite
 DATABASE_URL = os.environ.get('DATABASE_URL', '')
 
-# Render provides DATABASE_URL with postgres:// but SQLAlchemy needs postgresql://
+# Render/Railway provides DATABASE_URL with postgres:// but SQLAlchemy needs postgresql://
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
-if not DATABASE_URL:
+IS_SQLITE = not DATABASE_URL
+
+if IS_SQLITE:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'vibrana.db')}"
 
-engine = create_engine(DATABASE_URL, echo=False,
-                       pool_pre_ping=True,
-                       pool_recycle=300)
+# Engine configuration varies by backend
+engine_kwargs = {
+    'echo': False,
+    'pool_pre_ping': True,
+}
+
+if IS_SQLITE:
+    # SQLite doesn't support pool_recycle; needs check_same_thread=False for Flask threads
+    engine_kwargs['connect_args'] = {'check_same_thread': False}
+else:
+    engine_kwargs['pool_recycle'] = 300
+
+engine = create_engine(DATABASE_URL, **engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 
@@ -33,6 +45,11 @@ def get_db():
 
 def init_db():
     """Create all tables."""
-    from models import Patient, ScanResult, DiagnosticLog, User, AuditLog  # noqa: F401
+    # Import ALL models so Base.metadata knows about every table
+    from models import (  # noqa: F401
+        Patient, ScanResult, DiagnosticLog, User, AuditLog,
+        Team, TeamMember, SystemConfig, ReferenceDocument,
+        ApiUsageLog, WorkflowAutomation
+    )
     Base.metadata.create_all(bind=engine)
-    print(f"[OK] Database initialized ({DATABASE_URL[:30]}...)")
+    print(f"[OK] Database initialized ({'SQLite' if IS_SQLITE else 'PostgreSQL'}: {DATABASE_URL[:40]}...)")

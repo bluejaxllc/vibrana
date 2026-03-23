@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Monitor, Crosshair, Flame, Camera, Palette, X, Check } from 'lucide-react';
+import { Monitor, Crosshair, Flame, Camera, Palette, X, Check, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLicense } from '../hooks/useLicense';
 
 import { LOCAL_API as API } from '../config.js';
 
 const CVTools = () => {
+    const { isFeatureAvailable, promptUpgrade } = useLicense();
     const [activeTab, setActiveTab] = useState('heatmap');
     const [heatmapSrc, setHeatmapSrc] = useState(null);
     const [monitors, setMonitors] = useState([]);
@@ -124,6 +126,19 @@ const CVTools = () => {
         { key: 'colors', icon: <Palette size={14} />, label: 'Colores' },
         { key: 'snapshots', icon: <Camera size={14} />, label: 'Capturas' },
     ];
+
+    if (!isFeatureAvailable('cv_tools')) {
+        return (
+            <div className="cv-tools locked-feature" style={{ textAlign: 'center', padding: '40px' }}>
+                <Lock size={32} style={{ color: '#a78bfa', margin: '0 auto 10px' }} />
+                <h3>Herramientas CV Avanzadas</h3>
+                <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '0.85rem' }}>Análisis profundo con visión por computadora. Requiere el plan Pro.</p>
+                <button className="btn btn-analyze" onClick={() => promptUpgrade('cv_tools')} style={{ padding: '8px 24px' }}>
+                    Mejorar Plan
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="cv-tools">

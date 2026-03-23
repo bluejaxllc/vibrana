@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Puzzle, Power, PowerOff, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLicense } from '../hooks/useLicense';
 
 import { API } from '../config.js';
 
 const PluginPanel = ({ token }) => {
+    const { isFeatureAvailable, promptUpgrade } = useLicense();
     const [plugins, setPlugins] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -24,6 +26,10 @@ const PluginPanel = ({ token }) => {
     useEffect(() => { fetchPlugins(); }, []);
 
     const loadPlugin = async (name) => {
+        if (!isFeatureAvailable('plugins')) {
+            promptUpgrade('plugins');
+            return;
+        }
         setLoading(true);
         try {
             const res = await fetch(`${API}/plugins/${name}/load`, {

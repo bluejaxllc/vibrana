@@ -2,7 +2,10 @@ __pycache__/
 *.pyc
 *.pyo
 *.db
+*.sqlite3
 .env
+.env.*
+!.env.example
 venv/
 .venv/
 venv2/
@@ -12,3 +15,33 @@ snapshots/
 dist/
 build/
 plugins/
+*.log
+*.heapsnapshot
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Cloud proxy binary
+cloud-sql-proxy.exe
+
+# Debug & test artifacts
+debug_capture.png
+minimal_capture.png
+test_pdf_mock.pdf
+test_output.txt
+
+# Log dumps
+cloud_logs*.txt
+logs*.txt
+latest_logs.txt
+err.log
+
+# Temp & debug text
+fix_*.txt
+parsed*.txt
+raw_gemini_output.txt
+cols.txt
+calibration.json
+
+# Railway/deploy vars dump
+railway_vars.txt

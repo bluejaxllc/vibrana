@@ -87,6 +87,7 @@ def require_auth(f):
                 return jsonify({'error': 'User not found or inactive'}), 401
             g.current_user = user
             g.current_user_dict = user.to_dict()
+            request.user_id = user.id
         finally:
             db.close()
 

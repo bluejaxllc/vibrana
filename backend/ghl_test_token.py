@@ -1,14 +1,24 @@
+"""
+Vibrana GHL Token Test Script
+Uses environment variables for token security.
+"""
+import os
 import requests
-import sys
 
-TOKEN = "pit-9abdfe80-8790-48a1-82b4-74c55d52e628"
-LOCATION_ID = "GC3Q5eqwDKw2MhZQ0KSj"
-TEST_PHONE = "+526391233367"
-MSG_TEXT = "Hello Edgar! This is an automated API test from Vibrana AI. We successfully received your private GHL token and injected the WhatsApp message directly into your BlueJax CRM! Phase 15 is 100% complete! 🚀"
+TOKEN = os.environ.get('GHL_API_TOKEN', '')
+LOCATION_ID = os.environ.get('GHL_LOCATION_ID', 'GC3Q5eqwDKw2MhZQ0KSj')
+TEST_PHONE = os.environ.get('GHL_TEST_PHONE', '+526391233367')
+
+if not TOKEN:
+    print("❌ GHL_API_TOKEN environment variable not set.")
+    print("   Set it: $env:GHL_API_TOKEN='pit-xxxx-xxxx...'")
+    exit(1)
+
+MSG_TEXT = "Hello! Vibrana AI WhatsApp API test — token authentication verified. 🚀"
 
 headers = {
     "Authorization": f"Bearer {TOKEN}",
-    "Version": "2021-07-28", # standard version for contacts v2
+    "Version": "2021-07-28",
     "Content-Type": "application/json",
     "Accept": "application/json"
 }
@@ -19,13 +29,13 @@ search_res = requests.get(
     headers=headers
 )
 
-print(f"Search Response: {search_res.status_code} {search_res.text}")
+print(f"Search Response: {search_res.status_code}")
 
 contact_id = None
 if search_res.ok and search_res.json().get('contact'):
     contact_id = search_res.json()['contact']['id']
     print(f"✅ Found existing contact: {contact_id}")
-    
+
     print("\n🚀 Sending direct WhatsApp message via API...")
     msg_payload = {
         "type": "WhatsApp",
@@ -43,11 +53,11 @@ if search_res.ok and search_res.json().get('contact'):
     )
 
     if msg_res.ok:
-        print("\n🎉 MISSION ACCOMPLISHED! WhatsApp message dispatched.")
+        print("\n🎉 WhatsApp message dispatched successfully!")
         print("API Response:", msg_res.json())
     else:
         print("\n❌ Failed to send WhatsApp message:", msg_res.text)
         print("Status Code:", msg_res.status_code)
-
 else:
-    print("Cannot send message without a valid contact. Please ensure the token has 'contacts.readonly' and 'conversations.message.write' scopes, or try creating the contact manually in GHL first.")
+    print("Cannot send message without a valid contact.")
+    print("Ensure GHL_API_TOKEN has 'contacts.readonly' and 'conversations.message.write' scopes.")

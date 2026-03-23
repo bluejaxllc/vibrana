@@ -1,8 +1,8 @@
 // Centralized API configuration
-// Cloud API (Google Cloud Run) for most features
-// Local API (localhost:5001) for device-dependent features (macros record/play, MJPEG stream)
+// Cloud API for production, Local API for device-dependent features (macros, MJPEG stream)
 
-const USE_LOCAL = false; // Toggle to true to route ALL traffic through local backend
+const USE_LOCAL = import.meta.env.VITE_USE_LOCAL === 'true' ||
+    (!import.meta.env.VITE_API_URL && window.location.hostname === 'localhost');
 
 export const API = USE_LOCAL
     ? 'http://localhost:5001'

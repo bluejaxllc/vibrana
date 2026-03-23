@@ -21,6 +21,24 @@ const ORGANS = [
     { id: 'prostate', name: 'Próstata', cx: 200, cy: 395, r: 12, color: '#bd93f9' },
 ];
 
+// Shared keyword mapping for organ detection (used in both status check and heatmap)
+const ORGAN_KEYWORDS = {
+    'liver': ['hígado', 'higado', 'biliar', 'hepátic', 'hepatic'],
+    'brain': ['cerebro', 'neuronal', 'cabeza', 'meninges', 'encéfalo', 'encefalo'],
+    'lungs_l': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
+    'lungs_r': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
+    'heart': ['corazón', 'corazon', 'cardiac', 'vascul', 'cardíaco', 'cardiaco'],
+    'stomach': ['estómago', 'estomago', 'gástrico', 'gastric'],
+    'kidney_l': ['riñón', 'rinon', 'renal'],
+    'kidney_r': ['riñón', 'rinon', 'renal'],
+    'intestines': ['digerir', 'intestino', 'colon', 'digestiv'],
+    'thyroid': ['tiroides', 'thyroid'],
+    'spleen': ['bazo', 'esplénic', 'esplenic'],
+    'pancreas': ['páncreas', 'pancreas', 'pancreátic', 'pancreatic'],
+    'bladder': ['vejiga', 'vesic'],
+    'prostate': ['próstata', 'prostata'],
+};
+
 const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
     const [hoveredOrgan, setHoveredOrgan] = useState(null);
     const [selectedOrgan, setSelectedOrgan] = useState(null);
@@ -31,26 +49,8 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
         // Priority 1: Semantic match from AI PDF Analysis
         if (aiReportData?.scan_metadata?.organ_or_tissue) {
             const target = aiReportData.scan_metadata.organ_or_tissue.toLowerCase();
-            // Spanish translation map rough matching
-            const matchMap = {
-                'liver': ['hígado', 'higado', 'biliar', 'hepátic', 'hepatic'],
-                'brain': ['cerebro', 'neuronal', 'cabeza', 'meninges', 'encéfalo', 'encefalo'],
-                'lungs_l': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
-                'lungs_r': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
-                'heart': ['corazón', 'corazon', 'cardiac', 'vascul', 'cardíaco', 'cardiaco'],
-                'stomach': ['estómago', 'estomago', 'gástrico', 'gastric'],
-                'kidney_l': ['riñón', 'rinon', 'renal'],
-                'kidney_r': ['riñón', 'rinon', 'renal'],
-                'intestines': ['digerir', 'intestino', 'colon', 'digestiv'],
-                'thyroid': ['tiroides', 'thyroid'],
-                'spleen': ['bazo', 'esplénic', 'esplenic'],
-                'pancreas': ['páncreas', 'pancreas', 'pancreátic', 'pancreatic'],
-                'bladder': ['vejiga', 'vesic'],
-                'prostate': ['próstata', 'prostata'],
-            };
-
             const organId = organ.id;
-            const isMatch = matchMap[organId]?.some(kw => target.includes(kw)) ||
+            const isMatch = ORGAN_KEYWORDS[organId]?.some(kw => target.includes(kw)) ||
                 target.includes(organ.name.toLowerCase());
 
             if (isMatch) {
@@ -149,6 +149,18 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
             </div>
 
             <svg viewBox="0 0 400 450" className="organ-svg">
+                <defs>
+                    <radialGradient id="pathology-gradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#ff5555" stopOpacity="0.8" />
+                        <stop offset="50%" stopColor="#ff5555" stopOpacity="0.5" />
+                        <stop offset="100%" stopColor="#ffb86c" stopOpacity="0" />
+                    </radialGradient>
+                    <radialGradient id="compromised-gradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#ffb86c" stopOpacity="0.7" />
+                        <stop offset="50%" stopColor="#f1fa8c" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#50fa7b" stopOpacity="0" />
+                    </radialGradient>
+                </defs>
                 {/* Body silhouette */}
                 <path
                     d="M200 20 C170 20 150 45 150 55 C150 70 170 80 175 90 
@@ -190,49 +202,41 @@ const OrganMap = ({ onOrganSelect, patientId, scanResults, aiReportData }) => {
                         {/* 2. PDF AI Generated Points */}
                         {aiReportData?.scan_metadata?.organ_or_tissue && ORGANS.map(organ => {
                             const target = aiReportData.scan_metadata.organ_or_tissue.toLowerCase();
-                            const matchMap = {
-                                'liver': ['hígado', 'higado', 'biliar', 'hepátic', 'hepatic'],
-                                'brain': ['cerebro', 'neuronal', 'cabeza', 'meninges', 'encéfalo', 'encefalo'],
-                                'lungs_l': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
-                                'lungs_r': ['pulmón', 'pulmon', 'respiratorio', 'bronqu'],
-                                'heart': ['corazón', 'corazon', 'cardiac', 'vascul', 'cardíaco', 'cardiaco'],
-                                'stomach': ['estómago', 'estomago', 'gástrico', 'gastric'],
-                                'kidney_l': ['riñón', 'rinon', 'renal'],
-                                'kidney_r': ['riñón', 'rinon', 'renal'],
-                                'intestines': ['digerir', 'intestino', 'colon', 'digestiv'],
-                                'thyroid': ['tiroides', 'thyroid'],
-                                'spleen': ['bazo', 'esplénic', 'esplenic'],
-                                'pancreas': ['páncreas', 'pancreas', 'pancreátic', 'pancreatic'],
-                                'bladder': ['vejiga', 'vesic'],
-                                'prostate': ['próstata', 'prostata'],
-                            };
-                            const isMatch = matchMap[organ.id]?.some(kw => target.includes(kw)) || target.includes(organ.name.toLowerCase());
+                            const isMatch = ORGAN_KEYWORDS[organ.id]?.some(kw => target.includes(kw)) || target.includes(organ.name.toLowerCase());
 
                             if (!isMatch) return null;
 
-                            // Generate a simulated cluster of entropy points based on the level
-                            // The offset previously used for raw points is not needed here; we position relative to the pure organ center.
+                            // Visual Enhancements: Smooth Pulsing Radial Gradient replacing scatter dots
                             const level = aiReportData.entropic_analysis?.fleindler_entropy_level || 1;
-                            const points = Array.from({ length: 40 }).map(() => ({
-                                x: organ.cx + (Math.random() - 0.5) * organ.r * 1.5,
-                                y: organ.cy + (Math.random() - 0.5) * organ.r * 1.5,
-                                level: Math.random() > 0.3 ? level : Math.max(1, level - 1)
-                            }));
+                            const isPathology = level >= 5;
+                            const gradientUrl = isPathology ? "url(#pathology-gradient)" : "url(#compromised-gradient)";
 
                             return (
-                                <g key={`heatmap-ai-${organ.id}`}>
-                                    {points.map((pt, idx) => (
-                                        <circle
-                                            key={`ai-${idx}`}
-                                            cx={pt.x}
-                                            cy={pt.y}
-                                            r={Math.random() * 2 + 1}
-                                            fill={getEntropyColor(pt.level)}
-                                            opacity={0.7}
-                                            className="heatmap-point vfx-fade-in"
-                                            style={{ animationDelay: `${idx * 0.05}s` }}
-                                        />
-                                    ))}
+                                <g key={`heatmap-ai-${organ.id}`} className="vfx-fade-in">
+                                    {/* 3 Rings for pulsing shockwave effect */}
+                                    <circle
+                                        cx={organ.cx}
+                                        cy={organ.cy}
+                                        r={organ.r * 1.8}
+                                        fill={gradientUrl}
+                                        className="organ-pulse-fast"
+                                        style={{ transformOrigin: `${organ.cx}px ${organ.cy}px` }}
+                                    />
+                                    <circle
+                                        cx={organ.cx}
+                                        cy={organ.cy}
+                                        r={organ.r * 1.2}
+                                        fill={gradientUrl}
+                                        className="organ-pulse-slow"
+                                        style={{ transformOrigin: `${organ.cx}px ${organ.cy}px` }}
+                                    />
+                                    <circle
+                                        cx={organ.cx}
+                                        cy={organ.cy}
+                                        r={organ.r * 0.6}
+                                        fill={getEntropyColor(level)}
+                                        opacity={0.9}
+                                    />
                                 </g>
                             );
                         })}

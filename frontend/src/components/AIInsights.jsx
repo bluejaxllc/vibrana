@@ -67,7 +67,14 @@ const AIInsights = ({ scanId, patientId }) => {
     return (
         <div className="ai-insights">
             <div className="ai-header" onClick={() => setExpanded(!expanded)}>
-                <h3><Brain size={16} /> Perspectivas de IA</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3><Brain size={16} /> Perspectivas de IA</h3>
+                    {interpretation?.used_knowledge_base && (
+                        <span style={{ fontSize: '0.65rem', background: '#bd93f922', color: '#bd93f9', padding: '2px 6px', borderRadius: '4px', border: '1px solid #bd93f944' }}>
+                            📚 Base de Conocimiento
+                        </span>
+                    )}
+                </div>
                 <div className="ai-actions">
                     <button className="btn btn-analyze btn-sm" onClick={(e) => { e.stopPropagation(); interpretScan(); }} disabled={loading}>
                         {loading ? '...' : 'Interpretar'}

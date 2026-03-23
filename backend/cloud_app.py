@@ -5,7 +5,7 @@ Deployed to Render. Contains all cloud-safe routes (no screen capture dependenci
 from flask import Flask, jsonify, request, Response, send_file, g
 from flask_cors import CORS
 from database import init_db, SessionLocal
-from models import Patient, ScanResult, User, AuditLog, DiagnosticLog, SystemConfig, Team, TeamMember, MessageLog
+from models import Patient, ScanResult, User, AuditLog, DiagnosticLog, SystemConfig, Team, TeamMember
 from auth import hash_password, check_password, generate_token, require_auth, require_role
 import csv
 import io
@@ -18,15 +18,19 @@ import os
 from licensing import get_license_status, activate_license, deactivate_license, init_license, get_current_tier, require_tier
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": [
+
+# CORS: use CORS_ORIGINS env var or fall back to defaults
+_default_origins = [
     "http://localhost:5176",
     "http://localhost:5177",
     "https://vibrana.vercel.app",
     "https://vibrana.bluejax.ai",
     "https://www.bluejax.ai",
     "https://bluejax.ai",
-    "https://vibrana-frontend-181276091615.us-central1.run.app"
-]}})
+]
+_cors_origins = os.environ.get('CORS_ORIGINS', '').strip()
+_origins = [o.strip() for o in _cors_origins.split(',') if o.strip()] if _cors_origins else _default_origins
+CORS(app, resources={r"/*": {"origins": _origins}})
 
 
 # Initialize database
@@ -150,6 +154,137 @@ def get_stats():
             "bot_online": False,
             "recent_activity": recent_activity
         })
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────
+# ANALYTICS — Phase 21
+# ──────────────────────────────────────
+@app.route('/analytics', methods=['GET'])
+@require_auth
+def get_analytics():
+    """Comprehensive analytics: statusCounts, entropyDistribution, weeklyTrends, activity."""
+    db = get_db()
+    try:
+        from collections import Counter
+        from datetime import timedelta
+
+        team_id = request.args.get('team_id', '').strip()
+        days = int(request.args.get('days', 7))
+
+        query = db.query(ScanResult)
+        if team_id:
+            query = query.join(Patient).filter(Patient.team_id == team_id)
+
+        all_scans = query.order_by(ScanResult.timestamp.desc()).all()
+
+        status_counter = Counter(s.status for s in all_scans if s.status)
+        entropy_dist = Counter()
+        for s in all_scans:
+            counts = s.counts or {}
+            for lvl in ['1', '2', '3', '4', '5', '6']:
+                entropy_dist[lvl] += int(counts.get(lvl, 0))
+
+        today_dt = datetime.combine(date.today(), datetime.min.time())
+        weekly_trends = []
+        for i in range(days - 1, -1, -1):
+            day_start = today_dt - timedelta(days=i)
+            day_end = day_start + timedelta(days=1)
+            count = sum(1 for s in all_scans if s.timestamp and day_start <= s.timestamp < day_end)
+            weekly_trends.append({"date": day_start.strftime('%m/%d'), "scans": count})
+
+        recent = all_scans[:10]
+        recent_activity = [{
+            "id": s.id, "organ_name": s.organ_name, "status": s.status,
+            "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            "patient_name": s.patient.name if s.patient else "Unknown"
+        } for s in recent]
+
+        return jsonify({
+            "total_patients": db.query(Patient).count(),
+            "total_scans": len(all_scans),
+            "statusCounts": dict(status_counter),
+            "entropyDistribution": dict(entropy_dist),
+            "weeklyTrends": weekly_trends,
+            "recent_activity": recent_activity
+        })
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────
+# BATCH SCAN — Phase 21  (cloud stub: no bot, just creates a record)
+# ──────────────────────────────────────
+@app.route('/scan/batch', methods=['POST'])
+@require_auth
+def batch_scan():
+    db = get_db()
+    try:
+        data = request.json
+        patient_id = data.get('patientId')
+        if not patient_id:
+            return jsonify({"error": "patientId is required"}), 400
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not patient:
+            return jsonify({"error": "Patient not found"}), 404
+        return jsonify({"status": "success", "scanned": 0, "results": [], "message": "Batch scan not available in cloud mode (no screen capture)"})
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────
+# LICENSE ACTIVATION — Phase 22
+# ──────────────────────────────────────
+@app.route('/auth/activate-license', methods=['POST'])
+def activate_license():
+    db = get_db()
+    try:
+        data = request.json
+        license_key = data.get('license_key', '').strip()
+        if not license_key:
+            return jsonify({"error": "license_key is required"}), 400
+        result = licensing.activate(license_key)
+        if result.get('valid'):
+            return jsonify({"status": "activated", "tier": result.get('tier', 'Pro')})
+        return jsonify({"error": result.get('error', 'Invalid license key')}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────
+# SYSTEM CONFIG — Phase 25
+# ──────────────────────────────────────
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    """Retrieve all system config key-value pairs."""
+    db = get_db()
+    try:
+        rows = db.query(SystemConfig).all()
+        return jsonify({r.key: r.value for r in rows})
+    finally:
+        db.close()
+
+
+@app.route('/api/config', methods=['POST'])
+def update_config():
+    """Update one or more system config entries."""
+    db = get_db()
+    try:
+        data = request.json or {}
+        for key, value in data.items():
+            existing = db.query(SystemConfig).filter(SystemConfig.key == key).first()
+            if existing:
+                existing.value = str(value)
+            else:
+                db.add(SystemConfig(key=key, value=str(value)))
+        db.commit()
+        return jsonify({"status": "ok", "updated": list(data.keys())})
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 500
     finally:
         db.close()
 
@@ -2371,7 +2506,8 @@ Escala de Fleindler: Evalúa la escala de íconos 1-6. Íconos 1-3 indican energ
 
 Disociación Gráfica Rojo/Azul: Analiza las líneas de frecuencia anabólica (Rojo) y catabólica (Azul). Líneas entrelazadas = homeostasis. Separación alta = mayor entropía y degradación funcional.
 
-CSS (Valor-D): CSS < 0.425 = patología activa. CSS 0.425-0.750 = problema subagudo. CSS > 1.0 = sin resonancia significativa.
+CSS (Valor-D): CSS < 0.425 = patología activa aguda. CSS 0.425-0.750 = problema subagudo. CSS > 1.0 = sin resonancia significativa.
+IMPORTANTE: Identifica estrictamente las patologías agudas (CSS < 0.425) e Inversiones de Campos de Torsión para poblar el "scorecard".
 
 INSTRUCCIONES PARA EL PLAN TERAPÉUTICO:
 
@@ -2403,6 +2539,13 @@ ESQUEMA JSON:
     "red_blue_dissociation": "Disociación Severa",
     "css_d_value": 0.312
   }},
+  "scorecard": [
+    {{
+      "sistema": "Nombre del Sistema/Órgano",
+      "hallazgo": "Descripción corta del problema agudo (ej: CSS < 0.425)",
+      "severidad": "critico"
+    }}
+  ],
   "clinical_synthesis": "Resumen de 3-4 oraciones: estado energético, compromiso funcional, causas entrópicas, urgencia.",
   "recommended_etalons": [
     {{
@@ -2606,6 +2749,7 @@ def delete_macro_endpoint_cloud(name):
 # NLS REPORT PDF DOWNLOAD
 # ──────────────────────────────────────
 @app.route('/api/nls-report-pdf', methods=['POST'])
+@require_auth
 def nls_report_pdf():
     """Generate a downloadable PDF from the NLS scan report data."""
     try:

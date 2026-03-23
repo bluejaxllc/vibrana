@@ -12,6 +12,7 @@ import LiveEntropyCounter from './LiveEntropyCounter';
 import ScreenWatcherPanel from './ScreenWatcherPanel';
 import OrganMap from './OrganMap';
 import NLSAnalyzerPanel from './NLSAnalyzerPanel';
+import KnowledgeBasePanel from './KnowledgeBasePanel';
 import '../App.css';
 
 import { LOCAL_API as API } from '../config.js';
@@ -139,6 +140,7 @@ const WIDGET_REGISTRY = [
     { id: 'macros', label: 'Macros', icon: '⌨️', column: 'center', defaultVisible: true },
     { id: 'live-analysis', label: 'Análisis en Vivo', icon: '📊', column: 'center', defaultVisible: false },
     { id: 'advanced-tools', label: 'Herramientas Avanzadas', icon: '🔧', column: 'right', defaultVisible: false },
+    { id: 'knowledge-base', label: 'Base Conocimiento', icon: '📚', column: 'right', defaultVisible: false },
     { id: 'nls-analyzer', label: 'Sistema NLS', icon: '🔬', column: 'right', defaultVisible: true },
     { id: 'scan-log', label: 'Registro de Escaneo', icon: '📋', column: 'right', defaultVisible: true },
 ];
@@ -555,6 +557,12 @@ const Dashboard = () => {
                             <CollapsibleSection title="Herramientas Avanzadas" icon={<Wrench size={14} />} defaultOpen={false}>
                                 <CVTools />
                             </CollapsibleSection>
+                        </div>
+                    );
+                case 'knowledge-base':
+                    return (
+                        <div className="vfx-card-enter" style={{ animationDelay: '0.38s' }}>
+                            <KnowledgeBasePanel />
                         </div>
                     );
                 case 'nls-analyzer':

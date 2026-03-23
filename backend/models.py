@@ -178,6 +178,11 @@ class MessageLog(Base):
             "timestamp": self.timestamp.isoformat() if self.timestamp else None
         }
 
+class SystemConfig(Base):
+    __tablename__ = "system_config"
+    key = Column(String(100), primary_key=True)
+    value = Column(Text)
+
 class ScanResult(Base):
     __tablename__ = 'scan_results'
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
-import { FileText, UploadCloud, Activity, Printer, Download, X, Shield, Target, Zap, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { FileText, UploadCloud, Activity, Printer, Download, X, Shield, Target, Zap, ChevronDown, ChevronRight, BookOpen, Lock } from 'lucide-react';
 import { API } from '../config.js';
+import { useLicense } from '../hooks/useLicense';
 import OrganMap from './OrganMap';
 
 /* ── Collapsible Therapy Card ── */
@@ -98,6 +99,7 @@ const TimeSlot = ({ label, emoji, color, data }) => {
 
 /* ── Main Component ── */
 const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
+    const { isFeatureAvailable, promptUpgrade } = useLicense();
     const [file, setFile] = useState(null);
     const [status, setStatus] = useState('idle');
     const [reportData, setReportData] = useState(null);
@@ -306,6 +308,19 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
         if (timeframe.includes('6 meses')) return 'nls-urgency-yellow';
         return 'nls-urgency-green';
     };
+
+    if (!isFeatureAvailable('ai_report')) {
+        return (
+            <div className="nls-analyzer-panel locked-feature" style={{ textAlign: 'center', padding: '40px', background: 'linear-gradient(180deg, rgba(20,20,40,0.95), rgba(15,15,30,0.98))', border: '1px solid rgba(139,233,253,0.1)', borderRadius: 16, marginTop: 16 }}>
+                <Lock size={32} style={{ color: '#a78bfa', margin: '0 auto 10px' }} />
+                <h3 style={{ color: '#f1f5f9', margin: '0 0 10px', fontSize: '18px' }}>Analizador NLS IA</h3>
+                <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '0.85rem' }}>Generación automática de reportes y protocolos. Requiere el plan Pro.</p>
+                <button className="btn btn-analyze" onClick={() => promptUpgrade('ai_report')} style={{ padding: '8px 24px' }}>
+                    Mejorar Plan
+                </button>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -594,6 +609,27 @@ const NLSAnalyzerPanel = ({ onAnalyzeComplete, patientId, patientScans }) => {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* ── Scorecard (Patologías Agudas) ── */}
+                                {reportData.scorecard && reportData.scorecard.length > 0 && (
+                                    <div className="nls-section">
+                                        <h3 className="nls-section-title" style={{ color: '#ffb86c' }}>
+                                            <Shield size={16} /> Scorecard (Hallazgos Críticos)
+                                        </h3>
+                                        <div className="nls-scorecard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                                            {reportData.scorecard.map((item, idx) => (
+                                                <div key={idx} className="nls-scorecard-item" style={{ background: 'rgba(255, 85, 85, 0.08)', border: '1px solid rgba(255, 85, 85, 0.2)', borderRadius: '10px', padding: '14px', position: 'relative', overflow: 'hidden' }}>
+                                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#ff5555' }}></div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                                        <span style={{ color: '#f1f5f9', fontWeight: 600, fontSize: '13px' }}>{item.sistema}</span>
+                                                        <span style={{ background: 'rgba(255,85,85,0.2)', color: '#ffb86c', border: '1px solid rgba(255,85,85,0.4)', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}>{item.severidad}</span>
+                                                    </div>
+                                                    <p style={{ color: '#cbd5e1', fontSize: '12.5px', margin: 0, lineHeight: 1.4 }}>{item.hallazgo}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* ── Clinical Synthesis ── */}
                                 {reportData.clinical_synthesis && (

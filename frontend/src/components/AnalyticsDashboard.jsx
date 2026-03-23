@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { TrendingUp, AlertTriangle, CheckCircle, Activity } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
+import { TrendingUp, AlertTriangle, CheckCircle, Activity, Calendar } from 'lucide-react';
 
 import { API } from '../config.js';
 
@@ -9,10 +9,11 @@ const COLORS = ['#50fa7b', '#b8e986', '#f1fa8c', '#ffb86c', '#ff7979', '#ff5555'
 const AnalyticsDashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [dateRange, setDateRange] = useState(7);
 
     useEffect(() => {
         fetchAnalytics();
-    }, []);
+    }, [dateRange]);
 
     const fetchAnalytics = async () => {
         try {
@@ -20,14 +21,19 @@ const AnalyticsDashboard = () => {
             const token = localStorage.getItem('vibrana_token');
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-            if (teamId) {
-                const res = await fetch(`${API}/teams/${teamId}/analytics`, { headers });
+            // Try the new dedicated analytics endpoint first
+            const params = new URLSearchParams({ days: dateRange });
+            if (teamId) params.append('team_id', teamId);
+
+            const res = await fetch(`${API}/analytics?${params}`, { headers });
+            if (res.ok) {
                 const data = await res.json();
-                setStats({ ...data, isTeam: true });
+                setStats(data);
             } else {
-                const res = await fetch(`${API}/stats`, { headers });
-                const data = await res.json();
-                setStats({ ...data, isTeam: false });
+                // Fallback to legacy /stats
+                const fallback = await fetch(`${API}/stats`, { headers });
+                const data = await fallback.json();
+                setStats({ ...data, isLegacy: true });
             }
         } catch (err) {
             console.error("Analytics fetch failed:", err);
@@ -35,7 +41,6 @@ const AnalyticsDashboard = () => {
             setLoading(false);
         }
     };
-
 
     if (loading) {
         return (
@@ -48,14 +53,10 @@ const AnalyticsDashboard = () => {
 
     if (!stats) return null;
 
-    // Prepare chart data based on whether it's team data or global data
-    const statusData = stats.isTeam
-        ? Object.entries(stats.severity_distribution || {}).map(([name, value]) => ({ name, value })).filter(d => d.value > 0)
-        : Object.entries(stats.statusCounts || {}).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
-
-    const entropyData = stats.isTeam
-        ? Object.entries(stats.organ_distribution || {}).map(([name, count]) => ({ name, count })) // For team, we show organ distribution instead of raw entropy levels
-        : Object.entries(stats.entropyDistribution || {}).map(([level, count]) => ({ name: `Nivel ${level}`, count, level: parseInt(level) }));
+    // Prepare chart data
+    const statusData = Object.entries(stats.statusCounts || {}).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
+    const entropyData = Object.entries(stats.entropyDistribution || {}).map(([level, count]) => ({ name: `Nivel ${level}`, count, level: parseInt(level) }));
+    const weeklyTrends = stats.weeklyTrends || [];
 
     const statusColors = {
         Normal: '#50fa7b',
@@ -67,35 +68,30 @@ const AnalyticsDashboard = () => {
     };
 
     const totalScans = stats.total_scans || stats.totalScans || 0;
-
     let pathologyRate = 0, normalRate = 0;
     if (totalScans > 0) {
-        if (stats.isTeam) {
-            pathologyRate = (((stats.severity_distribution?.Critical || 0) + (stats.severity_distribution?.Warning || 0)) / totalScans * 100).toFixed(1);
-            normalRate = ((stats.severity_distribution?.Normal || 0) / totalScans * 100).toFixed(1);
-        } else {
-            pathologyRate = ((stats.statusCounts?.Pathology || 0) / totalScans * 100).toFixed(1);
-            normalRate = ((stats.statusCounts?.Normal || 0) / totalScans * 100).toFixed(1);
-        }
+        pathologyRate = ((stats.statusCounts?.Pathology || 0) / totalScans * 100).toFixed(1);
+        normalRate = ((stats.statusCounts?.Normal || 0) / totalScans * 100).toFixed(1);
     }
 
     return (
         <div className="analytics-dashboard">
-            <h3><TrendingUp size={16} /> {stats.isTeam ? "Analíticas Poblacionales del Equipo" : "Panel de Analíticas Global"}</h3>
-
-            {/* Team Specific Summary Stats */}
-            {stats.isTeam && (
-                <div className="analytics-summary mt-4 mb-4" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    <div className="analytics-card" style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '8px', flex: 1 }}>
-                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Pacientes Totales</h4>
-                        <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.patient_count}</span>
-                    </div>
-                    <div className="analytics-card" style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '1rem', borderRadius: '8px', flex: 1 }}>
-                        <h4 style={{ margin: 0, opacity: 0.7, fontSize: '0.85rem' }}>Índice de Actividad</h4>
-                        <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.activity_index}</span>
-                    </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                <h3><TrendingUp size={16} /> Panel de Analíticas</h3>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <Calendar size={14} style={{ color: '#8892a4' }} />
+                    {[7, 14, 30].map(d => (
+                        <button
+                            key={d}
+                            className={`btn btn-sm ${dateRange === d ? 'btn-analyze' : 'btn-ghost'}`}
+                            onClick={() => setDateRange(d)}
+                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                        >
+                            {d}d
+                        </button>
+                    ))}
                 </div>
-            )}
+            </div>
 
             {/* Summary Cards */}
             <div className="analytics-summary">
@@ -122,35 +118,36 @@ const AnalyticsDashboard = () => {
                 </div>
             </div>
 
+            {/* Weekly Trends */}
+            {weeklyTrends.length > 0 && (
+                <div className="chart-panel" style={{ marginBottom: 16 }}>
+                    <h4>📈 Tendencias ({dateRange} días)</h4>
+                    <ResponsiveContainer width="100%" height={180}>
+                        <LineChart data={weeklyTrends}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                            <XAxis dataKey="date" tick={{ fill: '#8892a4', fontSize: 11 }} axisLine={{ stroke: 'rgba(255,255,255,0.1)' }} />
+                            <YAxis tick={{ fill: '#8892a4', fontSize: 11 }} axisLine={{ stroke: 'rgba(255,255,255,0.1)' }} allowDecimals={false} />
+                            <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#e2e8f0' }} />
+                            <Line type="monotone" dataKey="scans" stroke="#bd93f9" strokeWidth={2} dot={{ r: 3, fill: '#bd93f9' }} activeDot={{ r: 5 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
+
             {/* Charts Row */}
             <div className="analytics-charts">
                 {/* Status Distribution Pie */}
                 <div className="chart-panel">
-                    <h4>Distribución de Estados de Escaneo</h4>
+                    <h4>Distribución de Estados</h4>
                     {statusData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={200}>
                             <PieChart>
-                                <Pie
-                                    data={statusData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={40}
-                                    outerRadius={75}
-                                    paddingAngle={3}
-                                    dataKey="value"
-                                >
+                                <Pie data={statusData} cx="50%" cy="50%" innerRadius={40} outerRadius={75} paddingAngle={3} dataKey="value">
                                     {statusData.map((entry, idx) => (
                                         <Cell key={idx} fill={statusColors[entry.name] || '#8892a4'} />
                                     ))}
                                 </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        background: '#1a1a2e',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: 8,
-                                        color: '#e2e8f0'
-                                    }}
-                                />
+                                <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#e2e8f0' }} />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
@@ -161,28 +158,13 @@ const AnalyticsDashboard = () => {
 
                 {/* Entropy Level Bar Chart */}
                 <div className="chart-panel">
-                    <h4>{stats.isTeam ? "Distribución de Órganos Escaneados" : "Distribución de Niveles de Entropía"}</h4>
+                    <h4>Distribución de Niveles de Entropía</h4>
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={entropyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                            <XAxis
-                                dataKey="name"
-                                tick={{ fill: '#8892a4', fontSize: 11 }}
-                                axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                            />
-                            <YAxis
-                                tick={{ fill: '#8892a4', fontSize: 11 }}
-                                axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                                allowDecimals={false}
-                            />
-                            <Tooltip
-                                contentStyle={{
-                                    background: '#1a1a2e',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: 8,
-                                    color: '#e2e8f0'
-                                }}
-                            />
+                            <XAxis dataKey="name" tick={{ fill: '#8892a4', fontSize: 11 }} axisLine={{ stroke: 'rgba(255,255,255,0.1)' }} />
+                            <YAxis tick={{ fill: '#8892a4', fontSize: 11 }} axisLine={{ stroke: 'rgba(255,255,255,0.1)' }} allowDecimals={false} />
+                            <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#e2e8f0' }} />
                             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                                 {entropyData.map((entry, idx) => (
                                     <Cell key={idx} fill={COLORS[idx]} />

@@ -22,6 +22,21 @@ from collections import deque
 from nls_ocr_parser import NLSOCRParser
 
 
+def capture_region(x, y, width=200, height=200):
+    """Capture a screen region at (x, y) with given dimensions. Returns numpy frame or None."""
+    try:
+        import mss
+        with mss.mss() as sct:
+            monitor = {"top": max(0, y - height // 2), "left": max(0, x - width // 2),
+                       "width": width, "height": height}
+            img = sct.grab(monitor)
+            frame = np.array(img)
+            return cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+    except Exception as e:
+        print(f"[capture_region] Error: {e}")
+        return None
+
+
 class ScreenWatcher:
     def __init__(self, bot, max_events=200, db_factory=None):
         """

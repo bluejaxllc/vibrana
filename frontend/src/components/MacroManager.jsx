@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Square, Trash2, Circle, ListOrdered, Monitor, Keyboard, Mouse, Plus, Move, Clock, ArrowDown, Edit3, Save, X, Search, Eye, Zap, Camera, AlertCircle, CheckCircle, XCircle, StopCircle, Brain, ScanSearch, RefreshCw, Crosshair } from 'lucide-react';
+import { Play, Square, Trash2, Circle, ListOrdered, Monitor, Keyboard, Mouse, Plus, Move, Clock, ArrowDown, Edit3, Save, X, Search, Eye, Zap, Camera, AlertCircle, CheckCircle, XCircle, StopCircle, Brain, ScanSearch, RefreshCw, Crosshair, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLicense } from '../hooks/useLicense';
 
 import { API, LOCAL_API } from '../config.js';
 
@@ -336,6 +337,7 @@ const PlaybackPanel = ({ status, onAbort }) => {
 
 /* ─── Main Component ─── */
 const MacroManager = () => {
+    const { isFeatureAvailable, promptUpgrade } = useLicense();
     const [macros, setMacros] = useState([]);
     const [recording, setRecording] = useState(false);
     const [macroName, setMacroName] = useState('');
@@ -608,6 +610,19 @@ const MacroManager = () => {
             else toast.error(data.error || 'Error');
         } catch { toast.error('Error al guardar template'); }
     };
+
+    if (!isFeatureAvailable('macros')) {
+        return (
+            <div className="macro-manager locked-feature" style={{ textAlign: 'center', padding: '40px' }}>
+                <Lock size={32} style={{ color: '#a78bfa', margin: '0 auto 10px' }} />
+                <h3>Automatización de Macros</h3>
+                <p style={{ color: '#94a3b8', marginBottom: '20px', fontSize: '0.85rem' }}>Automatiza tareas y clics en tu software NLS. Esta función requiere el plan Pro.</p>
+                <button className="btn btn-analyze" onClick={() => promptUpgrade('macros')} style={{ padding: '8px 24px' }}>
+                    Mejorar Plan
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="macro-manager">

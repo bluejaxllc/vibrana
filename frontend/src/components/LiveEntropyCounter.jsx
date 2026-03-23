@@ -38,21 +38,22 @@ const LiveEntropyCounter = ({ patientId }) => {
                 body: JSON.stringify(body)
             });
             const data = await res.json();
-            if (data.summary) {
-                setLiveData(data.summary);
+            const analysisData = data.analysis || data.summary;
+            if (analysisData) {
+                setLiveData(analysisData);
                 setHistory(prev => [...prev.slice(-30), {
                     time: new Date().toLocaleTimeString(),
-                    total: data.summary.total_points || 0,
-                    status: data.summary.status || 'Unknown'
+                    total: analysisData.total_points || 0,
+                    status: analysisData.status || 'Unknown'
                 }]);
 
                 // Alert on high entropy
-                const counts = data.summary.counts || {};
+                const counts = analysisData.counts || {};
                 const lvl6 = parseInt(counts['6']) || 0;
                 const lvl5 = parseInt(counts['5']) || 0;
                 if (lvl6 > 3) {
                     playAlertSound(6);
-                    toast('⚠️ ¡Entropía L6 alta detectada!', {
+                    toast(`⚠️ ¡Entropía L6 detectada en ${analysisData.organ_name || 'tejido'}!`, {
                         icon: '🔴',
                         style: { background: '#2a0f0f', border: '1px solid #ff5555', color: '#ff5555' }
                     });
@@ -147,6 +148,7 @@ const LiveEntropyCounter = ({ patientId }) => {
                         );
                     })}
                     <div className="live-total">
+                        <span style={{ color: '#bd93f9', fontWeight: 'bold' }}>{liveData.organ_name || 'Escaneando...'}</span>
                         <span>Total: {liveData.total_points}</span>
                         <span className="live-status">{liveData.status}</span>
                     </div>

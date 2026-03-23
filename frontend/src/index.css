@@ -35,3 +35,46 @@ h3 {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Vibrana OrganMap Visual Enhancements */
+@keyframes organ-pulse-fast {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes organ-pulse-slow {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+}
+
+.organ-pulse-fast {
+  animation: organ-pulse-fast 2s infinite ease-in-out;
+}
+
+.organ-pulse-slow {
+  animation: organ-pulse-slow 3.5s infinite ease-in-out;
+}

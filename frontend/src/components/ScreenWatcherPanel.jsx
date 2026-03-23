@@ -10,6 +10,8 @@ const ScreenWatcherPanel = ({ patientId }) => {
     const [lastEventId, setLastEventId] = useState(0);
     const [totalChanges, setTotalChanges] = useState(0);
     const [expandedEvent, setExpandedEvent] = useState(null);
+    const [backendOnline, setBackendOnline] = useState(true);
+    const [capturing, setCapturing] = useState(false);
     const pollRef = useRef(null);
 
     // Poll for new events while watching
@@ -48,9 +50,37 @@ const ScreenWatcherPanel = ({ patientId }) => {
                 const data = await res.json();
                 setWatching(data.running);
                 setTotalChanges(data.total_changes || 0);
-            } catch { /* backend offline */ }
+                setBackendOnline(true);
+            } catch {
+                setBackendOnline(false);
+            }
         })();
     }, []);
+
+    const handleManualCapture = async () => {
+        setCapturing(true);
+        try {
+            const res = await fetch(`${API}/watcher/capture`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ patient_id: patientId })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                toast.success(`📸 Captura manual: ${data.organ_detected || 'pantalla capturada'}`);
+                if (data.event) {
+                    setEvents(prev => [data.event, ...prev].slice(0, 100));
+                }
+            } else {
+                toast.error('Error en captura manual');
+            }
+        } catch {
+            toast.error('Backend local no disponible');
+            setBackendOnline(false);
+        } finally {
+            setCapturing(false);
+        }
+    };
 
     const handleToggle = async () => {
         try {
@@ -97,8 +127,17 @@ const ScreenWatcherPanel = ({ patientId }) => {
                         </span>
                     )}
                     <button
+                        className="btn btn-sm btn-outline"
+                        onClick={handleManualCapture}
+                        disabled={capturing || !backendOnline}
+                        style={{ fontSize: '0.75rem' }}
+                    >
+                        {capturing ? '📸 Capturando...' : '📸 Capturar Ahora'}
+                    </button>
+                    <button
                         className={`btn btn-sm ${watching ? 'btn-danger' : 'btn-primary'}`}
                         onClick={handleToggle}
+                        disabled={!backendOnline}
                     >
                         {watching ? <><EyeOff size={12} /> Detener</> : <><Eye size={12} /> Iniciar Observador</>}
                     </button>
@@ -218,10 +257,13 @@ const ScreenWatcherPanel = ({ patientId }) => {
                 </div>
             ) : (
                 <div className="watcher-empty">
-                    {watching
-                        ? <><Eye size={16} className="pulse-icon" /> Observando cambios en pantalla NLS...</>
-                        : 'Inicie el observador para auto-detectar cambios de órganos y capturar datos NLS'
-                    }
+                    {!backendOnline ? (
+                        <><EyeOff size={16} /> Backend local no disponible. Inicie el servidor NLS para activar el observador.</>
+                    ) : watching ? (
+                        <><Eye size={16} className="pulse-icon" /> Observando cambios en pantalla NLS...</>
+                    ) : (
+                        'Inicie el observador para auto-detectar cambios de órganos y capturar datos NLS'
+                    )}
                 </div>
             )}
         </div>

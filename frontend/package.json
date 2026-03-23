@@ -1,14 +1,15 @@
 {
-  "name": "frontend",
+  "name": "vibrana-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview"
+    "start": "vite preview",
+    "icons": "node generate_icons.js"
   },
   "dependencies": {
     "lucide-react": "^0.574.0",

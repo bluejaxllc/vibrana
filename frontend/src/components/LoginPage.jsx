@@ -6,6 +6,9 @@ import { API } from '../config.js';
 
 const LoginPage = ({ onLogin }) => {
     const [isRegistering, setIsRegistering] = useState(false);
+    const [showLicenseInput, setShowLicenseInput] = useState(false);
+    const [licenseKey, setLicenseKey] = useState('');
+    const [licenseLoading, setLicenseLoading] = useState(false);
     const [form, setForm] = useState({
         username: '',
         password: '',
@@ -137,6 +140,29 @@ const LoginPage = ({ onLogin }) => {
         setForm(prev => ({ ...prev, [field]: value }));
     };
 
+    const handleActivateLicense = async () => {
+        if (!licenseKey.trim()) return toast.error('Ingrese una clave de licencia');
+        setLicenseLoading(true);
+        try {
+            const res = await fetch(`${API}/auth/activate-license`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ license_key: licenseKey.trim() })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(`✅ Licencia activada: ${data.tier || 'Pro'}`);
+                setShowLicenseInput(false);
+            } else {
+                toast.error(data.error || 'Clave de licencia inválida');
+            }
+        } catch {
+            toast.error('Error al verificar licencia');
+        } finally {
+            setLicenseLoading(false);
+        }
+    };
+
     return (
         <div className="login-page">
             {/* Particle canvas */}
@@ -226,8 +252,34 @@ const LoginPage = ({ onLogin }) => {
                     </button>
                 </div>
 
-                <div className="login-hint">
-                    Por defecto: <code>admin</code> / <code>admin123</code>
+                {!isRegistering && (
+                    <div className="login-forgot">
+                        <button className="btn-link" onClick={() => toast('Contacte al administrador de su clínica para restablecer su contraseña.', { icon: '📧' })}>
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </div>
+                )}
+
+                <div className="login-license-section">
+                    {showLicenseInput ? (
+                        <div className="license-input-group">
+                            <input
+                                type="text"
+                                value={licenseKey}
+                                onChange={e => setLicenseKey(e.target.value)}
+                                placeholder="XXXX-XXXX-XXXX-XXXX"
+                                className="license-input"
+                            />
+                            <button className="btn btn-sm btn-analyze" onClick={handleActivateLicense} disabled={licenseLoading}>
+                                {licenseLoading ? '...' : 'Activar'}
+                            </button>
+                            <button className="btn btn-sm btn-ghost" onClick={() => setShowLicenseInput(false)}>✕</button>
+                        </div>
+                    ) : (
+                        <button className="btn-link" onClick={() => setShowLicenseInput(true)}>
+                            🔑 Activar Clave de Licencia
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
