@@ -1334,7 +1334,7 @@ def generate_health_report(patient_id):
 # AI REPORT — Phase 16 (Gemini-powered)
 # ──────────────────────────────────────
 @app.route('/patients/<patient_id>/ai-report', methods=['GET'])
-def get_ai_report(patient_id):
+def get_ai_report_v2(patient_id):
     """Generate a comprehensive AI-powered bioresonance report."""
     from report_agent import generate_narrative_report
     try:
