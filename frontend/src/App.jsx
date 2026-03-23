@@ -214,16 +214,8 @@ const PageWrapper = ({ children, title, theme, toggleTheme }) => (
 );
 
 const RequireLicense = ({ children }) => {
-  const { loading } = useLicense();
-
-  if (loading) {
-    return (
-      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="vfx-pulse">Verificando licencia...</div>
-      </div>
-    );
-  }
-
+  // License check runs silently in background via LicenseProvider.
+  // No loading gate shown — demo mode. Flip this back when paywall goes live.
   return children;
 };
 
