@@ -6,7 +6,7 @@ const USE_LOCAL = import.meta.env.VITE_USE_LOCAL === 'true' ||
 
 export const API = USE_LOCAL
     ? 'http://localhost:5001'
-    : (import.meta.env.VITE_API_URL || 'https://vibrana-backend-snz5dayccq-uc.a.run.app');
+    : (import.meta.env.VITE_API_URL || 'https://fabulous-embrace-production-1e4f.up.railway.app');
 
 // LOCAL_API always points to the local backend — used for device-dependent features
 export const LOCAL_API = 'http://localhost:5001';
