@@ -3848,6 +3848,60 @@ body:has(.landing-page) {
   color: var(--accent-light);
 }
 
+/* Forgot password & License section */
+.login-forgot {
+  text-align: center;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-license-section {
+  text-align: center;
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Generic text-link button */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  transition: color 0.2s;
+}
+
+.btn-link:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+/* License input group */
+.license-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.license-input {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  width: 200px;
+}
+
+.license-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 /* ============================================
    SETTINGS PANEL â€” Phase 7
    ============================================ */
