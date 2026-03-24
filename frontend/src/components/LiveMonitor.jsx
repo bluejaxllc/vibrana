@@ -334,6 +334,8 @@ const LiveMonitor = () => {
     // --- ROI Drawing Handlers ---
     const handleMouseDown = (e) => {
         if (!setupData || setupLoading || sequenceMode) return;
+        e.preventDefault();
+        e.stopPropagation();
         const rect = imgContainerRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -345,6 +347,7 @@ const LiveMonitor = () => {
 
     const handleMouseMove = (e) => {
         if (!isDrawing) return;
+        e.preventDefault();
         const rect = imgContainerRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
@@ -352,8 +355,9 @@ const LiveMonitor = () => {
         setDrawCurrent({ x, y });
     };
 
-    const handleMouseUp = async () => {
+    const handleMouseUp = async (e) => {
         if (!isDrawing || !drawStart || !drawCurrent) { setIsDrawing(false); return; }
+        if (e) e.preventDefault();
         setIsDrawing(false);
         const x = Math.min(drawStart.x, drawCurrent.x);
         const y = Math.min(drawStart.y, drawCurrent.y);
@@ -481,9 +485,9 @@ const LiveMonitor = () => {
                                 }`}
                             onClick={handleAutoExplore}
                             disabled={setupLoading || !selectedWindow}
-                            title={selectedWindow ? `Explorar automáticamente: ${selectedWindow}` : '🔒 Selecciona una ventana primero para desbloquear'}
+                            title={selectedWindow ? 'Explorar automáticamente los botones' : 'Selecciona una ventana primero'}
                         >
-                            Auto-Explorar
+                            ⚡ Auto
                         </button>
                     )}
                     {setupActive && !isAutoExploring && (
@@ -491,9 +495,9 @@ const LiveMonitor = () => {
                             className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${sequenceMode ? 'border-cyan-400 bg-cyan-500/20 text-cyan-300' : 'border-white/10 hover:border-cyan-400/50 text-white/50'
                                 }`}
                             onClick={() => { setSequenceMode(!sequenceMode); setSequence([]); }}
-                            title="Modo secuencia: haz clic en botones en orden para programar la macro"
+                            title="Modo secuencia: clic en botones en orden para macro"
                         >
-                            {sequenceMode ? '✕ Cancelar Sec.' : '🔢 Secuencia'}
+                            {sequenceMode ? '✕ Sec.' : '🔢 Sec.'}
                         </button>
                     )}
                     {setupActive && sequenceMode && sequence.length > 0 && (
@@ -502,7 +506,7 @@ const LiveMonitor = () => {
                             onClick={executeSequence}
                             disabled={isExecuting}
                         >
-                            {isExecuting ? 'Ejecutando...' : `▶ Ejecutar (${sequence.length})`}
+                            {isExecuting ? '...' : `▶ ${sequence.length}`}
                         </button>
                     )}
                     {setupActive && isAutoExploring && (
@@ -511,7 +515,7 @@ const LiveMonitor = () => {
                             onClick={stopAutoExplore}
                             title="Detener la exploración automática"
                         >
-                            Detener Exploración
+                            Detener
                         </button>
                     )}
                     <button
@@ -545,13 +549,16 @@ const LiveMonitor = () => {
                         {/* LEFT: Screen Capture with OCR Overlay + ROI Drawing */}
                         <div
                             className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden group"
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={() => { if (isDrawing) handleMouseUp(); }}
-                            style={{ cursor: isDrawing ? 'crosshair' : sequenceMode ? 'pointer' : 'crosshair' }}
                         >
-                            <div ref={imgContainerRef} className="relative" style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%' }}>
+                            <div
+                                ref={imgContainerRef}
+                                className="relative select-none"
+                                style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : 'crosshair' }}
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={() => { if (isDrawing) handleMouseUp(); }}
+                            >
                                 <img
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
                                     className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"

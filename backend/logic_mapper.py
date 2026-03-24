@@ -129,7 +129,7 @@ class LogicMapper:
         for i in range(n_boxes):
             text = results['text'][i].strip()
             conf = int(results['conf'][i])
-            if conf > 40 and len(text) > 1:  # Filter out low confidence and single characters
+            if conf > 60 and len(text) > 2:  # Higher threshold + min length to filter garbled OCR noise
                 (x, y, w, h) = (results['left'][i], results['top'][i], results['width'][i], results['height'][i])
                 # Apply padding so the bounding box covers the actual button, not just the text
                 padded_x = max(0, x - BUTTON_PADDING_X)
