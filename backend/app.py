@@ -987,7 +987,16 @@ def get_logic_tree():
 
 @app.route('/api/setup/refresh', methods=['GET'])
 def refresh_logic_setup():
-    return jsonify({"new_state": logic_mapper.detect_buttons()})
+    # Accept optional ROI as query params (percentages 0-100)
+    roi = None
+    if request.args.get('roi_x') is not None:
+        roi = {
+            'x': float(request.args.get('roi_x', 0)),
+            'y': float(request.args.get('roi_y', 0)),
+            'w': float(request.args.get('roi_w', 100)),
+            'h': float(request.args.get('roi_h', 100))
+        }
+    return jsonify({"new_state": logic_mapper.detect_buttons(roi=roi)})
 
 @app.route('/api/system/windows', methods=['GET'])
 def get_windows():
@@ -1003,7 +1012,8 @@ def auto_explore_ui():
     data = request.json or {}
     max_steps = data.get('max_steps', 10)
     ignored_texts = data.get('ignored_texts', [])
-    res = logic_mapper.auto_explore(max_steps, ignored_texts)
+    roi = data.get('roi', None)  # {x, y, w, h} as percentages
+    res = logic_mapper.auto_explore(max_steps, ignored_texts, roi=roi)
     return jsonify(res)
 
 @app.route('/api/setup/auto_explore_stop', methods=['POST'])
@@ -1013,6 +1023,15 @@ def auto_explore_stop():
 @app.route('/api/setup/reset_memory', methods=['POST'])
 def reset_explore_memory():
     return jsonify(logic_mapper.reset_memory())
+
+@app.route('/api/setup/execute_sequence', methods=['POST'])
+def execute_sequence_ui():
+    data = request.json or {}
+    steps = data.get('steps', [])
+    if not steps:
+        return jsonify({"error": "No steps provided"}), 400
+    res = logic_mapper.execute_sequence(steps)
+    return jsonify(res)
 
 @app.route('/api/setup/convert_macro', methods=['POST'])
 def convert_logic_tree_to_macro():

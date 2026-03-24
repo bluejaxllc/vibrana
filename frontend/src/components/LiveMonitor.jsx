@@ -24,9 +24,21 @@ const LiveMonitor = () => {
     const [clickedButtons, setClickedButtons] = useState(new Set());
     const [showHelp, setShowHelp] = useState(false);
 
+    // ROI (Region of Interest) state
+    const [roi, setRoi] = useState(null); // {x, y, w, h} as percentages
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [drawStart, setDrawStart] = useState(null);
+    const [drawCurrent, setDrawCurrent] = useState(null);
+
+    // Sequence builder state
+    const [sequenceMode, setSequenceMode] = useState(false);
+    const [sequence, setSequence] = useState([]); // [{x, y, text, btnId}]
+    const [isExecuting, setIsExecuting] = useState(false);
+
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const containerRef = useRef(null);
+    const imgContainerRef = useRef(null);
 
     const API = "http://localhost:5001"; // Make sure to point to local backend for ScreenWatcher
 
@@ -225,7 +237,9 @@ const LiveMonitor = () => {
             });
 
             setSetupLoading(true);
-            const refreshRes = await fetch(`${API}/api/setup/refresh`, {
+            let url = `${API}/api/setup/refresh`;
+            if (roi) url += `?roi_x=${roi.x}&roi_y=${roi.y}&roi_w=${roi.w}&roi_h=${roi.h}`;
+            const refreshRes = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
             });
             const refreshData = await refreshRes.json();
@@ -276,7 +290,7 @@ const LiveMonitor = () => {
             const res = await fetch(`${API}/api/setup/auto_explore`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
-                body: JSON.stringify({ max_steps: 10, ignored_texts: ignoredTexts })
+                body: JSON.stringify({ max_steps: 10, ignored_texts: ignoredTexts, roi: roi || undefined })
             });
             const data = await res.json();
             console.log('[AutoExplore] Response:', data.status, 'steps:', data.steps_taken, 'edges:', data.tree?.edges?.length);
@@ -315,6 +329,106 @@ const LiveMonitor = () => {
         } catch (e) {
             console.error(e);
         }
+    };
+
+    // --- ROI Drawing Handlers ---
+    const handleMouseDown = (e) => {
+        if (!setupData || setupLoading || sequenceMode) return;
+        const rect = imgContainerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setIsDrawing(true);
+        setDrawStart({ x, y });
+        setDrawCurrent({ x, y });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDrawing) return;
+        const rect = imgContainerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        setDrawCurrent({ x, y });
+    };
+
+    const handleMouseUp = async () => {
+        if (!isDrawing || !drawStart || !drawCurrent) { setIsDrawing(false); return; }
+        setIsDrawing(false);
+        const x = Math.min(drawStart.x, drawCurrent.x);
+        const y = Math.min(drawStart.y, drawCurrent.y);
+        const w = Math.abs(drawCurrent.x - drawStart.x);
+        const h = Math.abs(drawCurrent.y - drawStart.y);
+        if (w < 3 || h < 3) return; // Too small, ignore
+        const newRoi = { x, y, w, h };
+        setRoi(newRoi);
+        // Re-detect buttons with ROI
+        setSetupLoading(true);
+        try {
+            const res = await fetch(`${API}/api/setup/refresh?roi_x=${newRoi.x}&roi_y=${newRoi.y}&roi_w=${newRoi.w}&roi_h=${newRoi.h}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            const data = await res.json();
+            if (data.new_state && !data.new_state.error) {
+                setSetupData(data.new_state);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        setSetupLoading(false);
+    };
+
+    const clearRoi = async () => {
+        setRoi(null);
+        setSequence([]);
+        setSetupLoading(true);
+        try {
+            const res = await fetch(`${API}/api/setup/refresh`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            const data = await res.json();
+            if (data.new_state && !data.new_state.error) setSetupData(data.new_state);
+        } catch (e) {
+            console.error(e);
+        }
+        setSetupLoading(false);
+    };
+
+    // --- Sequence Builder ---
+    const handleSequenceClick = (btn) => {
+        if (!sequenceMode) return;
+        // Toggle: if already in sequence, remove it
+        const idx = sequence.findIndex(s => s.btnId === btn.id);
+        if (idx >= 0) {
+            setSequence(sequence.filter((_, i) => i !== idx));
+        } else {
+            setSequence([...sequence, {
+                btnId: btn.id,
+                x: Math.floor(btn.x + btn.w / 2),
+                y: Math.floor(btn.y + btn.h * 0.45),
+                text: btn.text
+            }]);
+        }
+    };
+
+    const executeSequence = async () => {
+        if (!sequence.length || isExecuting) return;
+        setIsExecuting(true);
+        try {
+            const res = await fetch(`${API}/api/setup/execute_sequence`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: JSON.stringify({ steps: sequence })
+            });
+            const data = await res.json();
+            if (data.new_state) {
+                setSetupData(data.new_state);
+                if (data.new_state.explored_texts) setClickedButtons(new Set(data.new_state.explored_texts));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        setIsExecuting(false);
     };
 
     const formatUptime = (s) => {
@@ -372,6 +486,25 @@ const LiveMonitor = () => {
                             Auto-Explorar
                         </button>
                     )}
+                    {setupActive && !isAutoExploring && (
+                        <button
+                            className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${sequenceMode ? 'border-cyan-400 bg-cyan-500/20 text-cyan-300' : 'border-white/10 hover:border-cyan-400/50 text-white/50'
+                                }`}
+                            onClick={() => { setSequenceMode(!sequenceMode); setSequence([]); }}
+                            title="Modo secuencia: haz clic en botones en orden para programar la macro"
+                        >
+                            {sequenceMode ? '✕ Cancelar Sec.' : '🔢 Secuencia'}
+                        </button>
+                    )}
+                    {setupActive && sequenceMode && sequence.length > 0 && (
+                        <button
+                            className="btn-xs border border-green-400 bg-green-500/20 text-green-300 px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 shadow-[0_0_8px_rgba(74,222,128,0.3)]"
+                            onClick={executeSequence}
+                            disabled={isExecuting}
+                        >
+                            {isExecuting ? 'Ejecutando...' : `▶ Ejecutar (${sequence.length})`}
+                        </button>
+                    )}
                     {setupActive && isAutoExploring && (
                         <button
                             className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-2 h-5 rounded transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]"
@@ -409,31 +542,84 @@ const LiveMonitor = () => {
             <div className={`monitor-screen${setupActive ? ' mapping-mode' : ''}`}>
                 {setupActive && setupData ? (
                     <>
-                        {/* LEFT: Screen Capture with OCR Overlay */}
-                        <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden group">
-                            <div className="relative" style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%' }}>
+                        {/* LEFT: Screen Capture with OCR Overlay + ROI Drawing */}
+                        <div
+                            className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden group"
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onMouseUp={handleMouseUp}
+                            onMouseLeave={() => { if (isDrawing) handleMouseUp(); }}
+                            style={{ cursor: isDrawing ? 'crosshair' : sequenceMode ? 'pointer' : 'crosshair' }}
+                        >
+                            <div ref={imgContainerRef} className="relative" style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%' }}>
                                 <img
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
-                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50"
+                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
                                     alt="Screen State"
+                                    draggable={false}
                                 />
+
+                                {/* ROI drawing preview (while dragging) */}
+                                {isDrawing && drawStart && drawCurrent && (
+                                    <div className="absolute border-2 border-cyan-400 bg-cyan-400/10 z-30 pointer-events-none" style={{
+                                        left: `${Math.min(drawStart.x, drawCurrent.x)}%`,
+                                        top: `${Math.min(drawStart.y, drawCurrent.y)}%`,
+                                        width: `${Math.abs(drawCurrent.x - drawStart.x)}%`,
+                                        height: `${Math.abs(drawCurrent.y - drawStart.y)}%`
+                                    }} />
+                                )}
+
+                                {/* ROI rectangle (after set) */}
+                                {roi && !isDrawing && (
+                                    <>
+                                        {/* Dimming overlay outside ROI */}
+                                        <div className="absolute inset-0 bg-black/50 z-10 pointer-events-none" style={{
+                                            clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${roi.y}%, ${roi.x}% ${roi.y}%, ${roi.x}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y}%, 0% ${roi.y}%)`
+                                        }} />
+                                        <div className="absolute border-2 border-cyan-400 z-20 pointer-events-none" style={{
+                                            left: `${roi.x}%`, top: `${roi.y}%`, width: `${roi.w}%`, height: `${roi.h}%`
+                                        }}>
+                                            <span className="absolute -top-5 left-0 text-[9px] bg-cyan-500/80 text-white px-1.5 py-0.5 rounded">
+                                                📐 Zona Activa
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* Clear ROI button */}
+                                {roi && (
+                                    <button
+                                        className="absolute top-1 right-1 z-30 bg-red-500/80 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded transition-colors"
+                                        onClick={(e) => { e.stopPropagation(); clearRoi(); }}
+                                    >
+                                        ✕ Borrar Zona
+                                    </button>
+                                )}
+
                                 {/* HUD overlay */}
-                                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="bg-black/80 text-white px-4 py-2 rounded text-sm mb-2 border border-purple-500/50">
-                                        Modo Aprendizaje OCR Activo
-                                    </span>
-                                    <span className="bg-black/60 text-white/70 px-3 py-1 rounded text-xs">
-                                        Haz clic en los botones resaltados para mapear el flujo
-                                    </span>
-                                </div>
+                                {!roi && !isDrawing && (
+                                    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="bg-black/80 text-white px-4 py-2 rounded text-sm mb-2 border border-purple-500/50">
+                                            {sequenceMode ? '🔢 Modo Secuencia: Clic en botones en orden' : 'Arrastra para seleccionar zona de botones'}
+                                        </span>
+                                        <span className="bg-black/60 text-white/70 px-3 py-1 rounded text-xs">
+                                            {sequenceMode ? 'Los botones se ejecutarán en el orden que los selecciones' : 'Solo botones dentro de la zona serán detectados'}
+                                        </span>
+                                    </div>
+                                )}
+
                                 {/* Bounding boxes */}
                                 {setupData.buttons.map(b => {
                                     const isVisited = b.visited || clickedButtons.has(b.text);
+                                    const seqIdx = sequence.findIndex(s => s.btnId === b.id);
+                                    const isInSequence = seqIdx >= 0;
                                     return (
                                         <div key={b.id}
-                                            className={`absolute cursor-pointer transition-all hover:z-10 ${isVisited
-                                                ? 'border-2 border-green-400/70 bg-green-500/15 hover:bg-green-500/30 hover:border-green-300 hover:shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                                                : 'border border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]'
+                                            className={`absolute cursor-pointer transition-all hover:z-10 z-20 ${isInSequence
+                                                ? 'border-2 border-cyan-400 bg-cyan-500/20 hover:bg-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.5)]'
+                                                : isVisited
+                                                    ? 'border-2 border-green-400/70 bg-green-500/15 hover:bg-green-500/30 hover:border-green-300 hover:shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                                                    : 'border border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]'
                                                 }`}
                                             style={{
                                                 left: `${(b.x / setupData.screen_width) * 100}%`,
@@ -441,8 +627,18 @@ const LiveMonitor = () => {
                                                 width: `${(b.w / setupData.screen_width) * 100}%`,
                                                 height: `${(b.h / setupData.screen_height) * 100}%`
                                             }}
-                                            onClick={() => handleSetupClick(b)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (sequenceMode) handleSequenceClick(b);
+                                                else handleSetupClick(b);
+                                            }}
                                         >
+                                            {/* Sequence number badge */}
+                                            {isInSequence && (
+                                                <span className="absolute -top-3 -left-1 bg-cyan-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg z-30">
+                                                    {seqIdx + 1}
+                                                </span>
+                                            )}
                                             <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-black/80 text-white px-1 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
                                                 {isVisited ? '✓ ' : ''}{b.text} ({b.conf}%)
                                             </span>

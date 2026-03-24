@@ -72,8 +72,10 @@ class LogicMapper:
         # We process both normal and inverted versions since some buttons might be dark on light, or light on dark
         return gray
 
-    def detect_buttons(self, image=None):
-        """Captures screen and returns bounding boxes of detected text/buttons"""
+    def detect_buttons(self, image=None, roi=None):
+        """Captures screen and returns bounding boxes of detected text/buttons.
+        roi: optional dict {x, y, w, h} as percentages (0-100) to restrict detection area.
+        """
         with mss.mss() as sct:
             # monitors[0] = ALL screens combined (virtual desktop) — BAD for clicking
             # monitors[1] = primary monitor — correct default
@@ -134,6 +136,18 @@ class LogicMapper:
                 padded_y = max(0, y - BUTTON_PADDING_Y)
                 padded_w = min(img_w - padded_x, w + BUTTON_PADDING_X * 2)
                 padded_h = min(img_h - padded_y, h + BUTTON_PADDING_Y * 2)
+
+                # If ROI is set, skip buttons whose center falls outside the region
+                if roi:
+                    btn_cx = padded_x + padded_w / 2
+                    btn_cy = padded_y + padded_h / 2
+                    roi_x = roi['x'] / 100 * img_w
+                    roi_y = roi['y'] / 100 * img_h
+                    roi_r = (roi['x'] + roi['w']) / 100 * img_w
+                    roi_b = (roi['y'] + roi['h']) / 100 * img_h
+                    if btn_cx < roi_x or btn_cx > roi_r or btn_cy < roi_y or btn_cy > roi_b:
+                        continue
+
                 buttons.append({
                     "id": str(uuid.uuid4())[:8],
                     "text": text,
@@ -269,7 +283,7 @@ class LogicMapper:
         self._auto_explore_abort = True
         return {"status": "stopping_auto_explore"}
 
-    def auto_explore(self, max_steps=10, ignored_texts=None):
+    def auto_explore(self, max_steps=10, ignored_texts=None, roi=None):
         if ignored_texts is None:
             ignored_texts = []
         if not self.session_active:
@@ -327,8 +341,31 @@ class LogicMapper:
             steps_taken += 1
             
         # Always return a fresh detection with the full tree
-        final = self.detect_buttons()
+        final = self.detect_buttons(roi=roi)
         return {"status": "finished", "steps_taken": steps_taken, "tree": self.tree, "new_state": final}
+
+    def execute_sequence(self, steps):
+        """Execute a user-defined ordered sequence of click targets.
+        steps: list of {x, y, text} dicts in execution order.
+        """
+        if not self.session_active:
+            return {"error": "Session must be started before executing a sequence"}
+        
+        results = []
+        for i, step in enumerate(steps):
+            if self._auto_explore_abort:
+                break
+            x = step.get('x', 0)
+            y = step.get('y', 0)
+            text = step.get('text', '')
+            print(f"[Sequence] Step {i+1}/{len(steps)}: Clicking '{text}' at ({x}, {y})")
+            result = self.execute_click(x, y, text, self.current_node_id)
+            results.append({"step": i + 1, "text": text, "status": "error" if "error" in result else "ok"})
+            if "error" in result:
+                break
+        
+        final = self.detect_buttons()
+        return {"status": "finished", "steps_completed": len(results), "results": results, "new_state": final}
 
     def get_tree(self):
         return self.tree
