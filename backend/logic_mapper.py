@@ -56,7 +56,7 @@ class LogicMapper:
         self.current_node_id = None
         # Don't reset explored_texts here — memory persists across sessions
         self.bot = bot
-        return {"status": "started", "message": "Logic mapping session started"}
+        return {"status": "started", "message": "Logic mapping session started", "target_window": self.target_window}
 
     def reset_memory(self):
         """Clears the explored_texts memory so Auto-Explore re-visits all buttons."""
@@ -65,7 +65,7 @@ class LogicMapper:
 
     def stop_session(self):
         self.session_active = False
-        return {"status": "stopped", "message": "Session ended", "tree": self.tree}
+        return {"status": "stopped", "message": "Session ended", "tree": self.tree, "target_window": self.target_window}
 
     def _process_image_for_ocr(self, image):
         # Convert to grayscale
@@ -189,7 +189,8 @@ class LogicMapper:
             "screen_height": img_h,
             "screen": encoded_image,
             "tree": self.tree,
-            "explored_texts": list(self.explored_texts)
+            "explored_texts": list(self.explored_texts),
+            "target_window": self.target_window
         }
 
     def _encode_frame(self, frame):

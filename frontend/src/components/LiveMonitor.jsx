@@ -206,6 +206,9 @@ const LiveMonitor = ({ onMappingChange }) => {
                 const data = await res.json();
                 if (data.initial_state) {
                     setSetupData(data.initial_state);
+                    if (data.initial_state.target_window) {
+                        setSelectedWindow(data.initial_state.target_window);
+                    }
                 }
             } catch (e) {
                 console.error('Setup start error:', e);
@@ -252,6 +255,7 @@ const LiveMonitor = ({ onMappingChange }) => {
             const refreshData = await refreshRes.json();
             if (refreshData.new_state && !refreshData.new_state.error) {
                 setSetupData(refreshData.new_state);
+                if (refreshData.new_state.target_window) setSelectedWindow(refreshData.new_state.target_window);
             }
             setSetupLoading(false);
         } catch (e) {
@@ -277,6 +281,7 @@ const LiveMonitor = ({ onMappingChange }) => {
             const data = await res.json();
             if (data.new_state && !data.error) {
                 setSetupData(data.new_state);
+                if (data.new_state.target_window) setSelectedWindow(data.new_state.target_window);
                 // Update local click memory from backend
                 if (data.new_state.explored_texts) {
                     setClickedButtons(new Set(data.new_state.explored_texts));
@@ -477,7 +482,12 @@ const LiveMonitor = ({ onMappingChange }) => {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
             });
             const data = await res.json();
-            if (data.new_state && !data.new_state.error) setSetupData(data.new_state);
+            if (data.new_state && !data.new_state.error) {
+                setSetupData(data.new_state);
+                if (data.new_state.target_window) {
+                    setSelectedWindow(data.new_state.target_window);
+                }
+            }
         } catch (e) {
             console.error(e);
         }
