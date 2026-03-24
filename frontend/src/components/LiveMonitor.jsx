@@ -289,25 +289,47 @@ const LiveMonitor = ({ onMappingChange }) => {
         if (!setupActive || setupLoading || isAutoExploring) return;
         setIsAutoExploring(true);
         try {
-            const res = await fetch(`${API}/api/setup/auto_explore`, {
+            // Start auto-explore in background thread on the backend
+            await fetch(`${API}/api/setup/auto_explore`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({ max_steps: 10, ignored_texts: ignoredTexts, roi: roi || undefined })
             });
-            const data = await res.json();
-            console.log('[AutoExplore] Response:', data.status, 'steps:', data.steps_taken, 'edges:', data.tree?.edges?.length);
-            if (data.new_state) {
-                setSetupData(data.new_state);
-                if (data.new_state.explored_texts) {
-                    setClickedButtons(new Set(data.new_state.explored_texts));
+
+            // Poll for results every 2 seconds
+            const poll = async () => {
+                try {
+                    const res = await fetch(`${API}/api/setup/auto_explore_poll`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                    });
+                    const data = await res.json();
+                    if (data.status === 'running') {
+                        // Still running — poll again
+                        setTimeout(poll, 2000);
+                        return;
+                    }
+                    // Finished — apply results
+                    console.log('[AutoExplore] Response:', data.status, 'steps:', data.steps_taken);
+                    if (data.new_state) {
+                        setSetupData(data.new_state);
+                        if (data.new_state.explored_texts) {
+                            setClickedButtons(new Set(data.new_state.explored_texts));
+                        }
+                    } else if (data.tree && setupData) {
+                        setSetupData(prev => ({ ...prev, tree: data.tree }));
+                    }
+                    setIsAutoExploring(false);
+                } catch (e) {
+                    console.error('Poll error:', e);
+                    setIsAutoExploring(false);
                 }
-            } else if (data.tree && setupData) {
-                setSetupData(prev => ({ ...prev, tree: data.tree }));
-            }
+            };
+            // Start polling after a brief delay
+            setTimeout(poll, 1500);
         } catch (e) {
-            console.error('Auto-explore error:', e);
+            console.error('Auto-explore start error:', e);
+            setIsAutoExploring(false);
         }
-        setIsAutoExploring(false);
     };
 
     const stopAutoExplore = async () => {
@@ -319,6 +341,8 @@ const LiveMonitor = ({ onMappingChange }) => {
         } catch (e) {
             console.error(e);
         }
+        // Immediately update UI — backend loop will break on next iteration
+        setIsAutoExploring(false);
     };
 
     const resetMemory = async () => {

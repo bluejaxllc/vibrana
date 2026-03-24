@@ -1013,8 +1013,31 @@ def auto_explore_ui():
     max_steps = data.get('max_steps', 10)
     ignored_texts = data.get('ignored_texts', [])
     roi = data.get('roi', None)  # {x, y, w, h} as percentages
-    res = logic_mapper.auto_explore(max_steps, ignored_texts, roi=roi)
-    return jsonify(res)
+
+    # Run auto_explore in a background thread so stop can be called concurrently
+    import threading
+
+    def run_explore():
+        logic_mapper._auto_explore_result = None
+        logic_mapper._auto_explore_running = True
+        result = logic_mapper.auto_explore(max_steps, ignored_texts, roi=roi)
+        logic_mapper._auto_explore_result = result
+        logic_mapper._auto_explore_running = False
+
+    t = threading.Thread(target=run_explore, daemon=True)
+    t.start()
+    return jsonify({"status": "started", "message": "Auto-explore started in background"})
+
+@app.route('/api/setup/auto_explore_poll', methods=['GET'])
+def auto_explore_poll():
+    running = getattr(logic_mapper, '_auto_explore_running', False)
+    result = getattr(logic_mapper, '_auto_explore_result', None)
+    if running:
+        return jsonify({"status": "running"})
+    elif result:
+        return jsonify(result)
+    else:
+        return jsonify({"status": "idle"})
 
 @app.route('/api/setup/auto_explore_stop', methods=['POST'])
 def auto_explore_stop():
@@ -2843,5 +2866,5 @@ def nls_report_pdf():
 # ──────────────────────────────────────
 if __name__ == '__main__':
     print("Starting Vibrana Backend on port 5001...")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True, threaded=True)
 
