@@ -657,7 +657,13 @@ const LiveMonitor = ({ onMappingChange }) => {
                             <div
                                 ref={imgContainerRef}
                                 className="absolute inset-0 select-none"
-                                style={{ cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
+                                style={{
+                                    cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair'),
+                                    WebkitUserSelect: 'none',
+                                    userSelect: 'none',
+                                    WebkitUserDrag: 'none'
+                                }}
+                                onDragStart={(e) => e.preventDefault()}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUp}
