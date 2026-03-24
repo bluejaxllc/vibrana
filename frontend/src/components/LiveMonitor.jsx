@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Maximize, MonitorUp } from 'lucide-react';
 
 
-const LiveMonitor = () => {
+const LiveMonitor = ({ onMappingChange }) => {
     const [isSharing, setIsSharing] = useState(false);
     const [uptime, setUptime] = useState(0);
     const [resolution, setResolution] = useState('—');
@@ -181,10 +181,12 @@ const LiveMonitor = () => {
             setSetupActive(false);
             setSetupData(null);
             setSetupLoading(false);
+            onMappingChange?.(false);
         } else {
             // Immediately switch to setup mode with placeholder
             setSetupActive(true);
             setSetupLoading(true);
+            onMappingChange?.(true);
             if (isSharing) stopScreenShare();
             if (remoteMode) toggleAutoDetect();
             try {

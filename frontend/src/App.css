@@ -1074,6 +1074,27 @@ body:has(.landing-page) {
 .dashboard-content.three-column-grid {
   display: grid;
   grid-template-columns: 2fr 1.3fr 1.3fr;
+  transition: grid-template-columns 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When Live Monitor is in mapping mode, switch to single-column layout */
+.dashboard-content.three-column-grid.mapping-active {
+  grid-template-columns: 1fr;
+}
+
+.dashboard-content.three-column-grid.mapping-active .column-left {
+  order: -1;
+  /* Keep monitor on top */
+}
+
+/* center + right columns flow naturally below the full-width monitor */
+.dashboard-content.three-column-grid.mapping-active {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dashboard-content.three-column-grid.mapping-active .column-left {
+  grid-column: 1 / -1;
+  /* Full width for monitor */
 }
 
 .column-left,
@@ -1085,6 +1106,7 @@ body:has(.landing-page) {
   overflow-y: auto;
   min-height: 0;
   padding-right: 4px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Subtle custom scrollbar for columns */

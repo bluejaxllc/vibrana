@@ -273,6 +273,7 @@ const Dashboard = () => {
     const [showConfigPanel, setShowConfigPanel] = useState(false);
     const [dragOverId, setDragOverId] = useState(null);
     const dragSourceRef = useRef(null);
+    const [isMappingActive, setIsMappingActive] = useState(false);
 
     // Persist config changes
     const saveConfig = useCallback((newConfig) => {
@@ -497,7 +498,7 @@ const Dashboard = () => {
                 case 'live-monitor':
                     return (
                         <div className="dashboard-panel vfx-card-enter" style={{ animationDelay: '0.15s', flex: 1, minHeight: '350px' }}>
-                            <LiveMonitor activeTeam={currentTeam} />
+                            <LiveMonitor activeTeam={currentTeam} onMappingChange={setIsMappingActive} />
                         </div>
                     );
                 case 'patient-manager':
@@ -696,7 +697,7 @@ const Dashboard = () => {
                 </div>
             )}
 
-            <main className="dashboard-content three-column-grid">
+            <main className={`dashboard-content three-column-grid${isMappingActive ? ' mapping-active' : ''}`}>
                 {/* COLUMN 1: Left */}
                 <div className="column-left">
                     {renderColumn('left')}
