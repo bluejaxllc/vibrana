@@ -1092,6 +1092,10 @@ def get_run_results():
 def get_run_history():
     return jsonify({"runs": run_engine.get_history()})
 
+@app.route('/api/run/clear_memory', methods=['POST'])
+def clear_run_memory():
+    return jsonify(run_engine.clear_memory())
+
 @app.route('/api/macros', methods=['GET'])
 def list_macros():
     return jsonify({"macros": macro_engine.list_macros()})

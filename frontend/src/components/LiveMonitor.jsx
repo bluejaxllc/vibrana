@@ -419,7 +419,7 @@ const LiveMonitor = ({ onMappingChange }) => {
 
     // --- ROI Drawing Handlers ---
     const handleMouseDown = (e) => {
-        if (!setupData || setupLoading || sequenceMode) return;
+        if (!setupData || setupLoading || sequenceMode || isRunning) return;
         e.preventDefault();
         e.stopPropagation();
         const rect = imgContainerRef.current?.getBoundingClientRect();
@@ -656,8 +656,8 @@ const LiveMonitor = ({ onMappingChange }) => {
                         >
                             <div
                                 ref={imgContainerRef}
-                                className="relative select-none"
-                                style={{ aspectRatio: `${setupData.screen_width}/${setupData.screen_height}`, maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : 'crosshair' }}
+                                className="relative select-none w-full"
+                                style={{ aspectRatio: `${setupData.screen_width || 1920}/${setupData.screen_height || 1080}`, maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUp}
@@ -931,6 +931,9 @@ const LiveMonitor = ({ onMappingChange }) => {
                                         <span>Pantalla {runProgress.current_screen}/{runProgress.total_screens}</span>
                                         <span>{runProgress.pct}%</span>
                                     </div>
+                                    {runProgress.status_text && (
+                                        <div className="text-[9px] text-emerald-300/70 mt-0.5 truncate">{runProgress.status_text}</div>
+                                    )}
                                     {runProgress.current_node && (
                                         <div className="text-[9px] text-white/40 mt-0.5 font-mono">📄 {runProgress.current_node}</div>
                                     )}
@@ -942,9 +945,9 @@ const LiveMonitor = ({ onMappingChange }) => {
                                     <div className="flex items-center justify-between mb-1.5">
                                         <span className="text-[10px] uppercase text-blue-300 font-bold tracking-wider">📊 Resultados</span>
                                         <span className={`text-[8px] px-1.5 py-0.5 rounded-full uppercase font-bold ${runResults.summary?.overall_status === 'critical' ? 'bg-red-500/20 text-red-300' :
-                                                runResults.summary?.overall_status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
-                                                    runResults.summary?.overall_status === 'normal' ? 'bg-green-500/20 text-green-300' :
-                                                        'bg-white/10 text-white/40'
+                                            runResults.summary?.overall_status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
+                                                runResults.summary?.overall_status === 'normal' ? 'bg-green-500/20 text-green-300' :
+                                                    'bg-white/10 text-white/40'
                                             }`}>{runResults.summary?.overall_status || 'N/A'}</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-1 text-[9px]">
@@ -969,8 +972,8 @@ const LiveMonitor = ({ onMappingChange }) => {
                                         <div className="mt-1.5 flex gap-1 flex-wrap">
                                             {Object.entries(runResults.summary.level_counts).sort().map(([level, count]) => (
                                                 <span key={level} className={`text-[8px] px-1 py-0.5 rounded ${parseInt(level) >= 5 ? 'bg-red-500/20 text-red-300' :
-                                                        parseInt(level) >= 3 ? 'bg-yellow-500/20 text-yellow-300' :
-                                                            'bg-green-500/20 text-green-300'
+                                                    parseInt(level) >= 3 ? 'bg-yellow-500/20 text-yellow-300' :
+                                                        'bg-green-500/20 text-green-300'
                                                     }`}>
                                                     L{level}: {count}
                                                 </span>
