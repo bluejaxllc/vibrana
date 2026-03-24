@@ -10,4 +10,4 @@ COPY . .
 ENV PORT=5001
 EXPOSE $PORT
 
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 cloud_app:app
+CMD python migrate_pg_phase15.py && gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 cloud_app:app

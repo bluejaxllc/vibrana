@@ -2,7 +2,7 @@
 // Cloud API for production, Local API for device-dependent features (macros, MJPEG stream)
 
 const USE_LOCAL = import.meta.env.VITE_USE_LOCAL === 'true' ||
-    (!import.meta.env.VITE_API_URL && window.location.hostname === 'localhost');
+    (!import.meta.env.VITE_API_URL && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
 
 export const API = USE_LOCAL
     ? 'http://localhost:5001'
