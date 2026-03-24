@@ -171,6 +171,29 @@ const LiveMonitor = ({ onMappingChange }) => {
         };
     }, []);
 
+    // Cleanup backend long-running tasks on window close or refresh
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (isAutoExploring) {
+                fetch(`${API}/api/setup/auto_explore_stop`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                    keepalive: true
+                }).catch(() => { });
+            }
+            if (isRunning) {
+                fetch(`${API}/api/run/stop`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                    keepalive: true
+                }).catch(() => { });
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isAutoExploring, isRunning]);
+
     const toggleSetupSession = async () => {
         if (setupActive) {
             setSetupLoading(true);
@@ -666,8 +689,10 @@ const LiveMonitor = ({ onMappingChange }) => {
                         >
                             <div
                                 ref={imgContainerRef}
-                                className="absolute inset-0 select-none"
+                                className="relative select-none flex"
                                 style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
                                     cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair'),
                                     WebkitUserSelect: 'none',
                                     userSelect: 'none',
@@ -681,7 +706,8 @@ const LiveMonitor = ({ onMappingChange }) => {
                             >
                                 <img
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
-                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
+                                    className="max-w-full max-h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
+                                    style={{ display: 'block' }}
                                     alt="Screen State"
                                     draggable={false}
                                 />
