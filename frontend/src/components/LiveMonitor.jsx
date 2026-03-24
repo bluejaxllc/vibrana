@@ -656,8 +656,8 @@ const LiveMonitor = ({ onMappingChange }) => {
                         >
                             <div
                                 ref={imgContainerRef}
-                                className="relative select-none w-full"
-                                style={{ aspectRatio: `${setupData.screen_width || 1920}/${setupData.screen_height || 1080}`, maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
+                                className="relative select-none"
+                                style={{ margin: 'auto', maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUp}
@@ -665,33 +665,44 @@ const LiveMonitor = ({ onMappingChange }) => {
                             >
                                 <img
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
-                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
+                                    className="block opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
+                                    style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
                                     alt="Screen State"
                                     draggable={false}
                                 />
 
-                                {/* ROI drawing preview (while dragging) */}
+                                {/* ROI drawing preview (while dragging) — NEON GREEN */}
                                 {isDrawing && drawStart && drawCurrent && (
-                                    <div className="absolute border-2 border-cyan-400 bg-cyan-400/10 z-30 pointer-events-none" style={{
+                                    <div className="absolute z-30 pointer-events-none" style={{
                                         left: `${Math.min(drawStart.x, drawCurrent.x)}%`,
                                         top: `${Math.min(drawStart.y, drawCurrent.y)}%`,
                                         width: `${Math.abs(drawCurrent.x - drawStart.x)}%`,
-                                        height: `${Math.abs(drawCurrent.y - drawStart.y)}%`
+                                        height: `${Math.abs(drawCurrent.y - drawStart.y)}%`,
+                                        border: '3px dashed #00FF66',
+                                        backgroundColor: 'rgba(0, 255, 102, 0.15)',
+                                        boxShadow: '0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 15px rgba(0, 255, 102, 0.1)',
                                     }} />
                                 )}
 
-                                {/* ROI rectangle (after set) */}
+                                {/* ROI rectangle (after set) — HIGH CONTRAST */}
                                 {roi && !isDrawing && (
                                     <>
-                                        {/* Dimming overlay outside ROI */}
-                                        <div className="absolute inset-0 bg-black/50 z-10 pointer-events-none" style={{
+                                        {/* Dimming overlay outside ROI — darker */}
+                                        <div className="absolute inset-0 z-10 pointer-events-none" style={{
+                                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
                                             clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${roi.y}%, ${roi.x}% ${roi.y}%, ${roi.x}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y}%, 0% ${roi.y}%)`
                                         }} />
-                                        <div className="absolute border-2 border-cyan-400 z-20 pointer-events-none" style={{
-                                            left: `${roi.x}%`, top: `${roi.y}%`, width: `${roi.w}%`, height: `${roi.h}%`
+                                        <div className="absolute z-20 pointer-events-none animate-pulse" style={{
+                                            left: `${roi.x}%`, top: `${roi.y}%`, width: `${roi.w}%`, height: `${roi.h}%`,
+                                            border: '3px solid #00FF66',
+                                            boxShadow: '0 0 20px rgba(0, 255, 102, 0.6), 0 0 40px rgba(0, 255, 102, 0.2)',
+                                            borderRadius: '4px',
                                         }}>
-                                            <span className="absolute -top-5 left-0 text-[9px] bg-cyan-500/80 text-white px-1.5 py-0.5 rounded">
-                                                📐 Zona Activa
+                                            <span className="absolute -top-6 left-1 text-[11px] font-bold px-2 py-0.5 rounded shadow-lg" style={{
+                                                backgroundColor: '#00FF66',
+                                                color: '#000',
+                                            }}>
+                                                📐 ZONA ACTIVA
                                             </span>
                                         </div>
                                     </>
