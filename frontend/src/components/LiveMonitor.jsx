@@ -656,8 +656,8 @@ const LiveMonitor = ({ onMappingChange }) => {
                         >
                             <div
                                 ref={imgContainerRef}
-                                className="relative select-none"
-                                style={{ margin: 'auto', maxHeight: '100%', maxWidth: '100%', cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
+                                className="absolute inset-0 select-none"
+                                style={{ cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair') }}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUp}
@@ -665,8 +665,7 @@ const LiveMonitor = ({ onMappingChange }) => {
                             >
                                 <img
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
-                                    className="block opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
-                                    style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
+                                    className="w-full h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
                                     alt="Screen State"
                                     draggable={false}
                                 />
