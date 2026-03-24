@@ -689,130 +689,164 @@ const LiveMonitor = ({ onMappingChange }) => {
                             </div>
                         </div>
 
-                        {/* RIGHT: Logic Tree Tracker (replaces old side panel) */}
-                        <div className="border-l border-white/10 bg-[#0a0f18] p-4 flex flex-col h-full overflow-hidden">
-                            <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-                                <h3 className="text-sm font-bold text-purple-400 flex items-center gap-2">
-                                    🌳 Árbol Lógico
-                                </h3>
-                                <span className="bg-purple-500/20 text-purple-300 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
-                                    En Vivo
-                                </span>
-                            </div>
+                        {/* RIGHT: Logic Tree + Workflow Wizard */}
+                        <div className="border-l border-white/10 bg-[#0a0f18] p-3 flex flex-col h-full overflow-hidden">
 
-                            {/* Skip Branches (Ignore List) */}
-                            <div className="mb-3 bg-black/40 rounded-lg p-2.5 border border-red-500/10">
-                                <label className="block text-[10px] uppercase text-red-400/80 font-bold mb-1" title="Textos de botones que Auto-Explorar ignorará automáticamente">
-                                    🚫 Ignorar Botones
-                                </label>
-                                <p className="text-[9px] text-white/40 mb-1.5">Agrega texto de botones que Auto-Explorar debe saltar (ej: cerrar, cancelar)</p>
-                                <div className="flex gap-1.5 mb-1.5">
-                                    <input
-                                        type="text"
-                                        className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-red-500/50 transition-colors"
-                                        placeholder="Texto a ignorar..."
-                                        value={ignoreInput}
-                                        onChange={e => setIgnoreInput(e.target.value)}
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter' && ignoreInput.trim()) {
-                                                setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
-                                                setIgnoreInput('');
-                                            }
-                                        }}
-                                    />
-                                    <button
-                                        className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 text-[10px] px-2 rounded transition-colors"
-                                        onClick={() => {
-                                            if (ignoreInput.trim()) {
-                                                setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
-                                                setIgnoreInput('');
-                                            }
-                                        }}
-                                        title="Agregar texto a la lista de ignorados"
-                                    >+ Agregar</button>
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                    {ignoredTexts.length === 0 && (
-                                        <span className="text-[9px] text-white/30 italic">Sin filtros — Auto-Explorar hará clic en todo.</span>
-                                    )}
-                                    {ignoredTexts.map((txt, i) => (
-                                        <span key={i} className="bg-red-500/20 border border-red-500/30 text-red-300 text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                                            {txt}
-                                            <button onClick={() => setIgnoredTexts(ignoredTexts.filter((_, idx) => idx !== i))} className="hover:text-white transition-colors">×</button>
-                                        </span>
+                            {/* ── Step-by-Step Workflow Wizard ── */}
+                            <div className="mb-3 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg p-2.5 border border-purple-500/20">
+                                <div className="text-[10px] uppercase text-purple-300 font-bold mb-2 tracking-wider">📍 Flujo de Trabajo</div>
+                                <div className="flex flex-col gap-1.5">
+                                    {[
+                                        { step: 1, label: 'Seleccionar Ventana', icon: '🖥️', done: !!selectedWindow, active: !selectedWindow && setupActive, hint: 'Usa el selector arriba para elegir la app' },
+                                        { step: 2, label: 'Dibujar Zona (ROI)', icon: '✏️', done: !!roi, active: !!selectedWindow && !roi, hint: 'Arrastra sobre la pantalla para marcar el área' },
+                                        { step: 3, label: 'Explorar Botones', icon: '⚡', done: (setupData?.tree?.edges?.length || 0) > 0, active: (!!selectedWindow || !!roi) && !(setupData?.tree?.edges?.length > 0), hint: 'Clic en ⚡ Auto o clic manual en botones detectados' },
+                                        { step: 4, label: 'Armar Secuencia', icon: '🔢', done: sequence.length > 0, active: (setupData?.tree?.edges?.length || 0) > 0 && sequence.length === 0, hint: 'Activa 🔢 Sec. y clic en botones en orden' },
+                                    ].map(({ step, label, icon, done, active, hint }) => (
+                                        <div key={step} className={`flex items-start gap-2 rounded-md px-2 py-1 transition-all ${active ? 'bg-white/5 border border-purple-500/30' : done ? 'opacity-60' : 'opacity-30'}`}>
+                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${done ? 'bg-green-500/30 text-green-300 border border-green-500/40' : active ? 'bg-purple-500/30 text-purple-300 border border-purple-400/50 animate-pulse' : 'bg-white/5 text-white/30 border border-white/10'}`}>
+                                                {done ? '✓' : step}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className={`text-[10px] font-semibold ${done ? 'text-green-300' : active ? 'text-white' : 'text-white/40'}`}>
+                                                    {icon} {label}
+                                                </div>
+                                                {active && <div className="text-[9px] text-white/50 mt-0.5">{hint}</div>}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Tree Timeline */}
-                            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                                <div className="text-[10px] uppercase text-white/40 font-bold mb-2">Secuencia de Mapeo</div>
-                                {setupData.tree && setupData.tree.edges && setupData.tree.edges.length > 0 ? (
-                                    setupData.tree.edges.map((edge, i) => {
-                                        const isVisited = clickedButtons.has(edge.text);
-                                        return (
-                                            <div key={i} className="mb-3 relative pl-4 border-l-2 border-purple-500/30 ml-1">
-                                                <div className={`absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full ${isVisited ? 'bg-green-400 shadow-[0_0_8px_#4ade80]' : 'bg-purple-500 shadow-[0_0_8px_#a855f7]'}`}></div>
-                                                <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">
-                                                    Paso {edge.step || i + 1} {isVisited ? '✓' : ''}
-                                                </div>
-                                                <div className={`bg-white/5 border rounded-lg p-2 shadow-lg ${isVisited ? 'border-green-500/20' : 'border-white/10'}`}>
-                                                    <span className="text-[10px] text-white/40 block">Click →</span>
-                                                    <span className={`font-semibold text-xs ${isVisited ? 'text-green-300' : 'text-purple-300'}`}>
-                                                        "{edge.text || `(${edge.x}, ${edge.y})`}"
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div className="h-full flex flex-col items-center justify-center opacity-50 p-4 text-center">
-                                        <div className="w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-2">
-                                            <span className="text-purple-400 font-mono text-lg">/</span>
-                                        </div>
-                                        <p className="text-[11px] text-white/60">
-                                            Árbol vacío. Haz clic en un botón OCR o usa Auto-Explorar.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Stats footer + Reset Memory */}
-                            <div className="mt-2 pt-2 border-t border-white/10 flex justify-between items-center text-[9px] text-white/30">
-                                <span>Nodos: {setupData.tree?.nodes?.length || 0} | Acciones: {setupData.tree?.edges?.length || 0}</span>
+                            {/* ── Ignore List (collapsible) ── */}
+                            <div className="mb-2">
                                 <button
-                                    className="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-300 text-[9px] px-2 py-0.5 rounded transition-colors"
-                                    onClick={resetMemory}
-                                    title="Borrar memoria de clics — Auto-Explorar volverá a hacer clic en todos los botones"
+                                    className="w-full text-left text-[10px] text-red-400/80 hover:text-red-300 font-bold uppercase flex items-center gap-1 transition-colors"
+                                    onClick={() => setShowHelp(prev => !prev)}
                                 >
-                                    🔄 Reset Memoria
-                                </button>
-                            </div>
-
-                            {/* Help Panel */}
-                            <div className="mt-2 pt-2 border-t border-white/10">
-                                <button
-                                    className="w-full text-left text-[10px] text-white/50 hover:text-white/80 transition-colors flex items-center gap-1"
-                                    onClick={() => setShowHelp(!showHelp)}
-                                >
-                                    {showHelp ? '▼' : '▶'} 📋 Guía Rápida
+                                    {ignoredTexts.length > 0 ? `🚫 Ignorar (${ignoredTexts.length})` : '🚫 Ignorar Botones'}
+                                    <span className="text-white/30 ml-auto">{showHelp ? '▼' : '▶'}</span>
                                 </button>
                                 {showHelp && (
-                                    <div className="mt-2 bg-black/40 rounded-lg p-2.5 border border-blue-500/10 text-[9px] text-white/60 space-y-1.5">
-                                        <div><span className="text-blue-300 font-bold">Compartir Pantalla</span> — Comparte tu pantalla vía el navegador para vista local en vivo</div>
-                                        <div><span className="text-purple-300 font-bold">Mapear UI</span> — Inicia escaneo OCR: captura pantalla y detecta botones clicables</div>
-                                        <div><span className="text-white/80 font-bold">Selector de Ventana</span> — Restringe el OCR a una ventana específica en vez de la pantalla completa</div>
-                                        <div><span className="text-blue-300 font-bold">Auto-Explorar</span> — Hace clic automáticamente en botones no visitados, construyendo el árbol lógico</div>
-                                        <div><span className="text-red-300 font-bold">Detener Exploración</span> — Detiene Auto-Explorar a mitad de ejecución</div>
-                                        <div><span className="text-red-300 font-bold">🚫 Ignorar Botones (+)</span> — Agrega patrones de texto que Auto-Explorar saltará</div>
-                                        <div><span className="text-accent font-bold">Auto-Detección</span> — Observa la pantalla por cambios en software NLS y los registra</div>
-                                        <div><span className="text-yellow-300 font-bold">🔄 Reset Memoria</span> — Borra el historial de clics para que Auto-Explorar revisita todos los botones</div>
-                                        <div className="mt-2 pt-1.5 border-t border-white/10">
-                                            <span className="text-green-300">■</span> Verde = Ya visitado &nbsp;
-                                            <span className="text-purple-400">■</span> Púrpura = No visitado
+                                    <div className="mt-1.5 bg-black/40 rounded-lg p-2 border border-red-500/10">
+                                        <div className="flex gap-1.5 mb-1.5">
+                                            <input
+                                                type="text"
+                                                className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-red-500/50 transition-colors"
+                                                placeholder="Texto a ignorar..."
+                                                value={ignoreInput}
+                                                onChange={e => setIgnoreInput(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter' && ignoreInput.trim()) {
+                                                        setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
+                                                        setIgnoreInput('');
+                                                    }
+                                                }}
+                                            />
+                                            <button
+                                                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 text-[10px] px-2 rounded transition-colors"
+                                                onClick={() => {
+                                                    if (ignoreInput.trim()) {
+                                                        setIgnoredTexts([...ignoredTexts, ignoreInput.trim()]);
+                                                        setIgnoreInput('');
+                                                    }
+                                                }}
+                                            >+</button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-1">
+                                            {ignoredTexts.length === 0 && <span className="text-[9px] text-white/30 italic">Sin filtros</span>}
+                                            {ignoredTexts.map((txt, i) => (
+                                                <span key={i} className="bg-red-500/20 border border-red-500/30 text-red-300 text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                                    {txt}
+                                                    <button onClick={() => setIgnoredTexts(ignoredTexts.filter((_, idx) => idx !== i))} className="hover:text-white transition-colors">×</button>
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* ── Hierarchical Logic Tree ── */}
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="text-[10px] uppercase text-white/40 font-bold tracking-wider">🌳 Árbol Lógico</div>
+                                <button
+                                    className="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-300 text-[9px] px-1.5 py-0.5 rounded transition-colors"
+                                    onClick={resetMemory}
+                                    title="Borrar memoria de exploraciones"
+                                >🔄</button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                                {setupData.tree && setupData.tree.nodes && setupData.tree.nodes.length > 0 ? (() => {
+                                    const nodes = setupData.tree.nodes;
+                                    const edges = setupData.tree.edges || [];
+                                    const nodeMap = {};
+                                    nodes.forEach(n => { nodeMap[n.id] = n; });
+                                    const childrenOf = {};
+                                    edges.forEach(e => {
+                                        if (!childrenOf[e.from]) childrenOf[e.from] = [];
+                                        childrenOf[e.from].push(e);
+                                    });
+                                    const targetIds = new Set(edges.map(e => e.to));
+                                    const rootIds = nodes.map(n => n.id).filter(id => !targetIds.has(id));
+                                    if (rootIds.length === 0 && nodes.length > 0) rootIds.push(nodes[0].id);
+
+                                    const renderTreeNode = (nodeId, depth = 0, visited = new Set()) => {
+                                        if (visited.has(nodeId)) return null;
+                                        visited.add(nodeId);
+                                        const node = nodeMap[nodeId];
+                                        if (!node) return null;
+                                        const children = childrenOf[nodeId] || [];
+                                        const isCurrentNode = nodeId === setupData.node_id;
+                                        const btnCount = node.buttons?.length || 0;
+
+                                        return (
+                                            <div key={nodeId} style={{ marginLeft: depth * 14 }} className="mb-1">
+                                                <div className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-all ${isCurrentNode ? 'bg-purple-500/15 border border-purple-500/30' : 'hover:bg-white/3'}`}>
+                                                    <span className={`text-[10px] ${children.length > 0 ? 'text-purple-400' : 'text-white/20'}`}>
+                                                        {children.length > 0 ? '▾' : '·'}
+                                                    </span>
+                                                    <div className={`w-2 h-2 rounded-full shrink-0 ${isCurrentNode ? 'bg-purple-400 shadow-[0_0_6px_#a855f7] animate-pulse' : 'bg-white/20'}`} />
+                                                    <span className={`text-[10px] font-mono truncate flex-1 ${isCurrentNode ? 'text-purple-300 font-bold' : 'text-white/60'}`}>
+                                                        {node.id === 'root' ? '🏠 Inicio' : `📄 ${node.id.substring(0, 8)}`}
+                                                    </span>
+                                                    {btnCount > 0 && <span className="bg-blue-500/20 text-blue-300 text-[8px] px-1 rounded">{btnCount}</span>}
+                                                </div>
+                                                {children.map((edge, ci) => {
+                                                    const isVisited = clickedButtons.has(edge.text);
+                                                    return (
+                                                        <div key={ci} className="mt-0.5">
+                                                            <div style={{ marginLeft: 12 }} className="flex items-center gap-1 py-0.5">
+                                                                <span className="text-white/15 text-[10px]">└</span>
+                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded ${isVisited ? 'bg-green-500/15 text-green-300 border border-green-500/20' : 'bg-white/5 text-white/50 border border-white/10'}`}>
+                                                                    {isVisited ? '✓' : '→'} "{edge.text || '?'}"
+                                                                </span>
+                                                            </div>
+                                                            {renderTreeNode(edge.to, depth + 1, visited)}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    };
+
+                                    return rootIds.map(id => renderTreeNode(id, 0, new Set()));
+                                })() : (
+                                    <div className="h-full flex flex-col items-center justify-center opacity-50 p-4 text-center">
+                                        <div className="w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-2">
+                                            <span className="text-purple-400 text-lg">🌱</span>
+                                        </div>
+                                        <p className="text-[11px] text-white/60">Árbol vacío. Sigue los pasos arriba.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Stats + Legend */}
+                            <div className="mt-2 pt-2 border-t border-white/10 flex justify-between items-center text-[9px] text-white/30">
+                                <span>
+                                    <span className="text-green-400">●</span> Visitado &nbsp;
+                                    <span className="text-purple-400">●</span> Actual &nbsp;
+                                    <span className="text-white/30">●</span> Pendiente
+                                </span>
+                                <span>{setupData.tree?.nodes?.length || 0} pantallas · {setupData.tree?.edges?.length || 0} acciones</span>
                             </div>
                         </div>
                     </>
