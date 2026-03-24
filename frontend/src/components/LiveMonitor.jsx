@@ -35,6 +35,11 @@ const LiveMonitor = ({ onMappingChange }) => {
     const [sequence, setSequence] = useState([]); // [{x, y, text, btnId}]
     const [isExecuting, setIsExecuting] = useState(false);
 
+    // Run Engine state
+    const [isRunning, setIsRunning] = useState(false);
+    const [runProgress, setRunProgress] = useState(null); // {current_screen, total_screens, pct, current_node}
+    const [runResults, setRunResults] = useState(null);
+
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const containerRef = useRef(null);
@@ -345,6 +350,61 @@ const LiveMonitor = ({ onMappingChange }) => {
         setIsAutoExploring(false);
     };
 
+    // ── Run Engine ──
+    const startRun = async () => {
+        if (isRunning) return;
+        setIsRunning(true);
+        setRunResults(null);
+        setRunProgress({ current_screen: 0, total_screens: 0, pct: 0, current_node: '' });
+        try {
+            await fetch(`${API}/api/run/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
+                body: JSON.stringify({ patient_id: null })
+            });
+            // Poll for progress
+            const pollRun = async () => {
+                try {
+                    const res = await fetch(`${API}/api/run/poll`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                    });
+                    const data = await res.json();
+                    setRunProgress(data.progress);
+                    if (data.running) {
+                        setTimeout(pollRun, 2000);
+                    } else {
+                        // Run finished — fetch results
+                        const resResults = await fetch(`${API}/api/run/results`, {
+                            headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+                        });
+                        const results = await resResults.json();
+                        setRunResults(results);
+                        setIsRunning(false);
+                    }
+                } catch (e) {
+                    console.error('Run poll error:', e);
+                    setIsRunning(false);
+                }
+            };
+            setTimeout(pollRun, 1500);
+        } catch (e) {
+            console.error('Run start error:', e);
+            setIsRunning(false);
+        }
+    };
+
+    const stopRun = async () => {
+        try {
+            await fetch(`${API}/api/run/stop`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+        setIsRunning(false);
+    };
+
     const resetMemory = async () => {
         try {
             await fetch(`${API}/api/setup/reset_memory`, {
@@ -544,6 +604,24 @@ const LiveMonitor = ({ onMappingChange }) => {
                             Detener
                         </button>
                     )}
+                    {setupActive && !isAutoExploring && !isRunning && (setupData?.tree?.nodes?.length || 0) > 0 && (
+                        <button
+                            className="btn-xs border border-emerald-400 bg-emerald-500/20 text-emerald-300 px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 shadow-[0_0_8px_rgba(52,211,153,0.3)] animate-pulse"
+                            onClick={startRun}
+                            title="Ejecutar recolección de datos automática"
+                        >
+                            ▶ Run
+                        </button>
+                    )}
+                    {isRunning && (
+                        <button
+                            className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-2 h-5 rounded transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                            onClick={stopRun}
+                            title="Detener la recolección de datos"
+                        >
+                            ⏹ {runProgress?.pct || 0}%
+                        </button>
+                    )}
                     <button
                         className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${setupActive ? 'border-purple-400 bg-purple-500/20 text-purple-300' : 'border-white/10 hover:border-purple-400/50'}`}
                         onClick={toggleSetupSession}
@@ -701,6 +779,7 @@ const LiveMonitor = ({ onMappingChange }) => {
                                         { step: 2, label: 'Dibujar Zona (ROI)', icon: '✏️', done: !!roi, active: !!selectedWindow && !roi, hint: 'Arrastra sobre la pantalla para marcar el área' },
                                         { step: 3, label: 'Explorar Botones', icon: '⚡', done: (setupData?.tree?.edges?.length || 0) > 0, active: (!!selectedWindow || !!roi) && !(setupData?.tree?.edges?.length > 0), hint: 'Clic en ⚡ Auto o clic manual en botones detectados' },
                                         { step: 4, label: 'Armar Secuencia', icon: '🔢', done: sequence.length > 0, active: (setupData?.tree?.edges?.length || 0) > 0 && sequence.length === 0, hint: 'Activa 🔢 Sec. y clic en botones en orden' },
+                                        { step: 5, label: 'Ejecutar Run', icon: '▶️', done: !!runResults, active: (setupData?.tree?.nodes?.length || 0) > 0 && !isRunning && !runResults, hint: 'Inicia recolección de datos automática' },
                                     ].map(({ step, label, icon, done, active, hint }) => (
                                         <div key={step} className={`flex items-start gap-2 rounded-md px-2 py-1 transition-all ${active ? 'bg-white/5 border border-purple-500/30' : done ? 'opacity-60' : 'opacity-30'}`}>
                                             <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${done ? 'bg-green-500/30 text-green-300 border border-green-500/40' : active ? 'bg-purple-500/30 text-purple-300 border border-purple-400/50 animate-pulse' : 'bg-white/5 text-white/30 border border-white/10'}`}>
@@ -838,6 +917,72 @@ const LiveMonitor = ({ onMappingChange }) => {
                                     </div>
                                 )}
                             </div>
+
+                            {/* ── Run Progress / Results ── */}
+                            {isRunning && runProgress && (
+                                <div className="mt-2 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-lg p-2.5 border border-emerald-500/20">
+                                    <div className="text-[10px] uppercase text-emerald-300 font-bold mb-1.5 tracking-wider flex items-center gap-1">
+                                        <span className="animate-spin text-[8px]">⚙</span> Recolectando Datos...
+                                    </div>
+                                    <div className="w-full bg-white/10 rounded-full h-1.5 mb-1">
+                                        <div className="bg-emerald-400 h-1.5 rounded-full transition-all duration-500" style={{ width: `${runProgress.pct || 0}%` }} />
+                                    </div>
+                                    <div className="flex justify-between text-[9px] text-white/50">
+                                        <span>Pantalla {runProgress.current_screen}/{runProgress.total_screens}</span>
+                                        <span>{runProgress.pct}%</span>
+                                    </div>
+                                    {runProgress.current_node && (
+                                        <div className="text-[9px] text-white/40 mt-0.5 font-mono">📄 {runProgress.current_node}</div>
+                                    )}
+                                </div>
+                            )}
+
+                            {runResults && !isRunning && (
+                                <div className="mt-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-2.5 border border-blue-500/20">
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-[10px] uppercase text-blue-300 font-bold tracking-wider">📊 Resultados</span>
+                                        <span className={`text-[8px] px-1.5 py-0.5 rounded-full uppercase font-bold ${runResults.summary?.overall_status === 'critical' ? 'bg-red-500/20 text-red-300' :
+                                                runResults.summary?.overall_status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
+                                                    runResults.summary?.overall_status === 'normal' ? 'bg-green-500/20 text-green-300' :
+                                                        'bg-white/10 text-white/40'
+                                            }`}>{runResults.summary?.overall_status || 'N/A'}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-1 text-[9px]">
+                                        <div className="bg-white/5 rounded px-1.5 py-1">
+                                            <div className="text-white/40">Pantallas</div>
+                                            <div className="text-white font-bold">{runResults.summary?.total_screens || 0}</div>
+                                        </div>
+                                        <div className="bg-white/5 rounded px-1.5 py-1">
+                                            <div className="text-white/40">Puntos Entropía</div>
+                                            <div className="text-white font-bold">{runResults.summary?.total_entropy_points || 0}</div>
+                                        </div>
+                                        <div className="bg-white/5 rounded px-1.5 py-1">
+                                            <div className="text-white/40">Con OCR</div>
+                                            <div className="text-white font-bold">{runResults.summary?.screens_with_ocr || 0}</div>
+                                        </div>
+                                        <div className="bg-white/5 rounded px-1.5 py-1">
+                                            <div className="text-white/40">Duración</div>
+                                            <div className="text-white font-bold">{runResults.summary?.duration_seconds || 0}s</div>
+                                        </div>
+                                    </div>
+                                    {runResults.summary?.level_counts && Object.keys(runResults.summary.level_counts).length > 0 && (
+                                        <div className="mt-1.5 flex gap-1 flex-wrap">
+                                            {Object.entries(runResults.summary.level_counts).sort().map(([level, count]) => (
+                                                <span key={level} className={`text-[8px] px-1 py-0.5 rounded ${parseInt(level) >= 5 ? 'bg-red-500/20 text-red-300' :
+                                                        parseInt(level) >= 3 ? 'bg-yellow-500/20 text-yellow-300' :
+                                                            'bg-green-500/20 text-green-300'
+                                                    }`}>
+                                                    L{level}: {count}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <button
+                                        className="mt-1.5 w-full text-[9px] text-white/40 hover:text-white/70 transition-colors"
+                                        onClick={() => setRunResults(null)}
+                                    >Limpiar resultados</button>
+                                </div>
+                            )}
 
                             {/* Stats + Legend */}
                             <div className="mt-2 pt-2 border-t border-white/10 flex justify-between items-center text-[9px] text-white/30">

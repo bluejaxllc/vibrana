@@ -943,6 +943,8 @@ def take_snapshot():
 # ──────────────────────────────────────
 from macro_engine import macro_engine
 from logic_mapper import mapper as logic_mapper
+from run_engine import RunEngine
+run_engine = RunEngine(logic_mapper, bot)
 
 @app.route('/api/setup/start', methods=['POST'])
 def start_logic_setup():
@@ -1061,6 +1063,34 @@ def convert_logic_tree_to_macro():
     name = (request.json or {}).get('name', f"auto_map_{int(time.time())}")
     res = logic_mapper.create_macro_from_tree(name, macro_engine)
     return jsonify(res)
+
+# ──────────────────────────────────────
+# RUN ENGINE — Automated Data Collection
+# ──────────────────────────────────────
+
+@app.route('/api/run/start', methods=['POST'])
+def start_run():
+    data = request.json or {}
+    patient_id = data.get('patient_id')
+    res = run_engine.start_run(patient_id=patient_id)
+    return jsonify(res)
+
+@app.route('/api/run/poll', methods=['GET'])
+def poll_run():
+    return jsonify(run_engine.get_status())
+
+@app.route('/api/run/stop', methods=['POST'])
+def stop_run():
+    return jsonify(run_engine.stop_run())
+
+@app.route('/api/run/results', methods=['GET'])
+def get_run_results():
+    run_id = request.args.get('run_id')
+    return jsonify(run_engine.get_results(run_id))
+
+@app.route('/api/run/history', methods=['GET'])
+def get_run_history():
+    return jsonify({"runs": run_engine.get_history()})
 
 @app.route('/api/macros', methods=['GET'])
 def list_macros():
