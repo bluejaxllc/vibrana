@@ -1010,6 +1010,10 @@ def auto_explore_ui():
 def auto_explore_stop():
     return jsonify(logic_mapper.stop_auto_explore())
 
+@app.route('/api/setup/reset_memory', methods=['POST'])
+def reset_explore_memory():
+    return jsonify(logic_mapper.reset_memory())
+
 @app.route('/api/setup/convert_macro', methods=['POST'])
 def convert_logic_tree_to_macro():
     name = (request.json or {}).get('name', f"auto_map_{int(time.time())}")

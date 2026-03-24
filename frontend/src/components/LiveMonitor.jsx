@@ -17,10 +17,12 @@ const LiveMonitor = () => {
     const [setupData, setSetupData] = useState(null);
     const [setupLoading, setSetupLoading] = useState(false);
     const [isAutoExploring, setIsAutoExploring] = useState(false);
-    const [ignoredTexts, setIgnoredTexts] = useState([]);
+    const [ignoredTexts, setIgnoredTexts] = useState(['Cancel', 'Exit', 'Close']);
     const [ignoreInput, setIgnoreInput] = useState('');
     const [windows, setWindows] = useState([]);
     const [selectedWindow, setSelectedWindow] = useState('');
+    const [clickedButtons, setClickedButtons] = useState(new Set());
+    const [showHelp, setShowHelp] = useState(false);
 
     const videoRef = useRef(null);
     const streamRef = useRef(null);
@@ -246,7 +248,7 @@ const LiveMonitor = () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` },
                 body: JSON.stringify({
                     x: Math.floor(btn.x + (btn.w / 2)),
-                    y: Math.floor(btn.y + (btn.h / 2)),
+                    y: Math.floor(btn.y + (btn.h * 0.45)),
                     text: btn.text,
                     node_id: setupData.node_id
                 })
@@ -254,6 +256,12 @@ const LiveMonitor = () => {
             const data = await res.json();
             if (data.new_state && !data.error) {
                 setSetupData(data.new_state);
+                // Update local click memory from backend
+                if (data.new_state.explored_texts) {
+                    setClickedButtons(new Set(data.new_state.explored_texts));
+                } else {
+                    setClickedButtons(prev => new Set([...prev, btn.text]));
+                }
             }
         } catch (e) {
             console.error(e);
@@ -273,10 +281,11 @@ const LiveMonitor = () => {
             const data = await res.json();
             console.log('[AutoExplore] Response:', data.status, 'steps:', data.steps_taken, 'edges:', data.tree?.edges?.length);
             if (data.new_state) {
-                // new_state already contains the tree
                 setSetupData(data.new_state);
+                if (data.new_state.explored_texts) {
+                    setClickedButtons(new Set(data.new_state.explored_texts));
+                }
             } else if (data.tree && setupData) {
-                // Fallback: merge tree into existing setupData
                 setSetupData(prev => ({ ...prev, tree: data.tree }));
             }
         } catch (e) {
@@ -291,6 +300,18 @@ const LiveMonitor = () => {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
             });
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const resetMemory = async () => {
+        try {
+            await fetch(`${API}/api/setup/reset_memory`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('vibrana_token')}` }
+            });
+            setClickedButtons(new Set());
         } catch (e) {
             console.error(e);
         }
@@ -406,22 +427,28 @@ const LiveMonitor = () => {
                                     </span>
                                 </div>
                                 {/* Bounding boxes */}
-                                {setupData.buttons.map(b => (
-                                    <div key={b.id}
-                                        className="absolute border border-purple-500/50 bg-purple-500/10 cursor-pointer transition-all hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:z-10"
-                                        style={{
-                                            left: `${(b.x / setupData.screen_width) * 100}%`,
-                                            top: `${(b.y / setupData.screen_height) * 100}%`,
-                                            width: `${(b.w / setupData.screen_width) * 100}%`,
-                                            height: `${(b.h / setupData.screen_height) * 100}%`
-                                        }}
-                                        onClick={() => handleSetupClick(b)}
-                                    >
-                                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-black/80 text-white px-1 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
-                                            {b.text} ({b.conf}%)
-                                        </span>
-                                    </div>
-                                ))}
+                                {setupData.buttons.map(b => {
+                                    const isVisited = b.visited || clickedButtons.has(b.text);
+                                    return (
+                                        <div key={b.id}
+                                            className={`absolute cursor-pointer transition-all hover:z-10 ${isVisited
+                                                ? 'border-2 border-green-400/70 bg-green-500/15 hover:bg-green-500/30 hover:border-green-300 hover:shadow-[0_0_10px_rgba(74,222,128,0.5)]'
+                                                : 'border border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]'
+                                                }`}
+                                            style={{
+                                                left: `${(b.x / setupData.screen_width) * 100}%`,
+                                                top: `${(b.y / setupData.screen_height) * 100}%`,
+                                                width: `${(b.w / setupData.screen_width) * 100}%`,
+                                                height: `${(b.h / setupData.screen_height) * 100}%`
+                                            }}
+                                            onClick={() => handleSetupClick(b)}
+                                        >
+                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-black/80 text-white px-1 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
+                                                {isVisited ? '✓ ' : ''}{b.text} ({b.conf}%)
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                                 {(setupLoading || isAutoExploring) && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20">
                                         <div className="flex flex-col items-center gap-3">
@@ -444,14 +471,17 @@ const LiveMonitor = () => {
                                 </span>
                             </div>
 
-                            {/* Ignore List */}
+                            {/* Skip Branches (Ignore List) */}
                             <div className="mb-3 bg-black/40 rounded-lg p-2.5 border border-red-500/10">
-                                <label className="block text-[10px] uppercase text-red-400/80 font-bold mb-1.5">Saltar Ramas</label>
+                                <label className="block text-[10px] uppercase text-red-400/80 font-bold mb-1" title="Textos de botones que Auto-Explorar ignorará automáticamente">
+                                    🚫 Ignorar Botones
+                                </label>
+                                <p className="text-[9px] text-white/40 mb-1.5">Agrega texto de botones que Auto-Explorar debe saltar (ej: cerrar, cancelar)</p>
                                 <div className="flex gap-1.5 mb-1.5">
                                     <input
                                         type="text"
                                         className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-red-500/50 transition-colors"
-                                        placeholder="Ej: Cancelar, Salir..."
+                                        placeholder="Texto a ignorar..."
                                         value={ignoreInput}
                                         onChange={e => setIgnoreInput(e.target.value)}
                                         onKeyDown={e => {
@@ -469,11 +499,12 @@ const LiveMonitor = () => {
                                                 setIgnoreInput('');
                                             }
                                         }}
-                                    >+</button>
+                                        title="Agregar texto a la lista de ignorados"
+                                    >+ Agregar</button>
                                 </div>
                                 <div className="flex flex-wrap gap-1">
                                     {ignoredTexts.length === 0 && (
-                                        <span className="text-[9px] text-white/30 italic">Sin filtros.</span>
+                                        <span className="text-[9px] text-white/30 italic">Sin filtros — Auto-Explorar hará clic en todo.</span>
                                     )}
                                     {ignoredTexts.map((txt, i) => (
                                         <span key={i} className="bg-red-500/20 border border-red-500/30 text-red-300 text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
@@ -488,20 +519,23 @@ const LiveMonitor = () => {
                             <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
                                 <div className="text-[10px] uppercase text-white/40 font-bold mb-2">Secuencia de Mapeo</div>
                                 {setupData.tree && setupData.tree.edges && setupData.tree.edges.length > 0 ? (
-                                    setupData.tree.edges.map((edge, i) => (
-                                        <div key={i} className="mb-3 relative pl-4 border-l-2 border-purple-500/30 ml-1">
-                                            <div className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></div>
-                                            <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">
-                                                Paso {edge.step || i + 1}
+                                    setupData.tree.edges.map((edge, i) => {
+                                        const isVisited = clickedButtons.has(edge.text);
+                                        return (
+                                            <div key={i} className="mb-3 relative pl-4 border-l-2 border-purple-500/30 ml-1">
+                                                <div className={`absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full ${isVisited ? 'bg-green-400 shadow-[0_0_8px_#4ade80]' : 'bg-purple-500 shadow-[0_0_8px_#a855f7]'}`}></div>
+                                                <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">
+                                                    Paso {edge.step || i + 1} {isVisited ? '✓' : ''}
+                                                </div>
+                                                <div className={`bg-white/5 border rounded-lg p-2 shadow-lg ${isVisited ? 'border-green-500/20' : 'border-white/10'}`}>
+                                                    <span className="text-[10px] text-white/40 block">Click →</span>
+                                                    <span className={`font-semibold text-xs ${isVisited ? 'text-green-300' : 'text-purple-300'}`}>
+                                                        "{edge.text || `(${edge.x}, ${edge.y})`}"
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="bg-white/5 border border-white/10 rounded-lg p-2 shadow-lg">
-                                                <span className="text-[10px] text-white/40 block">Click →</span>
-                                                <span className="font-semibold text-xs text-purple-300">
-                                                    "{edge.text || `(${edge.x}, ${edge.y})`}"
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center opacity-50 p-4 text-center">
                                         <div className="w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-2">
@@ -514,10 +548,42 @@ const LiveMonitor = () => {
                                 )}
                             </div>
 
-                            {/* Stats footer */}
-                            <div className="mt-2 pt-2 border-t border-white/10 flex justify-between text-[9px] text-white/30">
-                                <span>Nodos: {setupData.tree?.nodes?.length || 0}</span>
-                                <span>Acciones: {setupData.tree?.edges?.length || 0}</span>
+                            {/* Stats footer + Reset Memory */}
+                            <div className="mt-2 pt-2 border-t border-white/10 flex justify-between items-center text-[9px] text-white/30">
+                                <span>Nodos: {setupData.tree?.nodes?.length || 0} | Acciones: {setupData.tree?.edges?.length || 0}</span>
+                                <button
+                                    className="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-300 text-[9px] px-2 py-0.5 rounded transition-colors"
+                                    onClick={resetMemory}
+                                    title="Borrar memoria de clics — Auto-Explorar volverá a hacer clic en todos los botones"
+                                >
+                                    🔄 Reset Memoria
+                                </button>
+                            </div>
+
+                            {/* Help Panel */}
+                            <div className="mt-2 pt-2 border-t border-white/10">
+                                <button
+                                    className="w-full text-left text-[10px] text-white/50 hover:text-white/80 transition-colors flex items-center gap-1"
+                                    onClick={() => setShowHelp(!showHelp)}
+                                >
+                                    {showHelp ? '▼' : '▶'} 📋 Guía Rápida
+                                </button>
+                                {showHelp && (
+                                    <div className="mt-2 bg-black/40 rounded-lg p-2.5 border border-blue-500/10 text-[9px] text-white/60 space-y-1.5">
+                                        <div><span className="text-blue-300 font-bold">Compartir Pantalla</span> — Comparte tu pantalla vía el navegador para vista local en vivo</div>
+                                        <div><span className="text-purple-300 font-bold">Mapear UI</span> — Inicia escaneo OCR: captura pantalla y detecta botones clicables</div>
+                                        <div><span className="text-white/80 font-bold">Selector de Ventana</span> — Restringe el OCR a una ventana específica en vez de la pantalla completa</div>
+                                        <div><span className="text-blue-300 font-bold">Auto-Explorar</span> — Hace clic automáticamente en botones no visitados, construyendo el árbol lógico</div>
+                                        <div><span className="text-red-300 font-bold">Detener Exploración</span> — Detiene Auto-Explorar a mitad de ejecución</div>
+                                        <div><span className="text-red-300 font-bold">🚫 Ignorar Botones (+)</span> — Agrega patrones de texto que Auto-Explorar saltará</div>
+                                        <div><span className="text-accent font-bold">Auto-Detección</span> — Observa la pantalla por cambios en software NLS y los registra</div>
+                                        <div><span className="text-yellow-300 font-bold">🔄 Reset Memoria</span> — Borra el historial de clics para que Auto-Explorar revisita todos los botones</div>
+                                        <div className="mt-2 pt-1.5 border-t border-white/10">
+                                            <span className="text-green-300">■</span> Verde = Ya visitado &nbsp;
+                                            <span className="text-purple-400">■</span> Púrpura = No visitado
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </>

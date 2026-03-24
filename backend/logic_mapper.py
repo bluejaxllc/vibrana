@@ -11,6 +11,12 @@ import numpy as np
 import mss
 import pygetwindow as gw
 
+# Padding added around OCR text boxes so clicks land on the actual button, not the text edge
+BUTTON_PADDING_X = 12
+BUTTON_PADDING_Y = 6
+# Click offset: shift click slightly above center since button text is often in the upper portion
+CLICK_Y_RATIO = 0.45  # 0.5 = dead center, 0.4 = slightly above
+
 class LogicMapper:
     def __init__(self):
         self.session_active = False
@@ -23,6 +29,7 @@ class LogicMapper:
         }
         self.current_node_id = None
         self.edge_count = 0
+        self.explored_texts = set()  # Persistent memory of clicked button texts
         self.bot = None  # Reference to NLSAutomation
 
     def get_windows(self):
@@ -36,8 +43,14 @@ class LogicMapper:
         self.session_active = True
         self.tree = {"nodes": [], "edges": []}
         self.current_node_id = None
+        # Don't reset explored_texts here — memory persists across sessions
         self.bot = bot
         return {"status": "started", "message": "Logic mapping session started"}
+
+    def reset_memory(self):
+        """Clears the explored_texts memory so Auto-Explore re-visits all buttons."""
+        self.explored_texts.clear()
+        return {"status": "memory_cleared", "message": "Click memory reset"}
 
     def stop_session(self):
         self.session_active = False
@@ -105,19 +118,26 @@ class LogicMapper:
         
         buttons = []
         n_boxes = len(results['text'])
+        img_h, img_w = screenshot.shape[:2]
         for i in range(n_boxes):
             text = results['text'][i].strip()
             conf = int(results['conf'][i])
             if conf > 40 and len(text) > 1:  # Filter out low confidence and single characters
                 (x, y, w, h) = (results['left'][i], results['top'][i], results['width'][i], results['height'][i])
+                # Apply padding so the bounding box covers the actual button, not just the text
+                padded_x = max(0, x - BUTTON_PADDING_X)
+                padded_y = max(0, y - BUTTON_PADDING_Y)
+                padded_w = min(img_w - padded_x, w + BUTTON_PADDING_X * 2)
+                padded_h = min(img_h - padded_y, h + BUTTON_PADDING_Y * 2)
                 buttons.append({
                     "id": str(uuid.uuid4())[:8],
                     "text": text,
-                    "x": x,
-                    "y": y,
-                    "w": w,
-                    "h": h,
-                    "conf": conf
+                    "x": padded_x,
+                    "y": padded_y,
+                    "w": padded_w,
+                    "h": padded_h,
+                    "conf": conf,
+                    "visited": text in self.explored_texts
                 })
 
         # Generate a thumbnail to return as base64 so frontend can display what it thinks it saw
@@ -140,10 +160,11 @@ class LogicMapper:
             "status": "success",
             "node_id": node_id,
             "buttons": buttons,
-            "screen_width": w,
-            "screen_height": h,
+            "screen_width": img_w,
+            "screen_height": img_h,
             "screen": encoded_image,
-            "tree": self.tree
+            "tree": self.tree,
+            "explored_texts": list(self.explored_texts)
         }
 
     def _encode_frame(self, frame):
@@ -205,6 +226,9 @@ class LogicMapper:
             print(f"[LogicMapper] Click relative ({x}, {y}) -> absolute ({abs_x}, {abs_y}) for '{text}'")
             pyautogui.moveTo(abs_x, abs_y, duration=0.15)
             pyautogui.click()
+            # Record this text as explored
+            if text:
+                self.explored_texts.add(text)
             time.sleep(1.5)
         except Exception as e:
             print(f"[LogicMapper] Error executing click: {e}")
@@ -247,8 +271,7 @@ class LogicMapper:
             return {"error": "Session must be started before auto-exploring"}
 
         self._auto_explore_abort = False
-        explored_texts = set()
-        # Removed 'x' — it was filtering too many legitimate buttons
+        # Use persistent memory instead of local set — skips previously visited buttons
         dangerous_keywords = ['exit', 'quit', 'close', 'delete', 'remove', 'cancel']
         
         for t in ignored_texts:
@@ -271,24 +294,25 @@ class LogicMapper:
                 
             buttons = current_node["buttons"]
             
-            # Find unclicked safe buttons
+            # Find unclicked safe buttons (uses persistent self.explored_texts)
             safe_unclicked = []
             for b in buttons:
                 txt_lower = b["text"].lower()
-                if b["text"] not in explored_texts and not any(d in txt_lower for d in dangerous_keywords):
+                if b["text"] not in self.explored_texts and not any(d in txt_lower for d in dangerous_keywords):
                     safe_unclicked.append(b)
             
-            print(f"[Auto-Explore] {len(buttons)} total buttons, {len(safe_unclicked)} safe/unclicked, explored: {explored_texts}")
+            print(f"[Auto-Explore] {len(buttons)} total buttons, {len(safe_unclicked)} safe/unclicked, explored: {self.explored_texts}")
             
             if not safe_unclicked:
                 print(f"[Auto-Explore] No safe unclicked buttons left")
                 break
                 
             btn_to_click = safe_unclicked[0]
-            explored_texts.add(btn_to_click["text"])
+            self.explored_texts.add(btn_to_click["text"])
             
-            cx = int(btn_to_click["x"] + btn_to_click["w"]/2)
-            cy = int(btn_to_click["y"] + btn_to_click["h"]/2)
+            # Use CLICK_Y_RATIO for better targeting (slightly above center)
+            cx = int(btn_to_click["x"] + btn_to_click["w"] / 2)
+            cy = int(btn_to_click["y"] + btn_to_click["h"] * CLICK_Y_RATIO)
             
             print(f"[Auto-Explore] Step {steps_taken+1}: Clicking '{btn_to_click['text']}' at ({cx}, {cy})")
             last_result = self.execute_click(cx, cy, btn_to_click["text"], self.current_node_id)
