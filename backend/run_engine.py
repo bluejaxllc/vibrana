@@ -24,6 +24,13 @@ import base64
 import cv2
 import numpy as np
 import mss
+import pygetwindow as gw
+try:
+    import win32gui
+    import win32con
+    HAS_WIN32 = True
+except ImportError:
+    HAS_WIN32 = False
 from datetime import datetime
 from nls_ocr_parser import NLSOCRParser
 
@@ -47,6 +54,60 @@ class RunEngine:
         self._run_data = None
         self._progress = {"current_screen": 0, "total_screens": 0, "current_node": "", "pct": 0}
         self._run_history = []  # List of completed runs
+
+    def _refocus_window(self):
+        """Aggressively bring the target window to the foreground."""
+        target = self.mapper.target_window
+        if not target:
+            return
+        try:
+            windows = gw.getWindowsWithTitle(target)
+            if not windows:
+                print(f"[RunEngine] WARNING: Window '{target}' not found!")
+                return
+            win = windows[0]
+            if win.isMinimized:
+                win.restore()
+                import time as _t
+                _t.sleep(0.3)
+            # Try win32gui first (most reliable on Windows)
+            if HAS_WIN32:
+                hwnd = win._hWnd
+                try:
+                    # If window is minimized or in background, ShowWindow first
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    win32gui.SetForegroundWindow(hwnd)
+                except Exception:
+                    # Fallback: use AttachThreadInput trick
+                    try:
+                        import win32process
+                        import win32api
+                        fg_thread = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())[0]
+                        target_thread = win32process.GetWindowThreadProcessId(hwnd)[0]
+                        if fg_thread != target_thread:
+                            import ctypes
+                            ctypes.windll.user32.AttachThreadInput(fg_thread, target_thread, True)
+                            win32gui.SetForegroundWindow(hwnd)
+                            ctypes.windll.user32.AttachThreadInput(fg_thread, target_thread, False)
+                    except Exception as e2:
+                        print(f"[RunEngine] win32 fallback failed: {e2}")
+            else:
+                # pygetwindow fallback
+                try:
+                    win.activate()
+                except Exception:
+                    pass
+            time.sleep(0.2)
+            # Update cached window bounds
+            self.mapper.target_box = {
+                "top": win.top,
+                "left": win.left,
+                "width": win.width,
+                "height": win.height
+            }
+            print(f"[RunEngine] Refocused window '{target}' at ({win.left}, {win.top})")
+        except Exception as e:
+            print(f"[RunEngine] Refocus error: {e}")
 
     # ─────────────────────────────────────────
     # PUBLIC API
@@ -192,6 +253,9 @@ class RunEngine:
 
         print(f"[RunEngine] Screen {screen_idx}/{total}: Node {node_id[:8]}")
 
+        # Re-focus target window before capture
+        self._refocus_window()
+
         # Capture and analyze the current screen
         screen_data = self._collect_screen_data(node_id, node)
         self._run_data["screens"].append(screen_data)
@@ -208,6 +272,8 @@ class RunEngine:
             text = edge.get("text", "")
 
             print(f"[RunEngine] Clicking '{text}' at ({x}, {y}) to navigate...")
+            # Re-focus before clicking
+            self._refocus_window()
             result = self.mapper.execute_click(x, y, text, node_id)
 
             if "error" in result:
@@ -288,6 +354,8 @@ class RunEngine:
 
     def _capture_screen(self):
         """Capture the current screen, using the mapper's target window if set."""
+        # Re-focus before capture to ensure we're grabbing the right window
+        self._refocus_window()
         try:
             with mss.mss() as sct:
                 if self.mapper.target_box:

@@ -10,6 +10,12 @@ from datetime import datetime
 import numpy as np
 import mss
 import pygetwindow as gw
+try:
+    import win32gui
+    import win32con
+    HAS_WIN32 = True
+except ImportError:
+    HAS_WIN32 = False
 
 # Padding added around OCR text boxes so clicks land on the actual button, not the text edge
 BUTTON_PADDING_X = 12
@@ -198,7 +204,7 @@ class LogicMapper:
         return base64.b64encode(buffer).decode('utf-8')
 
     def _get_window_bounds(self):
-        """Re-acquire the target window position right now."""
+        """Re-acquire the target window position and forcefully bring it to foreground."""
         if not self.target_window:
             return None
         windows = gw.getWindowsWithTitle(self.target_window)
@@ -207,12 +213,31 @@ class LogicMapper:
         win = windows[0]
         if win.isMinimized:
             win.restore()
-            time.sleep(0.2)
-        try:
-            win.activate()
-        except Exception:
-            pass
-        time.sleep(0.1)
+            time.sleep(0.3)
+        # Use win32gui for reliable foreground activation
+        if HAS_WIN32:
+            hwnd = win._hWnd
+            try:
+                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                win32gui.SetForegroundWindow(hwnd)
+            except Exception:
+                try:
+                    import win32process
+                    import ctypes
+                    fg_thread = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())[0]
+                    target_thread = win32process.GetWindowThreadProcessId(hwnd)[0]
+                    if fg_thread != target_thread:
+                        ctypes.windll.user32.AttachThreadInput(fg_thread, target_thread, True)
+                        win32gui.SetForegroundWindow(hwnd)
+                        ctypes.windll.user32.AttachThreadInput(fg_thread, target_thread, False)
+                except Exception as e:
+                    print(f"[LogicMapper] Win32 focus fallback failed: {e}")
+        else:
+            try:
+                win.activate()
+            except Exception:
+                pass
+        time.sleep(0.15)
         return {
             "top": win.top,
             "left": win.left,
