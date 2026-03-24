@@ -32,8 +32,13 @@ class LogicMapper:
         self.explored_texts = set()  # Persistent memory of clicked button texts
         self.bot = None  # Reference to NLSAutomation
 
+    # Window titles to exclude from the selector (prevents recursive self-capture)
+    SELF_WINDOW_KEYWORDS = ['vibrana', 'overseer', 'localhost:5176', 'localhost:5001']
+
     def get_windows(self):
-        return [w for w in gw.getAllTitles() if w.strip()]
+        all_titles = [w for w in gw.getAllTitles() if w.strip()]
+        # Filter out Vibrana's own window to prevent recursive nested capture
+        return [w for w in all_titles if not any(kw in w.lower() for kw in self.SELF_WINDOW_KEYWORDS)]
 
     def set_target_window(self, title):
         self.target_window = title
