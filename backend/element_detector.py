@@ -68,6 +68,17 @@ def _img_to_base64(img, quality=75):
     return base64.b64encode(buf).decode('utf-8')
 
 
+import re
+
+def _clean_ocr_text(text):
+    """Clean garbled OCR text by removing excessive symbols and noise."""
+    # Keep alphanumeric, spaces, and essential punctuation
+    cleaned = re.sub(r'[^\w\s\-\.▶◀▲▼→←↑↓►◄>><<]', '', text)
+    # Remove isolated random characters if they constitute the entire string
+    if len(cleaned.strip()) < 2 and not any(c in ARROW_CHARS for c in cleaned):
+        return ""
+    return cleaned.strip()
+
 def _ocr_region(img):
     """Run OCR on a small image region. Returns text."""
     if pytesseract is None or cv2 is None:
@@ -79,7 +90,9 @@ def _ocr_region(img):
         text1 = pytesseract.image_to_string(thresh, config='--psm 7 -l spa+eng').strip()
         inv = cv2.bitwise_not(thresh)
         text2 = pytesseract.image_to_string(inv, config='--psm 7 -l spa+eng').strip()
-        return text1 if len(text1) >= len(text2) else text2
+        
+        best_text = text1 if len(text1) >= len(text2) else text2
+        return _clean_ocr_text(best_text)
     except Exception:
         return ""
 

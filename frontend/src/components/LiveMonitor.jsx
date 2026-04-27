@@ -44,6 +44,34 @@ const LiveMonitor = ({ onMappingChange }) => {
     const streamRef = useRef(null);
     const containerRef = useRef(null);
     const imgContainerRef = useRef(null);
+    const imgRef = useRef(null); // Ref to the actual rendered image element
+
+    const [imgBounds, setImgBounds] = useState({ left: 0, top: 0, width: '100%', height: '100%' });
+
+    // Calculate exact rendered image bounds on resize or stream change
+    useEffect(() => {
+        const calcBounds = () => {
+            if (!imgContainerRef.current || !imgRef.current) return;
+
+            const containerRect = imgContainerRef.current.getBoundingClientRect();
+            const imgRect = imgRef.current.getBoundingClientRect();
+
+            // The image might be smaller than the container if it's letterboxed
+            const offsetX = imgRect.left - containerRect.left;
+            const offsetY = imgRect.top - containerRect.top;
+
+            setImgBounds({
+                left: offsetX,
+                top: offsetY,
+                width: imgRect.width,
+                height: imgRect.height
+            });
+        };
+
+        calcBounds();
+        window.addEventListener('resize', calcBounds);
+        return () => window.removeEventListener('resize', calcBounds);
+    }, [setupData?.screen]);
 
     const API = "http://localhost:5001"; // Make sure to point to local backend for ScreenWatcher
 
@@ -447,16 +475,27 @@ const LiveMonitor = ({ onMappingChange }) => {
 
     // --- ROI Drawing Handlers ---
     const handleMouseDown = (e) => {
-        if (!setupData || setupLoading || sequenceMode || isRunning) return;
+        if (!setupData || setupLoading || sequenceMode || isRunning || isAutoExploring) return;
         e.preventDefault();
         e.stopPropagation();
         const rect = imgContainerRef.current?.getBoundingClientRect();
         if (!rect) return;
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        // Calculate coordinate exactly relative to the visible rendered image pixels
+        let localX = e.clientX - rect.left - imgBounds.left;
+        let localY = e.clientY - rect.top - imgBounds.top;
+
+        let x = (localX / imgBounds.width) * 100;
+        let y = (localY / imgBounds.height) * 100;
+
+        // Clamp to 0-100% so drawing stays within image bounds
+        x = Math.max(0, Math.min(100, x));
+        y = Math.max(0, Math.min(100, y));
+
         setIsDrawing(true);
         setDrawStart({ x, y });
         setDrawCurrent({ x, y });
+        setRoi(null);
     };
 
     const handleMouseMove = (e) => {
@@ -464,8 +503,16 @@ const LiveMonitor = ({ onMappingChange }) => {
         e.preventDefault();
         const rect = imgContainerRef.current?.getBoundingClientRect();
         if (!rect) return;
-        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+
+        let localX = e.clientX - rect.left - imgBounds.left;
+        let localY = e.clientY - rect.top - imgBounds.top;
+
+        let x = (localX / imgBounds.width) * 100;
+        let y = (localY / imgBounds.height) * 100;
+
+        x = Math.max(0, Math.min(100, x));
+        y = Math.max(0, Math.min(100, y));
+
         setDrawCurrent({ x, y });
     };
 
@@ -571,6 +618,9 @@ const LiveMonitor = ({ onMappingChange }) => {
         }
     };
 
+    /* ── Overflow menu state ── */
+    const [showOverflow, setShowOverflow] = useState(false);
+
     return (
         <div
             className="live-monitor"
@@ -579,104 +629,151 @@ const LiveMonitor = ({ onMappingChange }) => {
             <div className="monitor-header">
                 <h2>
                     <span className={`monitor-live-dot${isSharing || remoteStatus === 'online' || setupActive ? '' : ' offline'}`} />
-                    {setupActive ? 'Mapeo de UI (OCR)' : remoteMode ? 'Monitor Auto-Detectado' : 'Transmisión Local en Vivo'}
+                    {isRunning ? 'Recolección en Curso' : setupActive ? 'Mapeo de UI' : 'Monitor'}
                 </h2>
-                <div className="monitor-meta flex items-center gap-2">
-                    {setupActive && (
-                        <select
-                            className="btn-xs border border-white/10 bg-[#0a0f18] text-white px-2 h-5 rounded transition-all focus:border-purple-500/50 outline-none w-32 truncate"
-                            value={selectedWindow}
-                            onChange={handleWindowChange}
-                            title="Seleccionar ventana específica para restringir el OCR"
-                            disabled={setupLoading || isAutoExploring}
-                        >
-                            <option value="">Pantalla Completa</option>
-                            {windows.map((w, i) => (
-                                <option key={i} value={w}>{w}</option>
-                            ))}
-                        </select>
-                    )}
-                    {setupActive && !isAutoExploring && (
-                        <button
-                            className={`btn-xs border px-2 h-5 rounded transition-all ${selectedWindow
-                                ? 'border-blue-400 bg-blue-500/20 text-blue-300 opacity-80 hover:opacity-100 cursor-pointer'
-                                : 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed'
-                                }`}
-                            onClick={handleAutoExplore}
-                            disabled={setupLoading || !selectedWindow}
-                            title={selectedWindow ? 'Explorar automáticamente los botones' : 'Selecciona una ventana primero'}
-                        >
-                            ⚡ Auto
-                        </button>
-                    )}
-                    {setupActive && !isAutoExploring && (
-                        <button
-                            className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${sequenceMode ? 'border-cyan-400 bg-cyan-500/20 text-cyan-300' : 'border-white/10 hover:border-cyan-400/50 text-white/50'
-                                }`}
-                            onClick={() => { setSequenceMode(!sequenceMode); setSequence([]); }}
-                            title="Modo secuencia: clic en botones en orden para macro"
-                        >
-                            {sequenceMode ? '✕ Sec.' : '🔢 Sec.'}
-                        </button>
-                    )}
-                    {setupActive && sequenceMode && sequence.length > 0 && (
-                        <button
-                            className="btn-xs border border-green-400 bg-green-500/20 text-green-300 px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 shadow-[0_0_8px_rgba(74,222,128,0.3)]"
-                            onClick={executeSequence}
-                            disabled={isExecuting}
-                        >
-                            {isExecuting ? '...' : `▶ ${sequence.length}`}
-                        </button>
-                    )}
-                    {setupActive && isAutoExploring && (
-                        <button
-                            className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-2 h-5 rounded transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]"
-                            onClick={stopAutoExplore}
-                            title="Detener la exploración automática"
-                        >
-                            Detener
-                        </button>
-                    )}
-                    {setupActive && !isAutoExploring && !isRunning && (setupData?.tree?.nodes?.length || 0) > 0 && (
-                        <button
-                            className="btn-xs border border-emerald-400 bg-emerald-500/20 text-emerald-300 px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 shadow-[0_0_8px_rgba(52,211,153,0.3)] animate-pulse"
-                            onClick={startRun}
-                            title="Ejecutar recolección de datos automática"
-                        >
-                            ▶ Run
-                        </button>
-                    )}
+                <div className="monitor-meta" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+
+                    {/* ══════════ STATE: RUNNING ══════════ */}
                     {isRunning && (
                         <button
-                            className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-2 h-5 rounded transition-all shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                            className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-3 h-6 rounded-md transition-all shadow-[0_0_10px_rgba(239,68,68,0.4)] flex items-center gap-1.5"
                             onClick={stopRun}
-                            title="Detener la recolección de datos"
                         >
-                            ⏹ {runProgress?.pct || 0}%
+                            <span className="inline-block w-2 h-2 bg-red-400 rounded-sm" />
+                            Detener · {runProgress?.pct || 0}%
                         </button>
                     )}
-                    <button
-                        className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${setupActive ? 'border-purple-400 bg-purple-500/20 text-purple-300' : 'border-white/10 hover:border-purple-400/50'}`}
-                        onClick={toggleSetupSession}
-                        disabled={setupLoading || isAutoExploring}
-                    >
-                        {setupLoading ? 'Cargando...' : setupActive ? 'Terminar Mapeo' : 'Mapear UI'}
-                    </button>
-                    <button
-                        className={`btn-xs border px-2 h-5 rounded transition-all opacity-80 hover:opacity-100 ${remoteMode ? 'border-accent bg-accent/20 text-accent' : 'border-white/10 hover:border-accent/50'}`}
-                        onClick={toggleAutoDetect}
-                    >
-                        {remoteMode ? 'Desactivar Auto-Detección' : 'Activar Auto-Detección'}
-                    </button>
-                    <button
-                        className="btn-xs border border-white/10 hover:border-accent/50 px-1.5 h-5 rounded transition-all opacity-60 hover:opacity-100"
-                        onClick={toggleFullscreen}
-                        title="Fullscreen / Pop Out"
-                    >
-                        <Maximize size={12} />
-                    </button>
-                    {(isSharing || remoteMode) && <span className="monitor-uptime">{formatUptime(uptime)}</span>}
-                    <span className="monitor-res">{resolution}</span>
+
+                    {/* ══════════ STATE: MAPPING (setup active) ══════════ */}
+                    {setupActive && !isRunning && (
+                        <>
+                            {/* Window selector */}
+                            <select
+                                className="btn-xs border border-white/10 bg-[#0a0f18] text-white/90 px-2 h-6 rounded-md transition-all focus:border-purple-500/50 outline-none"
+                                style={{ minWidth: '120px', maxWidth: '180px' }}
+                                value={selectedWindow}
+                                onChange={handleWindowChange}
+                                disabled={setupLoading || isAutoExploring}
+                            >
+                                <option value="">Pantalla Completa</option>
+                                {windows.map((w, i) => (
+                                    <option key={i} value={w}>{w}</option>
+                                ))}
+                            </select>
+
+                            {/* Auto-explore or Stop */}
+                            {isAutoExploring ? (
+                                <button
+                                    className="btn-xs border border-red-500 bg-red-500/20 text-red-400 px-3 h-6 rounded-md transition-all shadow-[0_0_10px_rgba(239,68,68,0.4)] flex items-center gap-1.5"
+                                    onClick={stopAutoExplore}
+                                >
+                                    <span className="animate-spin inline-block w-3 h-3 border border-red-400 border-t-transparent rounded-full" />
+                                    Detener
+                                </button>
+                            ) : (
+                                <button
+                                    className={`mapping-toolbar-btn btn-explore text-[11px] px-4 h-7 flex items-center gap-1.5 ${!selectedWindow ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={handleAutoExplore}
+                                    disabled={setupLoading || !selectedWindow}
+                                    title={selectedWindow ? 'Explorar la UI automáticamente' : 'Selecciona una ventana primero'}
+                                >
+                                    ⚡ Explorar
+                                </button>
+                            )}
+
+                            {/* Run button — only after tree has nodes */}
+                            {!isAutoExploring && (setupData?.tree?.nodes?.length || 0) > 0 && (
+                                <button
+                                    className="mapping-toolbar-btn btn-done text-[11px] px-4 h-7 flex items-center gap-1.5"
+                                    onClick={startRun}
+                                >
+                                    ▶ Ejecutar
+                                </button>
+                            )}
+
+                            {/* Overflow menu ⋯ */}
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    className="btn-xs border border-white/10 hover:border-white/30 px-1.5 h-6 rounded-md transition-all text-white/40 hover:text-white/70"
+                                    onClick={() => setShowOverflow(!showOverflow)}
+                                    title="Más opciones"
+                                >
+                                    ⋯
+                                </button>
+                                {showOverflow && (
+                                    <div
+                                        className="absolute right-0 top-full mt-1 bg-[#0f1628] border border-white/10 rounded-lg shadow-2xl py-1 z-50"
+                                        style={{ minWidth: '180px' }}
+                                        onMouseLeave={() => setShowOverflow(false)}
+                                    >
+                                        <button
+                                            className="w-full text-left px-3 py-1.5 text-[11px] text-white/70 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
+                                            onClick={() => { setSequenceMode(!sequenceMode); setSequence([]); setShowOverflow(false); }}
+                                        >
+                                            <span>{sequenceMode ? '✕' : '🔢'}</span>
+                                            {sequenceMode ? 'Salir de Secuencia' : 'Modo Secuencia'}
+                                        </button>
+                                        <button
+                                            className="w-full text-left px-3 py-1.5 text-[11px] text-white/70 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
+                                            onClick={() => { resetMemory(); setShowOverflow(false); }}
+                                        >
+                                            <span>🔄</span> Reiniciar Memoria
+                                        </button>
+                                        <button
+                                            className="w-full text-left px-3 py-1.5 text-[11px] text-white/70 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
+                                            onClick={() => { toggleFullscreen(); setShowOverflow(false); }}
+                                        >
+                                            <span>⬜</span> Pantalla Completa
+                                        </button>
+                                        <div className="border-t border-white/5 my-1" />
+                                        <button
+                                            className="w-full text-left px-3 py-1.5 text-[11px] text-white/70 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
+                                            onClick={() => { toggleAutoDetect(); setShowOverflow(false); }}
+                                        >
+                                            <span>{remoteMode ? '📡' : '📡'}</span>
+                                            {remoteMode ? 'Desactivar Auto-Detección' : 'Activar Auto-Detección'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Sequence execute button (only shows when sequence has items) */}
+                            {sequenceMode && sequence.length > 0 && (
+                                <button
+                                    className="btn-xs border border-cyan-400 bg-cyan-500/20 text-cyan-300 px-3 h-6 rounded-md transition-all hover:bg-cyan-500/30 flex items-center gap-1"
+                                    onClick={executeSequence}
+                                    disabled={isExecuting}
+                                >
+                                    {isExecuting ? '...' : `▶ ${sequence.length} pasos`}
+                                </button>
+                            )}
+
+                            {/* Done button */}
+                            <button
+                                className="btn-xs border border-white/20 bg-white/5 text-white/60 px-3 h-6 rounded-md transition-all hover:bg-white/10 hover:text-white/80"
+                                onClick={toggleSetupSession}
+                                disabled={setupLoading || isAutoExploring}
+                            >
+                                {setupLoading ? '...' : '✓ Listo'}
+                            </button>
+                        </>
+                    )}
+
+                    {/* ══════════ STATE: IDLE ══════════ */}
+                    {!setupActive && !isRunning && (
+                        <button
+                            className="btn-xs border border-purple-400/60 bg-purple-500/15 text-purple-300 px-3 h-6 rounded-md transition-all hover:bg-purple-500/25 hover:border-purple-400 flex items-center gap-1.5"
+                            onClick={toggleSetupSession}
+                            disabled={setupLoading}
+                        >
+                            {setupLoading ? (
+                                <span className="animate-spin inline-block w-3 h-3 border border-purple-300 border-t-transparent rounded-full" />
+                            ) : (
+                                <span>📡</span>
+                            )}
+                            {setupLoading ? 'Conectando...' : 'Mapear UI'}
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -684,19 +781,13 @@ const LiveMonitor = ({ onMappingChange }) => {
                 {setupActive && setupData ? (
                     <>
                         {/* LEFT: Screen Capture with OCR Overlay + ROI Drawing */}
-                        <div
-                            className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden group"
-                        >
+                        <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', overflow: 'hidden', padding: '8px' }}>
                             <div
                                 ref={imgContainerRef}
-                                className="relative select-none flex"
                                 style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
+                                    position: 'relative', width: '100%', height: '100%',
                                     cursor: sequenceMode ? 'pointer' : (roi ? 'default' : 'crosshair'),
-                                    WebkitUserSelect: 'none',
-                                    userSelect: 'none',
-                                    WebkitUserDrag: 'none'
+                                    WebkitUserSelect: 'none', userSelect: 'none', WebkitUserDrag: 'none'
                                 }}
                                 onDragStart={(e) => e.preventDefault()}
                                 onMouseDown={handleMouseDown}
@@ -705,117 +796,212 @@ const LiveMonitor = ({ onMappingChange }) => {
                                 onMouseLeave={() => { if (isDrawing) handleMouseUp(); }}
                             >
                                 <img
+                                    ref={imgRef}
                                     src={`data:image/jpeg;base64,${setupData.screen}`}
-                                    className="max-w-full max-h-full object-contain opacity-80 transition-opacity group-hover:opacity-50 select-none pointer-events-none"
-                                    style={{ display: 'block' }}
+                                    onLoad={() => {
+                                        if (imgContainerRef.current && imgRef.current) {
+                                            const containerRect = imgContainerRef.current.getBoundingClientRect();
+                                            const imgRect = imgRef.current.getBoundingClientRect();
+                                            setImgBounds({
+                                                left: imgRect.left - containerRect.left,
+                                                top: imgRect.top - containerRect.top,
+                                                width: imgRect.width,
+                                                height: imgRect.height
+                                            });
+                                        }
+                                    }}
+                                    style={{
+                                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                                        width: '100%', height: '100%', display: 'block',
+                                        objectFit: 'contain', opacity: 0.8, pointerEvents: 'none',
+                                        userSelect: 'none', WebkitUserSelect: 'none'
+                                    }}
                                     alt="Screen State"
                                     draggable={false}
                                 />
 
-                                {/* ROI drawing preview (while dragging) — NEON GREEN */}
-                                {isDrawing && drawStart && drawCurrent && (
-                                    <div className="absolute z-30 pointer-events-none" style={{
-                                        left: `${Math.min(drawStart.x, drawCurrent.x)}%`,
-                                        top: `${Math.min(drawStart.y, drawCurrent.y)}%`,
-                                        width: `${Math.abs(drawCurrent.x - drawStart.x)}%`,
-                                        height: `${Math.abs(drawCurrent.y - drawStart.y)}%`,
-                                        border: '3px dashed #00FF66',
-                                        backgroundColor: 'rgba(0, 255, 102, 0.15)',
-                                        boxShadow: '0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 15px rgba(0, 255, 102, 0.1)',
-                                    }} />
-                                )}
+                                {/* Exact Physical Overlay Mapping */}
+                                <div style={{
+                                    position: 'absolute', pointerEvents: 'none', overflow: 'hidden',
+                                    left: imgBounds.left, top: imgBounds.top, width: imgBounds.width, height: imgBounds.height
+                                }}>
 
-                                {/* ROI rectangle (after set) — HIGH CONTRAST */}
-                                {roi && !isDrawing && (
-                                    <>
-                                        {/* Dimming overlay outside ROI — darker */}
-                                        <div className="absolute inset-0 z-10 pointer-events-none" style={{
-                                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                            clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${roi.y}%, ${roi.x}% ${roi.y}%, ${roi.x}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y}%, 0% ${roi.y}%)`
+                                    {/* ROI drawing preview (while dragging) — NEON GREEN */}
+                                    {isDrawing && drawStart && drawCurrent && (
+                                        <div style={{
+                                            position: 'absolute', zIndex: 30, pointerEvents: 'none',
+                                            left: `${Math.min(drawStart.x, drawCurrent.x)}%`,
+                                            top: `${Math.min(drawStart.y, drawCurrent.y)}%`,
+                                            width: `${Math.abs(drawCurrent.x - drawStart.x)}%`,
+                                            height: `${Math.abs(drawCurrent.y - drawStart.y)}%`,
+                                            border: '3px dashed #00FF66',
+                                            backgroundColor: 'rgba(0, 255, 102, 0.15)',
+                                            boxShadow: '0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 15px rgba(0, 255, 102, 0.1)'
                                         }} />
-                                        <div className="absolute z-20 pointer-events-none animate-pulse" style={{
-                                            left: `${roi.x}%`, top: `${roi.y}%`, width: `${roi.w}%`, height: `${roi.h}%`,
-                                            border: '3px solid #00FF66',
-                                            boxShadow: '0 0 20px rgba(0, 255, 102, 0.6), 0 0 40px rgba(0, 255, 102, 0.2)',
-                                            borderRadius: '4px',
-                                        }}>
-                                            <span className="absolute -top-6 left-1 text-[11px] font-bold px-2 py-0.5 rounded shadow-lg" style={{
-                                                backgroundColor: '#00FF66',
-                                                color: '#000',
+                                    )}
+
+                                    {/* ROI rectangle (after set) — HIGH CONTRAST */}
+                                    {roi && !isDrawing && (
+                                        <>
+                                            {/* Dimming overlay outside ROI — darker */}
+                                            <div style={{
+                                                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, pointerEvents: 'none',
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                                clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${roi.y}%, ${roi.x}% ${roi.y}%, ${roi.x}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y + roi.h}%, ${roi.x + roi.w}% ${roi.y}%, 0% ${roi.y}%)`
+                                            }} />
+                                            <div style={{
+                                                position: 'absolute', zIndex: 20, pointerEvents: 'none',
+                                                left: `${roi.x}%`, top: `${roi.y}%`, width: `${roi.w}%`, height: `${roi.h}%`,
+                                                border: '3px solid #00FF66',
+                                                boxShadow: '0 0 20px rgba(0, 255, 102, 0.6), 0 0 40px rgba(0, 255, 102, 0.2)',
+                                                borderRadius: '4px'
                                             }}>
-                                                📐 ZONA ACTIVA
-                                            </span>
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* Clear ROI button */}
-                                {roi && (
-                                    <button
-                                        className="absolute top-1 right-1 z-30 bg-red-500/80 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded transition-colors"
-                                        onClick={(e) => { e.stopPropagation(); clearRoi(); }}
-                                    >
-                                        ✕ Borrar Zona
-                                    </button>
-                                )}
-
-                                {/* HUD overlay */}
-                                {!roi && !isDrawing && (
-                                    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="bg-black/80 text-white px-4 py-2 rounded text-sm mb-2 border border-purple-500/50">
-                                            {sequenceMode ? '🔢 Modo Secuencia: Clic en botones en orden' : 'Arrastra para seleccionar zona de botones'}
-                                        </span>
-                                        <span className="bg-black/60 text-white/70 px-3 py-1 rounded text-xs">
-                                            {sequenceMode ? 'Los botones se ejecutarán en el orden que los selecciones' : 'Solo botones dentro de la zona serán detectados'}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Bounding boxes */}
-                                {setupData.buttons.map(b => {
-                                    const isVisited = b.visited || clickedButtons.has(b.text);
-                                    const seqIdx = sequence.findIndex(s => s.btnId === b.id);
-                                    const isInSequence = seqIdx >= 0;
-                                    return (
-                                        <div key={b.id}
-                                            className={`absolute cursor-pointer transition-all hover:z-10 z-20 ${isInSequence
-                                                ? 'border-2 border-cyan-400 bg-cyan-500/20 hover:bg-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.5)]'
-                                                : isVisited
-                                                    ? 'border-2 border-green-400/70 bg-green-500/15 hover:bg-green-500/30 hover:border-green-300 hover:shadow-[0_0_10px_rgba(74,222,128,0.5)]'
-                                                    : 'border border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/40 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]'
-                                                }`}
-                                            style={{
-                                                left: `${(b.x / setupData.screen_width) * 100}%`,
-                                                top: `${(b.y / setupData.screen_height) * 100}%`,
-                                                width: `${(b.w / setupData.screen_width) * 100}%`,
-                                                height: `${(b.h / setupData.screen_height) * 100}%`
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (sequenceMode) handleSequenceClick(b);
-                                                else handleSetupClick(b);
-                                            }}
-                                        >
-                                            {/* Sequence number badge */}
-                                            {isInSequence && (
-                                                <span className="absolute -top-3 -left-1 bg-cyan-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg z-30">
-                                                    {seqIdx + 1}
+                                                <span style={{
+                                                    position: 'absolute', top: '-24px', left: '4px', fontSize: '11px',
+                                                    fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px',
+                                                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                                                    backgroundColor: '#00FF66', color: '#000'
+                                                }}>
+                                                    📐 ZONA ACTIVA
                                                 </span>
-                                            )}
-                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] bg-black/80 text-white px-1 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
-                                                {isVisited ? '✓ ' : ''}{b.text} ({b.conf}%)
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* 'Borrar Zona' button */}
+                                    {roi && (
+                                        <button
+                                            style={{
+                                                position: 'absolute', top: '8px', right: '8px', zIndex: 30, backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                                                color: '#fff', fontSize: '10px', padding: '2px 8px', borderRadius: '4px', border: 'none',
+                                                cursor: 'pointer', pointerEvents: 'auto', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                                            }}
+                                            onClick={(e) => { e.stopPropagation(); clearRoi(); }}
+                                            onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 1)'}
+                                            onMouseOut={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.9)'}
+                                        >
+                                            ✕ Borrar Zona
+                                        </button>
+                                    )}
+
+                                    {/* HUD overlay */}
+                                    {!roi && !isDrawing && (
+                                        <div style={{
+                                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none',
+                                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                            <span style={{
+                                                backgroundColor: 'rgba(0,0,0,0.8)', color: '#fff', padding: '8px 16px',
+                                                borderRadius: '4px', fontSize: '14px', marginBottom: '8px', border: '1px solid rgba(168,85,247,0.5)'
+                                            }}>
+                                                {sequenceMode ? '🔢 Modo Secuencia: Clic en botones en orden' : 'Arrastra para seleccionar zona de botones'}
+                                            </span>
+                                            <span style={{
+                                                backgroundColor: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.7)',
+                                                padding: '4px 12px', borderRadius: '4px', fontSize: '12px'
+                                            }}>
+                                                {sequenceMode ? 'Los botones se ejecutarán en el orden que los selecciones' : 'Solo botones dentro de la zona serán detectados'}
                                             </span>
                                         </div>
-                                    );
-                                })}
-                                {(setupLoading || isAutoExploring) && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20">
-                                        <div className="flex flex-col items-center gap-3">
-                                            <div className="animate-spin h-6 w-6 border-2 border-purple-500 border-t-transparent rounded-full" />
-                                            <span className="text-white/80 text-sm">{isAutoExploring ? "Exploración automática en curso..." : "Navegando y escaneando..."}</span>
+                                    )}
+
+                                    {/* Bounding boxes */}
+                                    {setupData.buttons.map(b => {
+                                        const isVisited = b.visited || clickedButtons.has(b.text);
+                                        const seqIdx = sequence.findIndex(s => s.btnId === b.id);
+                                        const isInSequence = seqIdx >= 0;
+
+                                        // Dynamic mapping for color based on state
+                                        let boxStyle = {
+                                            position: 'absolute', cursor: 'pointer', pointerEvents: 'auto',
+                                            transition: 'all 0.2s ease', zIndex: 20,
+                                            left: `${(b.x / (setupData.screen_width || 1920)) * 100}%`,
+                                            top: `${(b.y / (setupData.screen_height || 1080)) * 100}%`,
+                                            width: `${(b.w / (setupData.screen_width || 1920)) * 100}%`,
+                                            height: `${(b.h / (setupData.screen_height || 1080)) * 100}%`
+                                        };
+
+                                        if (isInSequence) {
+                                            boxStyle.border = '2px solid #22d3ee';
+                                            boxStyle.backgroundColor = 'rgba(34,211,238,0.2)';
+                                            boxStyle.boxShadow = '0 0 10px rgba(34,211,238,0.5)';
+                                        } else if (isVisited) {
+                                            boxStyle.border = '2px solid rgba(74,222,128,0.7)';
+                                            boxStyle.backgroundColor = 'rgba(74,222,128,0.15)';
+                                        } else {
+                                            boxStyle.border = '1px solid rgba(168,85,247,0.5)';
+                                            boxStyle.backgroundColor = 'rgba(168,85,247,0.1)';
+                                        }
+
+                                        return (
+                                            <div key={b.id}
+                                                style={boxStyle}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (sequenceMode) handleSequenceClick(b);
+                                                    else handleSetupClick(b);
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.zIndex = '30';
+                                                    if (!isInSequence && !isVisited) {
+                                                        e.currentTarget.style.backgroundColor = 'rgba(168,85,247,0.4)';
+                                                        e.currentTarget.style.borderColor = 'rgba(168,85,247,1)';
+                                                        e.currentTarget.style.boxShadow = '0 0 10px rgba(168,85,247,0.5)';
+                                                    } else if (isVisited) {
+                                                        e.currentTarget.style.backgroundColor = 'rgba(74,222,128,0.3)';
+                                                        e.currentTarget.style.borderColor = 'rgba(74,222,128,1)';
+                                                        e.currentTarget.style.boxShadow = '0 0 10px rgba(74,222,128,0.5)';
+                                                    }
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.zIndex = '20';
+                                                    if (!isInSequence && !isVisited) {
+                                                        e.currentTarget.style.backgroundColor = 'rgba(168,85,247,0.1)';
+                                                        e.currentTarget.style.borderColor = 'rgba(168,85,247,0.5)';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    } else if (isVisited) {
+                                                        e.currentTarget.style.backgroundColor = 'rgba(74,222,128,0.15)';
+                                                        e.currentTarget.style.borderColor = 'rgba(74,222,128,0.7)';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }
+                                                }}
+                                            >
+                                                {/* Sequence number badge */}
+                                                {isInSequence && (
+                                                    <span style={{
+                                                        position: 'absolute', top: '-12px', left: '-4px',
+                                                        backgroundColor: '#06b6d4', color: '#fff', fontSize: '10px',
+                                                        fontWeight: 'bold', width: '16px', height: '16px',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        borderRadius: '50%', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', zIndex: 30
+                                                    }}>
+                                                        {seqIdx + 1}
+                                                    </span>
+                                                )}
+                                                <span style={{
+                                                    position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)',
+                                                    fontSize: '9px', backgroundColor: 'rgba(0,0,0,0.8)', color: '#fff',
+                                                    padding: '2px 4px', borderRadius: '4px', whiteSpace: 'nowrap', pointerEvents: 'none'
+                                                }}>
+                                                    {isVisited ? '✓ ' : ''}{b.text} ({Math.round(b.conf)}%)
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                    {(setupLoading || isAutoExploring) && (
+                                        <div style={{
+                                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 20
+                                        }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                                                <div className="animate-spin" style={{ height: '24px', width: '24px', border: '2px solid #a855f7', borderTopColor: 'transparent', borderRadius: '50%' }} />
+                                                <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>
+                                                    {isAutoExploring ? "Exploración automática en curso..." : "Navegando y escaneando..."}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -905,7 +1091,7 @@ const LiveMonitor = ({ onMappingChange }) => {
                                     title="Borrar memoria de exploraciones"
                                 >🔄</button>
                             </div>
-                            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto pr-1 pb-4 custom-scrollbar" style={{ position: 'relative' }}>
                                 {setupData.tree && setupData.tree.nodes && setupData.tree.nodes.length > 0 ? (() => {
                                     const nodes = setupData.tree.nodes;
                                     const edges = setupData.tree.edges || [];
@@ -930,36 +1116,47 @@ const LiveMonitor = ({ onMappingChange }) => {
                                         const btnCount = node.buttons?.length || 0;
 
                                         return (
-                                            <div key={nodeId} style={{ marginLeft: depth * 14 }} className="mb-1">
-                                                <div className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-all ${isCurrentNode ? 'bg-purple-500/15 border border-purple-500/30' : 'hover:bg-white/3'}`}>
-                                                    <span className={`text-[10px] ${children.length > 0 ? 'text-purple-400' : 'text-white/20'}`}>
-                                                        {children.length > 0 ? '▾' : '·'}
+                                            <div key={nodeId} style={{ marginLeft: depth * 16, position: 'relative' }} className="mb-2 logic-tree-node">
+                                                {/* Vertical connector line for children (only if it has children) */}
+                                                {children.length > 0 && <div className="logic-tree-connector" />}
+                                                
+                                                {/* The Node Pill */}
+                                                <div className={`logic-tree-pill flex items-center gap-2 px-3 py-2 ${isCurrentNode ? 'border-purple-500/50 bg-purple-500/10 shadow-[0_0_15px_rgba(168,85,247,0.15)]' : ''}`}>
+                                                    <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCurrentNode ? 'bg-purple-400 shadow-[0_0_8px_#a855f7] animate-pulse' : 'bg-white/10'}`} />
+                                                    <span className={`text-[11px] font-medium tracking-wide truncate flex-1 ${isCurrentNode ? 'text-purple-200' : 'text-white/70'}`}>
+                                                        {node.id === 'root' ? 'Inicio General' : `Vista: ${node.id.substring(0, 8)}`}
                                                     </span>
-                                                    <div className={`w-2 h-2 rounded-full shrink-0 ${isCurrentNode ? 'bg-purple-400 shadow-[0_0_6px_#a855f7] animate-pulse' : 'bg-white/20'}`} />
-                                                    <span className={`text-[10px] font-mono truncate flex-1 ${isCurrentNode ? 'text-purple-300 font-bold' : 'text-white/60'}`}>
-                                                        {node.id === 'root' ? '🏠 Inicio' : `📄 ${node.id.substring(0, 8)}`}
-                                                    </span>
-                                                    {btnCount > 0 && <span className="bg-blue-500/20 text-blue-300 text-[8px] px-1 rounded">{btnCount}</span>}
+                                                    {btnCount > 0 && (
+                                                        <span className="bg-purple-500/20 text-purple-300 font-bold text-[9px] px-1.5 py-0.5 rounded-full border border-purple-500/30">
+                                                            {btnCount} elements
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                {children.map((edge, ci) => {
-                                                    const isVisited = clickedButtons.has(edge.text);
-                                                    return (
-                                                        <div key={ci} className="mt-0.5">
-                                                            <div style={{ marginLeft: 12 }} className="flex items-center gap-1 py-0.5">
-                                                                <span className="text-white/15 text-[10px]">└</span>
-                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded ${isVisited ? 'bg-green-500/15 text-green-300 border border-green-500/20' : 'bg-white/5 text-white/50 border border-white/10'}`}>
-                                                                    {isVisited ? '✓' : '→'} "{edge.text || '?'}"
-                                                                </span>
+                                                
+                                                {/* The Children (Edge branches) */}
+                                                <div className="mt-1">
+                                                    {children.map((edge, ci) => {
+                                                        const isVisited = clickedButtons.has(edge.text);
+                                                        return (
+                                                            <div key={ci} style={{ position: 'relative' }} className="mt-1">
+                                                                <div className="logic-tree-branch" />
+                                                                <div style={{ marginLeft: 22 }} className="flex items-center gap-1.5 py-1">
+                                                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm transition-all ${
+                                                                        isVisited 
+                                                                        ? 'bg-green-500/20 text-green-300 border border-green-500/40' 
+                                                                        : 'bg-[#1a1f2b] text-white/50 border border-white/10'
+                                                                    }`}>
+                                                                        {isVisited ? '✓' : '✧'} {edge.text ? `"${edge.text}"` : '[Área Interactiva]'}
+                                                                    </span>
+                                                                </div>
+                                                                {renderTreeNode(edge.to, depth + 1, visited)}
                                                             </div>
-                                                            {renderTreeNode(edge.to, depth + 1, visited)}
-                                                        </div>
-                                                    );
-                                                })}
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         );
-                                    };
-
-                                    return rootIds.map(id => renderTreeNode(id, 0, new Set()));
+                                    };                                    return rootIds.map(id => renderTreeNode(id, 0, new Set()));
                                 })() : (
                                     <div className="h-full flex flex-col items-center justify-center opacity-50 p-4 text-center">
                                         <div className="w-10 h-10 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-2">

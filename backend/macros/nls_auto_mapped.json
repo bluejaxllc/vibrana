@@ -1,0 +1,535 @@
+{
+  "name": "nls_auto_mapped",
+  "actions": [
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "40e5",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "MUSCULOSKELETAL",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "4.0.25",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Cardiovascular",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:56:46",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:56:49",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "CARDIOVASCULAR",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:56:55",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:56:59",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:02",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:05",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:08",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "CARDIOVASCULA",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:15",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Digestive",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "DIGESTIVE",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "25724",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "4.025",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Neural",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "NEURAL",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:37",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "nnected",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:44",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:47",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:57:50",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Respiratory",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "25757",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "RESPIRATORY",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "2:58:03",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Lungs",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Endocrine",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "ENDOCRINE",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Thyroid",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "40.25",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "0.25",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "25826",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "o25",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "THYROID",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "25836",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "25839",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    }
+  ],
+  "action_count": 80,
+  "updated": "2026-04-09T14:59:23.624943",
+  "created": "2026-04-09T14:59:23.624943",
+  "config": {
+    "retry_count": 3,
+    "retry_backoff": 0.5,
+    "settle_timeout": 3.0,
+    "step_delay": 0.1,
+    "continue_on_error": true
+  }
+}

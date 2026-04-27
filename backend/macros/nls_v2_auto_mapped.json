@@ -1,0 +1,262 @@
+{
+  "name": "nls_v2_auto_mapped",
+  "actions": [
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Digestive",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "DIGESTIVE",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "SYSTEM",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Cardiovascular",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "CARDIOVASCULAR",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Respiratory",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "RESPIRATORY",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Bronchi",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "BRONCHI",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Musculoskeletal",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "MUSCULOSKELETAL",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Pelvis",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Neural",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "NEURAL",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "Endocrine",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "ENDOCRINE",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "digestive",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "liver",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    },
+    {
+      "type": "ocr_click",
+      "params": {
+        "text": "LIVER",
+        "timeout": 15
+      }
+    },
+    {
+      "type": "wait",
+      "params": {
+        "seconds": 2.0
+      }
+    }
+  ],
+  "action_count": 38,
+  "updated": "2026-04-09T15:32:06.623764",
+  "created": "2026-04-09T15:32:06.623764",
+  "config": {
+    "retry_count": 3,
+    "retry_backoff": 0.5,
+    "settle_timeout": 3.0,
+    "step_delay": 0.1,
+    "continue_on_error": true
+  }
+}

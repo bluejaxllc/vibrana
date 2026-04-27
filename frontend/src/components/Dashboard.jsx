@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ChevronDown, ChevronRight, Wrench, Activity, Settings2, GripVertical, Eye, EyeOff, RotateCcw, X, BarChart3, ClipboardList, Users, Settings, Sun, Moon } from 'lucide-react';
+import { ChevronDown, ChevronRight, Wrench, Activity, Settings2, GripVertical, Eye, EyeOff, RotateCcw, X, Settings, Sun, Moon } from 'lucide-react';
 import ControlPanel from './ControlPanel';
 import LiveMonitor from './LiveMonitor';
 import PatientManager from './PatientManager';
@@ -12,7 +12,6 @@ import LiveEntropyCounter from './LiveEntropyCounter';
 import ScreenWatcherPanel from './ScreenWatcherPanel';
 import OrganMap from './OrganMap';
 import NLSAnalyzerPanel from './NLSAnalyzerPanel';
-import KnowledgeBasePanel from './KnowledgeBasePanel';
 import '../App.css';
 
 import { LOCAL_API as API } from '../config.js';
@@ -133,27 +132,25 @@ const CollapsibleSection = ({ title, icon, children, defaultOpen = false }) => {
 
 /* ── Widget Registry ─────────────────────────── */
 const WIDGET_REGISTRY = [
-    { id: 'organ-map', label: 'Mapa Corporal', icon: '🧬', column: 'left', defaultVisible: true },
-    { id: 'live-monitor', label: 'Transmisión en Vivo', icon: '📡', column: 'left', defaultVisible: true },
-    { id: 'patient-manager', label: 'Gestión de Pacientes', icon: '👤', column: 'center', defaultVisible: true },
-    { id: 'controls', label: 'Controles', icon: '🎛️', column: 'center', defaultVisible: true },
-    { id: 'macros', label: 'Macros', icon: '⌨️', column: 'center', defaultVisible: true },
-    { id: 'live-analysis', label: 'Análisis en Vivo', icon: '📊', column: 'center', defaultVisible: false },
-    { id: 'advanced-tools', label: 'Herramientas Avanzadas', icon: '🔧', column: 'right', defaultVisible: false },
-    { id: 'knowledge-base', label: 'Base Conocimiento', icon: '📚', column: 'right', defaultVisible: false },
-    { id: 'nls-analyzer', label: 'Sistema NLS', icon: '🔬', column: 'right', defaultVisible: true },
-    { id: 'scan-log', label: 'Registro de Escaneo', icon: '📋', column: 'right', defaultVisible: true },
+    { id: 'live-monitor', label: 'Monitor', icon: '📡', column: 'left', defaultVisible: true },
+    { id: 'patient-manager', label: 'Pacientes', icon: '👤', column: 'right', defaultVisible: true },
+    { id: 'macros', label: 'Macros', icon: '⌨️', column: 'right', defaultVisible: true },
+    { id: 'scan-log', label: 'Registro', icon: '📋', column: 'right', defaultVisible: true },
+    { id: 'organ-map', label: 'Mapa Corporal', icon: '🧬', column: 'left', defaultVisible: false },
+    { id: 'controls', label: 'Controles', icon: '🎛️', column: 'right', defaultVisible: false },
+    { id: 'nls-analyzer', label: 'Sistema NLS', icon: '🔬', column: 'right', defaultVisible: false },
+    { id: 'live-analysis', label: 'Análisis en Vivo', icon: '📊', column: 'right', defaultVisible: false },
+    { id: 'advanced-tools', label: 'Herramientas CV', icon: '🔧', column: 'right', defaultVisible: false },
 ];
 
-const STORAGE_KEY = 'vibrana_dashboard_config';
+const STORAGE_KEY = 'vibrana_dashboard_config_v2';
 
 const getDefaultConfig = () => ({
     columnOrder: {
-        left: ['organ-map', 'live-monitor'],
-        center: ['patient-manager', 'controls', 'macros', 'live-analysis'],
-        right: ['advanced-tools', 'nls-analyzer', 'scan-log'],
+        left: ['live-monitor', 'organ-map'],
+        right: ['patient-manager', 'macros', 'scan-log', 'controls', 'nls-analyzer', 'live-analysis', 'advanced-tools'],
     },
-    hidden: ['live-analysis', 'advanced-tools'],
+    hidden: ['organ-map', 'controls', 'nls-analyzer', 'live-analysis', 'advanced-tools'],
 });
 
 const loadConfig = () => {
@@ -165,11 +162,19 @@ const loadConfig = () => {
             if (parsed.columnOrder && parsed.hidden) {
                 // Add any new widgets that might have been added since last save
                 const allIds = WIDGET_REGISTRY.map(w => w.id);
-                const savedIds = [...parsed.columnOrder.left, ...parsed.columnOrder.center, ...parsed.columnOrder.right];
+                const allCols = ['left', 'right'];
+                const savedIds = allCols.flatMap(c => parsed.columnOrder[c] || []);
+                // Migrate: drop removed columns (center)
+                if (parsed.columnOrder.center) {
+                    parsed.columnOrder.right = [...(parsed.columnOrder.right || []), ...parsed.columnOrder.center];
+                    delete parsed.columnOrder.center;
+                }
                 const missing = allIds.filter(id => !savedIds.includes(id));
                 missing.forEach(id => {
                     const w = WIDGET_REGISTRY.find(r => r.id === id);
-                    if (w) parsed.columnOrder[w.column].push(id);
+                    const col = w?.column === 'left' ? 'left' : 'right';
+                    if (!parsed.columnOrder[col]) parsed.columnOrder[col] = [];
+                    parsed.columnOrder[col].push(id);
                 });
                 return parsed;
             }
@@ -317,16 +322,16 @@ const Dashboard = () => {
             const newOrder = { ...prev.columnOrder };
             // Find which column the source is in
             let sourceCol = null;
-            for (const col of ['left', 'center', 'right']) {
-                if (newOrder[col].includes(sourceId)) {
+            for (const col of ['left', 'right']) {
+                if (newOrder[col]?.includes(sourceId)) {
                     sourceCol = col;
                     break;
                 }
             }
             // Find which column the target is in
             let targetCol = null;
-            for (const col of ['left', 'center', 'right']) {
-                if (newOrder[col].includes(targetId)) {
+            for (const col of ['left', 'right']) {
+                if (newOrder[col]?.includes(targetId)) {
                     targetCol = col;
                     break;
                 }
@@ -560,12 +565,6 @@ const Dashboard = () => {
                             </CollapsibleSection>
                         </div>
                     );
-                case 'knowledge-base':
-                    return (
-                        <div className="vfx-card-enter" style={{ animationDelay: '0.38s' }}>
-                            <KnowledgeBasePanel />
-                        </div>
-                    );
                 case 'nls-analyzer':
                     return (
                         <div className="vfx-card-enter" style={{ animationDelay: '0.40s' }}>
@@ -632,83 +631,31 @@ const Dashboard = () => {
             <header className="dashboard-header vfx-fade-in">
                 <div>
                     <h1>Vibrana Overseer</h1>
-                    {selectedPatient && <div className="patient-badge">● Paciente: {selectedPatient.name}</div>}
+                    {selectedPatient && <div className="patient-badge">● {selectedPatient.name}</div>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {teams.length > 0 && (
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(167,139,250,0.2)',
-                            borderRadius: 10,
-                            padding: '4px 12px',
-                        }}>
-                            <span style={{ fontSize: 10, opacity: 0.5, textTransform: 'uppercase', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>Equipo</span>
-                            <select
-                                value={currentTeam?.team_id || ''}
-                                onChange={(e) => handleTeamChange(e.target.value)}
-                                style={{
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: '#a78bfa',
-                                    fontSize: 13,
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    outline: 'none',
-                                    fontFamily: 'inherit',
-                                }}
-                            >
-                                {teams.map(t => <option key={t.team_id} value={t.team_id} style={{ background: '#13132a', color: '#e2e8f0' }}>{t.team_name}</option>)}
-                            </select>
-                        </div>
-                    )}
-                    <a href="/analytics" className="btn btn-ghost btn-sm"><BarChart3 size={14} /> Estadisticas</a>
-                    <a href="/diagnostic-logs" className="btn btn-ghost btn-sm"><ClipboardList size={14} /> Registros</a>
-                    <a href="/teams" className="btn btn-ghost btn-sm"><Users size={14} /> Equipo</a>
+                    <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                     <button
-                        className={`btn btn-ghost btn-sm ${isEditing ? 'btn-editing-active' : ''}`}
+                        className="btn btn-ghost btn-sm"
                         onClick={() => setShowConfigPanel(true)}
                         title="Personalizar Dashboard"
                     >
                         <Settings2 size={16} />
                     </button>
-                    <button
-                        className={`btn btn-ghost btn-sm ${isEditing ? 'btn-editing-active' : ''}`}
-                        onClick={() => setIsEditing(!isEditing)}
-                        title={isEditing ? 'Terminar edicion' : 'Reorganizar widgets'}
-                    >
-                        {isEditing ? 'Listo' : <GripVertical size={16} />}
-                    </button>
-                    <a href="/settings" className="btn btn-ghost btn-sm" title="Configuracion"><Settings size={16} /></a>
+                    <a href="/settings" className="btn btn-ghost btn-sm" title="Configuración"><Settings size={16} /></a>
                     <button className="btn btn-ghost btn-sm" onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}>
                         {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
                     </button>
-                    <span className={`status-badge ${getStatusClass()}`}>● {status}</span>
                 </div>
             </header>
 
-            <StatsWidgets />
-
-            {isEditing && (
-                <div className="editing-banner">
-                    <GripVertical size={14} />
-                    Modo de edición — Arrastra los widgets para reordenar
-                    <button onClick={() => setIsEditing(false)} className="editing-done-btn">✓ Listo</button>
-                </div>
-            )}
-
-            <main className={`dashboard-content three-column-grid${isMappingActive ? ' mapping-active' : ''}`}>
-                {/* COLUMN 1: Left */}
+            <main className={`dashboard-content two-column-grid${isMappingActive ? ' mapping-active' : ''}`}>
+                {/* COLUMN 1: Left — Monitor */}
                 <div className="column-left">
                     {renderColumn('left')}
                 </div>
 
-                {/* COLUMN 2: Center */}
-                <div className="column-center">
-                    {renderColumn('center')}
-                </div>
-
-                {/* COLUMN 3: Right */}
+                {/* COLUMN 2: Right — Panels */}
                 <div className="column-right">
                     {renderColumn('right')}
                 </div>

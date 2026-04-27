@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Metatron Hunter 4025 — NLS Diagnostic</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0e1a;
+      --panel: #111827;
+      --border: #1e2a42;
+      --accent: #00d4ff;
+      --accent2: #8b5cf6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --orange: #f97316;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    
+    /* ─── TOP BAR ─── */
+    .topbar {
+      background: linear-gradient(90deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+    }
+    .topbar-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    .topbar-status {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .topbar-status .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    
+    /* ─── BREADCRUMB ─── */
+    .breadcrumb {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 20px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 32px;
+    }
+    .breadcrumb span { color: var(--accent); cursor: pointer; }
+    .breadcrumb span:hover { text-decoration: underline; }
+    .breadcrumb .sep { color: var(--muted); opacity: 0.5; }
+    
+    /* ─── MAIN LAYOUT ─── */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 220px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      padding: 12px 16px 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-btn:hover {
+      background: rgba(0, 212, 255, 0.08);
+      border-left-color: var(--accent);
+    }
+    .sidebar-btn.active {
+      background: rgba(0, 212, 255, 0.12);
+      border-left-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .sidebar-btn .emoji { font-size: 16px; width: 22px; text-align: center; }
+    
+    /* ─── CONTENT AREA ─── */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .content-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .content-header h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+    
+    .content-body {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    /* ─── BUTTON GRID ─── */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    
+    .nav-btn {
+      background: linear-gradient(135deg, #1a1f36 0%, #16213e 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-btn:hover {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, #1a2540 0%, #1e2d52 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+    }
+    .nav-btn .btn-emoji { font-size: 32px; }
+    .nav-btn .btn-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+    .nav-btn .btn-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    
+    /* ─── BACK BUTTON ─── */
+    .back-btn {
+      background: rgba(100, 116, 139, 0.15);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover {
+      background: rgba(100, 116, 139, 0.25);
+      border-color: var(--accent);
+    }
+    
+    /* ─── SCAN ACTION BUTTON ─── */
+    .scan-btn {
+      background: linear-gradient(135deg, var(--accent2) 0%, #6d28d9 100%);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.5px;
+    }
+    .scan-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    }
+    
+    /* ─── ENTROPY PANEL ─── */
+    .entropy-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .entropy-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .entropy-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .entropy-cell {
+      text-align: center;
+      padding: 8px 4px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .entropy-cell.level-1 { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+    .entropy-cell.level-2 { background: rgba(16, 185, 129, 0.25); color: var(--green); }
+    .entropy-cell.level-3 { background: rgba(245, 158, 11, 0.15); color: var(--yellow); }
+    .entropy-cell.level-4 { background: rgba(245, 158, 11, 0.25); color: var(--yellow); }
+    .entropy-cell.level-5 { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+    .entropy-cell.level-6 { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    
+    /* ─── FREQUENCY PANEL ─── */
+    .freq-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .freq-bar {
+      height: 6px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+      transition: width 0.5s ease;
+    }
+    .freq-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .freq-label { font-size: 11px; color: var(--muted); width: 80px; }
+    .freq-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+    .freq-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+    .freq-value { font-size: 11px; color: var(--text); width: 40px; text-align: right; }
+    
+    /* ─── SCAN RESULTS ─── */
+    .scan-results {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .result-row:last-child { border: none; }
+    .result-label { color: var(--muted); }
+    .result-value { font-weight: 600; }
+    .result-value.good { color: var(--green); }
+    .result-value.warn { color: var(--yellow); }
+    .result-value.bad { color: var(--red); }
+    
+    /* ─── BODY DIAGRAM (fake SVG placeholder) ─── */
+    .body-diagram {
+      background: linear-gradient(135deg, #0f1629 0%, #131b33 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .body-diagram::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.05) 0%, transparent 70%);
+    }
+    .body-outline {
+      width: 80px; height: 160px;
+      border: 2px solid rgba(0,212,255,0.3);
+      border-radius: 40px 40px 20px 20px;
+      position: relative;
+    }
+    .body-outline::before {
+      content: '';
+      width: 30px; height: 30px;
+      border: 2px solid rgba(0,212,255,0.3);
+      border-radius: 50%;
+      position: absolute;
+      top: -18px; left: 50%;
+      transform: translateX(-50%);
+    }
+    /* Nidal points */
+    .nidal-point {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      animation: nidal-pulse 2s infinite;
+    }
+    @keyframes nidal-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.5); opacity: 0.4; }
+    }
+    
+    /* ─── STATUS BAR ─── */
+    .statusbar {
+      background: #0c1020;
+      border-top: 1px solid var(--border);
+      padding: 4px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      height: 28px;
+    }
+    .statusbar .status-left, .statusbar .status-right {
+      display: flex; gap: 16px; align-items: center;
+    }
+    .statusbar .connected { color: var(--green); }
+    
+    /* ─── SCAN ANIMATION ─── */
+    .scanning-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 26, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      gap: 16px;
+    }
+    .scan-ring {
+      width: 80px; height: 80px;
+      border: 3px solid transparent;
+      border-top-color: var(--accent);
+      border-right-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scan-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 3px;
+    }
+    
+    /* ─── SCREEN TRANSITION ─── */
+    .screen-transition {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 26, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+    }
+    .transition-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      animation: fade-pulse 0.5s infinite alternate;
+    }
+    @keyframes fade-pulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">METATRON HUNTER 4025</div>
+    <div class="topbar-status">
+      <span><span class="dot"></span> Connected</span>
+      <span>v4.0.25</span>
+      <span id="clock"></span>
+    </div>
+  </div>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb" id="breadcrumb">
+    <span onclick="navigateTo('home')">Home</span>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-title">Systems</div>
+      <button class="sidebar-btn" onclick="navigateTo('cardiovascular')">
+        <span class="emoji">❤️</span> Cardiovascular
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('digestive')">
+        <span class="emoji">🟤</span> Digestive
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('neural')">
+        <span class="emoji">🧠</span> Neural
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('respiratory')">
+        <span class="emoji">🫁</span> Respiratory
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('endocrine')">
+        <span class="emoji">⚗️</span> Endocrine
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('musculoskeletal')">
+        <span class="emoji">🦴</span> Musculoskeletal
+      </button>
+
+      <div class="sidebar-title">Tools</div>
+      <button class="sidebar-btn" onclick="navigateTo('scan_full')">
+        <span class="emoji">📡</span> Full Body Scan
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('settings')">
+        <span class="emoji">⚙️</span> Settings
+      </button>
+      <button class="sidebar-btn" onclick="navigateTo('reports')">
+        <span class="emoji">📊</span> Reports
+      </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="content-header">
+        <h2 id="screen-title">DIAGNOSTIC OVERVIEW</h2>
+        <div id="header-actions"></div>
+      </div>
+      <div class="content-body" id="content-body">
+        <!-- Dynamic content rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="status-left">
+      <span class="connected">● Device Ready</span>
+      <span id="screen-id">Screen: home</span>
+    </div>
+    <div class="status-right">
+      <span>Freq: 1.8–8.2 Hz</span>
+      <span>Sensitivity: High</span>
+      <span id="scan-count">Scans: 0</span>
+    </div>
+  </div>
+
+  <!-- SCANNING OVERLAY (hidden by default) -->
+  <div class="scanning-overlay" id="scan-overlay" style="display:none;">
+    <div class="scan-ring"></div>
+    <div class="scan-text">SCANNING...</div>
+    <div style="font-size:12px;color:var(--muted);" id="scan-progress">Analyzing frequencies...</div>
+  </div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// MOCK NLS STATE MACHINE
+// ═══════════════════════════════════════════════════════
+
+const STATE = {
+  screen: 'home',
+  history: ['home'],
+  scanCount: 0,
+  results: {}
+};
+
+// ─── SCREEN DEFINITIONS ───
+const SCREENS = {
+  home: {
+    title: 'DIAGNOSTIC OVERVIEW',
+    type: 'grid',
+    buttons: [
+      { id: 'cardiovascular', emoji: '❤️', label: 'Cardiovascular', sub: '4 organs • 23 markers' },
+      { id: 'digestive',      emoji: '🟤', label: 'Digestive',      sub: '6 organs • 31 markers' },
+      { id: 'neural',         emoji: '🧠', label: 'Neural',         sub: '5 organs • 28 markers' },
+      { id: 'respiratory',    emoji: '🫁', label: 'Respiratory',    sub: '3 organs • 15 markers' },
+      { id: 'endocrine',      emoji: '⚗️', label: 'Endocrine',      sub: '4 organs • 19 markers' },
+      { id: 'musculoskeletal', emoji: '🦴', label: 'Musculoskeletal', sub: '6 organs • 35 markers' },
+    ]
+  },
+
+  // ─── CARDIOVASCULAR ───
+  cardiovascular: {
+    title: 'CARDIOVASCULAR SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'cv_heart',     emoji: '❤️', label: 'Heart',              sub: 'Myocardium analysis' },
+      { id: 'cv_aorta',     emoji: '🔴', label: 'Aorta',              sub: 'Thoracic + Abdominal' },
+      { id: 'cv_coronary',  emoji: '💗', label: 'Coronary Arteries',  sub: 'LAD, LCx, RCA' },
+      { id: 'cv_valves',    emoji: '🔶', label: 'Heart Valves',       sub: 'Mitral, Aortic, Tricuspid' },
+    ]
+  },
+  cv_heart:    { title: 'HEART — MYOCARDIUM', type: 'organ', parent: 'cardiovascular', organ: 'Heart' },
+  cv_aorta:    { title: 'AORTA', type: 'organ', parent: 'cardiovascular', organ: 'Aorta' },
+  cv_coronary: { title: 'CORONARY ARTERIES', type: 'organ', parent: 'cardiovascular', organ: 'Coronary' },
+  cv_valves:   { title: 'HEART VALVES', type: 'organ', parent: 'cardiovascular', organ: 'Valves' },
+
+  // ─── DIGESTIVE ───
+  digestive: {
+    title: 'DIGESTIVE SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'dg_stomach',   emoji: '🟤', label: 'Stomach',           sub: 'Gastric analysis' },
+      { id: 'dg_liver',     emoji: '🟠', label: 'Liver',             sub: 'Hepatocyte function' },
+      { id: 'dg_intestine', emoji: '🟡', label: 'Small Intestine',   sub: 'Absorption markers' },
+      { id: 'dg_colon',     emoji: '🔵', label: 'Large Intestine',   sub: 'Microbiome analysis' },
+      { id: 'dg_pancreas',  emoji: '🟣', label: 'Pancreas',          sub: 'Enzyme production' },
+      { id: 'dg_gallbladder', emoji: '🟢', label: 'Gallbladder',     sub: 'Bile flow analysis' },
+    ]
+  },
+  dg_stomach:    { title: 'STOMACH', type: 'organ', parent: 'digestive', organ: 'Stomach' },
+  dg_liver:      { title: 'LIVER', type: 'organ', parent: 'digestive', organ: 'Liver' },
+  dg_intestine:  { title: 'SMALL INTESTINE', type: 'organ', parent: 'digestive', organ: 'SmIntestine' },
+  dg_colon:      { title: 'LARGE INTESTINE', type: 'organ', parent: 'digestive', organ: 'LgIntestine' },
+  dg_pancreas:   { title: 'PANCREAS', type: 'organ', parent: 'digestive', organ: 'Pancreas' },
+  dg_gallbladder: { title: 'GALLBLADDER', type: 'organ', parent: 'digestive', organ: 'Gallbladder' },
+
+  // ─── NEURAL ───
+  neural: {
+    title: 'NEURAL SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'nr_brain',      emoji: '🧠', label: 'Brain',             sub: 'Cortex + Cerebellum' },
+      { id: 'nr_spinal',     emoji: '🦴', label: 'Spinal Cord',       sub: 'Cervical to Sacral' },
+      { id: 'nr_peripheral', emoji: '⚡', label: 'Peripheral Nerves', sub: 'Neuropathy markers' },
+      { id: 'nr_autonomic',  emoji: '🔮', label: 'Autonomic System',  sub: 'Sympathetic + Para' },
+      { id: 'nr_pineal',     emoji: '👁️', label: 'Pineal Gland',      sub: 'Melatonin markers' },
+    ]
+  },
+  nr_brain:      { title: 'BRAIN', type: 'organ', parent: 'neural', organ: 'Brain' },
+  nr_spinal:     { title: 'SPINAL CORD', type: 'organ', parent: 'neural', organ: 'SpinalCord' },
+  nr_peripheral: { title: 'PERIPHERAL NERVES', type: 'organ', parent: 'neural', organ: 'PeripheralNerves' },
+  nr_autonomic:  { title: 'AUTONOMIC SYSTEM', type: 'organ', parent: 'neural', organ: 'AutonomicSystem' },
+  nr_pineal:     { title: 'PINEAL GLAND', type: 'organ', parent: 'neural', organ: 'PinealGland' },
+
+  // ─── RESPIRATORY ───
+  respiratory: {
+    title: 'RESPIRATORY SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'rs_lungs',   emoji: '🫁', label: 'Lungs',    sub: 'Alveolar analysis' },
+      { id: 'rs_bronchi',  emoji: '🌬️', label: 'Bronchi',   sub: 'Airway conductance' },
+      { id: 'rs_trachea',  emoji: '🔷', label: 'Trachea',  sub: 'Upper airway' },
+    ]
+  },
+  rs_lungs:   { title: 'LUNGS', type: 'organ', parent: 'respiratory', organ: 'Lungs' },
+  rs_bronchi:  { title: 'BRONCHI', type: 'organ', parent: 'respiratory', organ: 'Bronchi' },
+  rs_trachea:  { title: 'TRACHEA', type: 'organ', parent: 'respiratory', organ: 'Trachea' },
+
+  // ─── ENDOCRINE ───
+  endocrine: {
+    title: 'ENDOCRINE SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'en_thyroid',   emoji: '🦋', label: 'Thyroid',       sub: 'T3, T4, TSH markers' },
+      { id: 'en_adrenal',   emoji: '⚡', label: 'Adrenal',       sub: 'Cortisol + Adrenaline' },
+      { id: 'en_pituitary', emoji: '🔵', label: 'Pituitary',     sub: 'Master gland' },
+      { id: 'en_hypothalamus', emoji: '🟣', label: 'Hypothalamus', sub: 'Regulation center' },
+    ]
+  },
+  en_thyroid:      { title: 'THYROID', type: 'organ', parent: 'endocrine', organ: 'Thyroid' },
+  en_adrenal:      { title: 'ADRENAL GLANDS', type: 'organ', parent: 'endocrine', organ: 'Adrenal' },
+  en_pituitary:    { title: 'PITUITARY', type: 'organ', parent: 'endocrine', organ: 'Pituitary' },
+  en_hypothalamus: { title: 'HYPOTHALAMUS', type: 'organ', parent: 'endocrine', organ: 'Hypothalamus' },
+
+  // ─── MUSCULOSKELETAL ───
+  musculoskeletal: {
+    title: 'MUSCULOSKELETAL SYSTEM',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'ms_spine',  emoji: '🦴', label: 'Spine',           sub: 'Vertebral segments' },
+      { id: 'ms_joints', emoji: '🔗', label: 'Major Joints',    sub: 'Knee, Hip, Shoulder' },
+      { id: 'ms_muscle', emoji: '💪', label: 'Muscle Groups',   sub: 'Tone + Inflammation' },
+      { id: 'ms_pelvis', emoji: '🦴', label: 'Pelvis',          sub: 'Sacroiliac analysis' },
+      { id: 'ms_cervical', emoji: '🔷', label: 'Cervical Spine', sub: 'C1-C7 analysis' },
+      { id: 'ms_lumbar',  emoji: '🔶', label: 'Lumbar Spine',   sub: 'L1-L5 analysis' },
+    ]
+  },
+  ms_spine:    { title: 'SPINE', type: 'organ', parent: 'musculoskeletal', organ: 'Spine' },
+  ms_joints:   { title: 'MAJOR JOINTS', type: 'organ', parent: 'musculoskeletal', organ: 'Joints' },
+  ms_muscle:   { title: 'MUSCLE GROUPS', type: 'organ', parent: 'musculoskeletal', organ: 'Muscles' },
+  ms_pelvis:   { title: 'PELVIS', type: 'organ', parent: 'musculoskeletal', organ: 'Pelvis' },
+  ms_cervical: { title: 'CERVICAL SPINE', type: 'organ', parent: 'musculoskeletal', organ: 'CervicalSpine' },
+  ms_lumbar:   { title: 'LUMBAR SPINE', type: 'organ', parent: 'musculoskeletal', organ: 'LumbarSpine' },
+
+  // ─── TOOLS ───
+  scan_full: {
+    title: 'FULL BODY SCAN',
+    type: 'tool',
+    parent: 'home',
+    toolType: 'fullScan'
+  },
+  settings: {
+    title: 'SETTINGS',
+    type: 'settings',
+    parent: 'home',
+    buttons: [
+      { id: 'set_calibration', emoji: '🎯', label: 'Calibration',     sub: 'Sensor calibration' },
+      { id: 'set_params',      emoji: '📐', label: 'Scan Parameters', sub: 'Frequency range + sensitivity' },
+      { id: 'set_device',      emoji: '🔌', label: 'Device Config',   sub: 'USB + Connection' },
+      { id: 'set_export',      emoji: '💾', label: 'Export Settings',  sub: 'PDF + CSV export' },
+    ]
+  },
+  set_calibration: { title: 'CALIBRATION', type: 'settings_detail', parent: 'settings' },
+  set_params:      { title: 'SCAN PARAMETERS', type: 'settings_detail', parent: 'settings' },
+  set_device:      { title: 'DEVICE CONFIG', type: 'settings_detail', parent: 'settings' },
+  set_export:      { title: 'EXPORT SETTINGS', type: 'settings_detail', parent: 'settings' },
+
+  reports: {
+    title: 'REPORTS',
+    type: 'grid',
+    parent: 'home',
+    buttons: [
+      { id: 'rpt_summary',  emoji: '📈', label: 'Summary Report',  sub: 'Full diagnostic overview' },
+      { id: 'rpt_history',  emoji: '📅', label: 'Scan History',    sub: 'Past 30 days' },
+      { id: 'rpt_compare',  emoji: '🔄', label: 'Compare Scans',   sub: 'Trend analysis' },
+    ]
+  },
+  rpt_summary: { title: 'SUMMARY REPORT', type: 'settings_detail', parent: 'reports' },
+  rpt_history: { title: 'SCAN HISTORY', type: 'settings_detail', parent: 'reports' },
+  rpt_compare: { title: 'COMPARE SCANS', type: 'settings_detail', parent: 'reports' },
+};
+
+// ─── RANDOM DATA GENERATORS ───
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randFloat(min, max) { return (Math.random() * (max - min) + min).toFixed(1); }
+
+function genEntropy() {
+  const levels = [];
+  for (let i = 0; i < 12; i++) {
+    levels.push(randInt(1, 6));
+  }
+  return levels;
+}
+
+function genFreqs() {
+  return [
+    { label: 'Alpha',  value: randInt(20, 95), color: 'var(--green)' },
+    { label: 'Beta',   value: randInt(15, 85), color: 'var(--accent)' },
+    { label: 'Gamma',  value: randInt(10, 70), color: 'var(--accent2)' },
+    { label: 'Delta',  value: randInt(30, 90), color: 'var(--yellow)' },
+    { label: 'Theta',  value: randInt(20, 80), color: 'var(--orange)' },
+  ];
+}
+
+function genScanResults(organ) {
+  const overall = Math.random();
+  const status = overall > 0.7 ? 'Normal' : overall > 0.4 ? 'Moderate' : 'Elevated';
+  const cls = overall > 0.7 ? 'good' : overall > 0.4 ? 'warn' : 'bad';
+  return [
+    { label: 'Organ Status', value: status, cls },
+    { label: 'Entropy Level', value: randFloat(1.2, 5.8), cls: parseFloat(randFloat(1,6)) > 4 ? 'bad' : 'good' },
+    { label: 'Frequency Match', value: `${randInt(60, 98)}%`, cls: 'good' },
+    { label: 'Nidal Points', value: `${randInt(3, 25)}`, cls: randInt(0,1) ? 'warn' : 'good' },
+    { label: 'Etalon Comparison', value: `${randInt(70, 99)}%`, cls: 'good' },
+    { label: 'Pathology Risk', value: `${randFloat(0.5, 4.2)}`, cls: parseFloat(randFloat(0,5)) > 3 ? 'bad' : 'good' },
+  ];
+}
+
+// ─── RENDERING ───
+
+// Simulate realistic transition delay (300-800ms)
+let _transitioning = false;
+function navigateTo(screenId) {
+  const screen = SCREENS[screenId];
+  if (!screen || _transitioning) return;
+  
+  // Random transition delay to simulate real NLS software loading
+  const delay = randInt(200, 700);
+  _transitioning = true;
+  
+  // Show brief loading overlay
+  const transEl = document.createElement('div');
+  transEl.className = 'screen-transition';
+  transEl.innerHTML = '<div class="transition-text">LOADING...</div>';
+  document.body.appendChild(transEl);
+  
+  setTimeout(() => {
+    transEl.remove();
+    _transitioning = false;
+    _renderScreen(screenId, screen);
+    
+    // 30% chance organ screens auto-trigger a quick initial scan
+    if (screen.type === 'organ' && Math.random() < 0.3 && screen.organ) {
+      setTimeout(() => {
+        if (STATE.screen === screenId) {
+          runScan(screen.organ, false);
+        }
+      }, 500);
+    }
+  }, delay);
+}
+
+function _renderScreen(screenId, screen) {
+  STATE.screen = screenId;
+  STATE.history.push(screenId);
+
+  // Update sidebar active
+  document.querySelectorAll('.sidebar-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.textContent.trim().replace(/^./, '').trim() === screen.title?.split(' ')[0]) {
+      btn.classList.add('active');
+    }
+  });
+
+  // Update title
+  document.getElementById('screen-title').textContent = screen.title;
+  document.getElementById('screen-id').textContent = `Screen: ${screenId}`;
+
+  // Build breadcrumb
+  buildBreadcrumb(screenId);
+
+  // Render content
+  const body = document.getElementById('content-body');
+  const actions = document.getElementById('header-actions');
+  body.innerHTML = '';
+  actions.innerHTML = '';
+
+  if (screen.parent) {
+    actions.innerHTML = `<button class="back-btn" onclick="navigateTo('${screen.parent}')">← Back</button>`;
+  }
+
+  switch (screen.type) {
+    case 'grid':
+    case 'settings':
+      renderGrid(body, screen);
+      break;
+    case 'organ':
+      renderOrgan(body, screen);
+      break;
+    case 'tool':
+      renderTool(body, screen);
+      break;
+    case 'settings_detail':
+      renderSettingsDetail(body, screen);
+      break;
+  }
+}
+
+function buildBreadcrumb(screenId) {
+  const bc = document.getElementById('breadcrumb');
+  const path = [];
+  let current = screenId;
+  while (current) {
+    path.unshift(current);
+    current = SCREENS[current]?.parent;
+  }
+  bc.innerHTML = path.map((id, i) => {
+    const s = SCREENS[id];
+    const isLast = i === path.length - 1;
+    const name = id === 'home' ? 'Home' : s?.title?.split(' — ')[0] || id;
+    return (i > 0 ? '<span class="sep">›</span>' : '') +
+      (isLast ? `<strong style="color:var(--accent)">${name}</strong>` :
+        `<span onclick="navigateTo('${id}')">${name}</span>`);
+  }).join('');
+}
+
+function renderGrid(body, screen) {
+  const grid = document.createElement('div');
+  grid.className = 'btn-grid';
+  (screen.buttons || []).forEach(btn => {
+    const el = document.createElement('button');
+    el.className = 'nav-btn';
+    el.onclick = () => navigateTo(btn.id);
+    el.innerHTML = `
+      <span class="btn-emoji">${btn.emoji}</span>
+      <span class="btn-label">${btn.label}</span>
+      <span class="btn-sub">${btn.sub}</span>
+    `;
+    grid.appendChild(el);
+  });
+  body.appendChild(grid);
+}
+
+function renderOrgan(body, screen) {
+  // Body diagram with nidal points
+  const diagram = document.createElement('div');
+  diagram.className = 'body-diagram';
+  const outline = document.createElement('div');
+  outline.className = 'body-outline';
+  diagram.appendChild(outline);
+  
+  // Add random nidal points
+  const colors = ['var(--green)', 'var(--green)', 'var(--yellow)', 'var(--yellow)', 'var(--orange)', 'var(--red)'];
+  for (let i = 0; i < randInt(5, 15); i++) {
+    const pt = document.createElement('div');
+    pt.className = 'nidal-point';
+    pt.style.left = `${randInt(15, 85)}%`;
+    pt.style.top = `${randInt(10, 90)}%`;
+    pt.style.background = colors[randInt(0, colors.length - 1)];
+    pt.style.animationDelay = `${Math.random() * 2}s`;
+    diagram.appendChild(pt);
+  }
+  body.appendChild(diagram);
+
+  // Scan button
+  const scanRow = document.createElement('div');
+  scanRow.style.display = 'flex';
+  scanRow.style.gap = '12px';
+  scanRow.innerHTML = `
+    <button class="scan-btn" onclick="runScan('${screen.organ}')">Run Scan</button>
+    <button class="scan-btn" style="background: linear-gradient(135deg, var(--accent) 0%, #0ea5e9 100%);" onclick="runScan('${screen.organ}', true)">Deep Analysis</button>
+    <button class="back-btn" onclick="navigateTo('${SCREENS[STATE.screen]?.parent || 'home'}')">Cancel</button>
+  `;
+  body.appendChild(scanRow);
+
+  // Entropy data
+  const entropy = genEntropy();
+  const epanel = document.createElement('div');
+  epanel.className = 'entropy-panel';
+  epanel.innerHTML = `
+    <div class="entropy-title">Entropy Analysis — ${screen.organ}</div>
+    <div class="entropy-grid">
+      ${entropy.map((lvl, i) => `<div class="entropy-cell level-${lvl}">L${lvl} · ${randFloat(1, 8)} Hz</div>`).join('')}
+    </div>
+  `;
+  body.appendChild(epanel);
+
+  // Frequency bars
+  const freqs = genFreqs();
+  const fpanel = document.createElement('div');
+  fpanel.className = 'freq-panel';
+  fpanel.innerHTML = `
+    <div class="entropy-title">Frequency Response</div>
+    ${freqs.map(f => `
+      <div class="freq-row">
+        <span class="freq-label">${f.label}</span>
+        <div class="freq-track"><div class="freq-fill" style="width:${f.value}%;background:${f.color};"></div></div>
+        <span class="freq-value">${f.value}%</span>
+      </div>
+    `).join('')}
+  `;
+  body.appendChild(fpanel);
+
+  // Show previous results if available
+  if (STATE.results[screen.organ]) {
+    renderResults(body, screen.organ);
+  }
+}
+
+function renderResults(body, organ) {
+  const results = STATE.results[organ];
+  if (!results) return;
+  
+  const panel = document.createElement('div');
+  panel.className = 'scan-results';
+  panel.innerHTML = `
+    <div class="entropy-title">Scan Results — ${organ}</div>
+    ${results.map(r => `
+      <div class="result-row">
+        <span class="result-label">${r.label}</span>
+        <span class="result-value ${r.cls}">${r.value}</span>
+      </div>
+    `).join('')}
+  `;
+  body.appendChild(panel);
+}
+
+function renderTool(body, screen) {
+  body.innerHTML = `
+    <div class="entropy-panel">
+      <div class="entropy-title">Full Body Scan</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">
+        This will perform a comprehensive NLS scan across all body systems. 
+        Estimated time: 3-5 minutes. Ensure the sensor headset is properly positioned.
+      </p>
+      <div style="display:flex;gap:12px;">
+        <button class="scan-btn" onclick="runFullScan()">Start Full Scan</button>
+        <button class="scan-btn" style="background:linear-gradient(135deg,#059669,#10b981);" onclick="runFullScan(true)">Quick Scan</button>
+      </div>
+    </div>
+    <div class="freq-panel">
+      <div class="entropy-title">Device Diagnostics</div>
+      <div class="result-row"><span class="result-label">Sensor Status</span><span class="result-value good">Connected</span></div>
+      <div class="result-row"><span class="result-label">Battery</span><span class="result-value good">87%</span></div>
+      <div class="result-row"><span class="result-label">Calibration</span><span class="result-value good">Valid (2h ago)</span></div>
+      <div class="result-row"><span class="result-label">Signal Quality</span><span class="result-value good">Excellent</span></div>
+    </div>
+  `;
+}
+
+function renderSettingsDetail(body, screen) {
+  const titles = {
+    'CALIBRATION': ['Auto-Calibrate', 'Manual Offset', 'Reset Defaults', 'Save Profile'],
+    'SCAN PARAMETERS': ['Frequency Range', 'Sensitivity Level', 'Duration Mode', 'Apply Changes'],
+    'DEVICE CONFIG': ['USB Port', 'Baud Rate', 'Test Connection', 'Firmware Update'],
+    'EXPORT SETTINGS': ['Export PDF', 'Export CSV', 'Print Report', 'Email Report'],
+    'SUMMARY REPORT': ['Generate Report', 'View Last Report', 'Print Summary', 'Export All'],
+    'SCAN HISTORY': ['View Log', 'Clear History', 'Export Log', 'Statistics'],
+    'COMPARE SCANS': ['Select Baseline', 'Select Target', 'Run Comparison', 'Trend Graph'],
+  };
+
+  const buttons = titles[screen.title] || ['Option 1', 'Option 2', 'Option 3'];
+  body.innerHTML = `
+    <div class="entropy-panel">
+      <div class="entropy-title">${screen.title}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+        ${buttons.map(b => `
+          <button class="back-btn" style="width:fit-content;" onclick="alert('${b} action triggered')">${b}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ─── SCAN SIMULATION ───
+// Realistic scan with variable timing (some steps take longer)
+function runScan(organ, deep = false) {
+  const overlay = document.getElementById('scan-overlay');
+  const progress = document.getElementById('scan-progress');
+  overlay.style.display = 'flex';
+
+  const steps = [
+    { text: 'Initializing frequency sweep...', delay: randInt(400, 900) },
+    { text: 'Scanning bio-resonance frequencies...', delay: randInt(600, 1200) },
+    { text: `Analyzing ${organ} entropy levels...`, delay: randInt(500, 1000) },
+    { text: 'Detecting nidal point distribution...', delay: randInt(400, 800) },
+    { text: 'Processing etalon comparison data...', delay: deep ? randInt(800, 1500) : randInt(400, 700) },
+    { text: 'Generating diagnostic results...', delay: randInt(300, 600) },
+  ];
+
+  let step = 0;
+  function nextStep() {
+    if (step < steps.length) {
+      progress.textContent = steps[step].text;
+      const delay = steps[step].delay;
+      step++;
+      setTimeout(nextStep, delay);
+    } else {
+      overlay.style.display = 'none';
+      STATE.scanCount++;
+      STATE.results[organ] = genScanResults(organ);
+      document.getElementById('scan-count').textContent = `Scans: ${STATE.scanCount}`;
+      // Small delay before re-rendering results
+      setTimeout(() => {
+        _renderScreen(STATE.screen, SCREENS[STATE.screen]);
+      }, 200);
+    }
+  }
+  nextStep();
+}
+
+function runFullScan() {
+  const overlay = document.getElementById('scan-overlay');
+  const progress = document.getElementById('scan-progress');
+  overlay.style.display = 'flex';
+
+  const systems = ['Cardiovascular', 'Digestive', 'Neural', 'Respiratory', 'Endocrine', 'Musculoskeletal'];
+  let idx = 0;
+  const interval = setInterval(() => {
+    if (idx < systems.length) {
+      progress.textContent = `Scanning ${systems[idx]} system...`;
+      idx++;
+    } else {
+      clearInterval(interval);
+      overlay.style.display = 'none';
+      STATE.scanCount++;
+      document.getElementById('scan-count').textContent = `Scans: ${STATE.scanCount}`;
+      alert('Full body scan complete. View results in Reports.');
+    }
+  }, 700);
+}
+
+// ─── CLOCK ───
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── INIT ───
+_renderScreen('home', SCREENS.home);
+</script>
+</body>
+</html>

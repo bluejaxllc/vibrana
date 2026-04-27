@@ -1034,8 +1034,14 @@ def auto_explore_ui():
 def auto_explore_poll():
     running = getattr(logic_mapper, '_auto_explore_running', False)
     result = getattr(logic_mapper, '_auto_explore_result', None)
+    log = getattr(logic_mapper, '_explore_log', [])
     if running:
-        return jsonify({"status": "running"})
+        return jsonify({
+            "status": "running",
+            "explore_log": log[-20:],  # Last 20 log entries
+            "explored_count": len(logic_mapper.explored_texts),
+            "nav_depth": len(getattr(logic_mapper, '_nav_stack', []))
+        })
     elif result:
         return jsonify(result)
     else:
@@ -1103,7 +1109,9 @@ def list_macros():
 
 @app.route('/api/macros/record/start', methods=['POST'])
 def start_macro_record():
-    return jsonify(macro_engine.start_recording())
+    data = request.json or {}
+    target_window = data.get('target_window')
+    return jsonify(macro_engine.start_recording(target_window=target_window))
 
 
 @app.route('/api/macros/record/stop', methods=['POST'])
@@ -1238,6 +1246,69 @@ def macro_save_template():
         return jsonify(capture_element_template(region, name))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# MACROS — UI Automation Discovery (Phase 5)
+
+@app.route('/api/macros/discover-window', methods=['POST'])
+def macro_discover_window():
+    """Discover UI elements in a window using Windows Accessibility API."""
+    data = request.json or {}
+    window_title = data.get('window_title', '')
+    max_depth = data.get('max_depth', 8)
+    interactive_only = data.get('interactive_only', True)
+    if not window_title:
+        return jsonify({"error": "window_title is required"}), 400
+    try:
+        from ui_automation import discover_window
+        return jsonify(discover_window(window_title, max_depth, interactive_only))
+    except Exception as e:
+        return jsonify({"error": str(e), "elements": []}), 500
+
+@app.route('/api/macros/ui-windows', methods=['GET'])
+def macro_ui_windows():
+    """List all visible windows for UI Automation targeting."""
+    try:
+        from ui_automation import list_ui_windows, is_available
+        result = list_ui_windows()
+        result['uia_available'] = is_available()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e), "windows": [], "uia_available": False}), 500
+
+@app.route('/api/macros/element-tree', methods=['POST'])
+def macro_element_tree():
+    """Get hierarchical accessibility tree for a window."""
+    data = request.json or {}
+    window_title = data.get('window_title', '')
+    max_depth = data.get('max_depth', 3)
+    if not window_title:
+        return jsonify({"error": "window_title is required"}), 400
+    try:
+        from ui_automation import get_element_tree
+        return jsonify(get_element_tree(window_title, max_depth))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/macros/click-element', methods=['POST'])
+def macro_click_element():
+    """Click a UI element by name using Accessibility API."""
+    data = request.json or {}
+    window_title = data.get('window_title', '')
+    element_name = data.get('element_name', '')
+    timeout = data.get('timeout', 10)
+    if not window_title or not element_name:
+        return jsonify({"error": "window_title and element_name required"}), 400
+    try:
+        from ui_automation import click_by_name
+        return jsonify(click_by_name(window_title, element_name, timeout))
+    except Exception as e:
+        return jsonify({"error": str(e), "success": False}), 500
+
+@app.route('/api/macros/recording-status', methods=['GET'])
+def macro_recording_status():
+    """Get extended recording status (listener health, elapsed time)."""
+    return jsonify(macro_engine.get_recording_status())
 
 
 # ──────────────────────────────────────
@@ -2895,6 +2966,127 @@ def nls_report_pdf():
         return jsonify({"error": f"Error generating PDF: {str(e)}"}), 500
 
 
+# ──────────────────────────────────────
+# MACRO ENGINE v2 — Additional API endpoints for new frontend
+# Uses the existing macro_engine singleton from line 944
+# ──────────────────────────────────────
+
+@app.route('/api/macros/list', methods=['GET'])
+def macro_list_v2():
+    """List all saved macros (frontend-compatible endpoint)."""
+    try:
+        macros = macro_engine.list_macros()
+        return jsonify({"macros": macros})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/macros/save', methods=['POST'])
+def macro_save_v2():
+    """Save or overwrite a macro."""
+    try:
+        data = request.json or {}
+        name = data.get('name', '')
+        actions = data.get('actions', [])
+        config = data.get('config')
+        target_window = data.get('target_window')
+        if not name:
+            return jsonify({"error": "name required"}), 400
+        macro_engine.save_macro(name, actions, config=config, target_window=target_window)
+        return jsonify({"status": "saved", "name": name, "action_count": len(actions)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/macros/play', methods=['POST'])
+def macro_play_v2():
+    """Play a macro (simple linear execution)."""
+    try:
+        data = request.json or {}
+        name = data.get('name', '')
+        if not name:
+            return jsonify({"error": "name required"}), 400
+        result = macro_engine.play_macro(name)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route('/api/macros/play-smart', methods=['POST'])
+def macro_play_smart_v2():
+    """Play a macro with smart retry/verification (async)."""
+    try:
+        data = request.json or {}
+        name = data.get('name', '')
+        if not name:
+            return jsonify({"error": "name required"}), 400
+        result = macro_engine.play_macro_smart(name)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e), "status": "error"}), 500
+
+@app.route('/api/macros/playback-status', methods=['GET'])
+def macro_playback_status_v2():
+    """Get current smart playback progress."""
+    try:
+        status = macro_engine.get_playback_status()
+        return jsonify(status)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/macros/abort', methods=['POST'])
+def macro_abort_v2():
+    """Abort current smart playback."""
+    try:
+        macro_engine.abort_playback()
+        return jsonify({"status": "aborting"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/macros/scan-screen', methods=['POST'])
+def macro_scan_screen_v2():
+    """OCR-based screen scan (fallback for non-UIA apps)."""
+    try:
+        import mss
+        import base64
+        from PIL import Image
+        sct = mss.mss()
+        monitor = sct.monitors[1]
+        screenshot = sct.grab(monitor)
+        img = Image.frombytes('RGB', (screenshot.width, screenshot.height), screenshot.rgb)
+
+        import io as _io
+        buf = _io.BytesIO()
+        img.save(buf, format='JPEG', quality=60)
+        b64 = base64.b64encode(buf.getvalue()).decode()
+
+        elements = []
+        try:
+            import pytesseract
+            data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+            for i in range(len(data['text'])):
+                text = data['text'][i].strip()
+                if text and len(text) > 1 and int(data['conf'][i]) > 40:
+                    elements.append({
+                        "id": f"ocr_{i}",
+                        "text": text,
+                        "type": "Text",
+                        "x": data['left'][i],
+                        "y": data['top'][i],
+                        "w": data['width'][i],
+                        "h": data['height'][i],
+                        "confidence": int(data['conf'][i])
+                    })
+        except Exception as ocr_err:
+            print(f"[Macro] OCR unavailable: {ocr_err}")
+
+        return jsonify({
+            "screenshot": b64,
+            "elements": elements,
+            "count": len(elements)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 # ──────────────────────────────────────
 # MAIN
 # ──────────────────────────────────────
