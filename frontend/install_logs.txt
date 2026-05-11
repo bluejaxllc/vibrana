@@ -1,0 +1,2 @@
+npm info using npm@11.11.1
+npm info using node@v25.8.2

@@ -834,7 +834,8 @@ class MacroEngine:
         """Human-readable description for the playback status."""
         if a_type == "click":
             label = params.get("verify_label", "")
-            return f"Click {f'on \"{label}\" ' if label else ''}at ({params.get('x', 0)}, {params.get('y', 0)})"
+            label_text = f'on "{label}" ' if label else ''
+            return f"Click {label_text}at ({params.get('x', 0)}, {params.get('y', 0)})"
         elif a_type == "key":
             return f"Key: {params.get('key', '')}"
         elif a_type == "type":

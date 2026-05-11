@@ -1,0 +1,29 @@
+/Users/temp/Library/CloudStorage/GoogleDrive-edgar@bluejax.ai/Other computers/Blue Jax/Desktop/Vibrana/backend/models.py:311: SAWarning: This declarative base already contains a class with the same class name and module name as models.SystemConfig, and will be replaced in the string-lookup table.
+  class SystemConfig(Base):
+ * Tip: There are .env files present. Install python-dotenv to use them.
+[OK] Database initialized (SQLite: sqlite:////Users/temp/Library/CloudStora...)
+[License] Cloud config: paywall=ACTIVE
+[License] System initialized — paywall: ACTIVE
+Initializing NLSAutomation bot...
+NLSAutomation.__init__ started
+Screen size detected: 1440x900
+Bot initialized successfully.
+[RunEngine] Loaded memory: 1 scanned nodes, 1 past runs
+Starting Vibrana Backend on port 5001...
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.1.1.52:5001
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+/Users/temp/Library/CloudStorage/GoogleDrive-edgar@bluejax.ai/Other computers/Blue Jax/Desktop/Vibrana/backend/models.py:311: SAWarning: This declarative base already contains a class with the same class name and module name as models.SystemConfig, and will be replaced in the string-lookup table.
+  class SystemConfig(Base):
+ * Tip: There are .env files present. Install python-dotenv to use them.
+ * Debugger is active!
+ * Debugger PIN: 645-075-292
+127.0.0.1 - - [27/Mar/2026 02:27:33] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [27/Mar/2026 02:27:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-ryb01am0'}
+  warnings.warn(

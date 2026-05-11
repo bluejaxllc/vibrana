@@ -1,3 +1,10 @@
-Starting Container
-  ➜  Network: http://10.175.89.6:8080/
-  ➜  Local:   http://localhost:8080/
+
+> vibrana-frontend@1.0.0 dev
+> vite
+
+
+  VITE v7.3.1  ready in 312 ms
+
+  ➜  Local:   http://localhost:5176/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
