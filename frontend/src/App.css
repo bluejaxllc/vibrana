@@ -47,6 +47,11 @@
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* INTERACTIVE VARIABLES (Updated via rAF to avoid React re-renders) */
+  --v-mouse-x: 0.5;
+  --v-mouse-y: 0.5;
+  --v-scroll-y: 0;
 }
 
 /* ============================================
@@ -5549,7 +5554,8 @@ body:has(.landing-page) {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  transition: background 0.3s ease;
+  background: radial-gradient(600px circle at calc(var(--v-mouse-x) * 100%) calc(var(--v-mouse-y) * 100%), rgba(139,92,246,0.06), transparent 60%);
+  transition: background 0.3s ease, opacity 0.5s ease;
 }
 
 /* â”€â”€ BACK BUTTON â”€â”€ */
@@ -5736,8 +5742,9 @@ body:has(.landing-page) {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  transition: transform 0.15s ease-out;
   will-change: transform;
+  /* Smooth out jitter from frame updates */
+  transition: transform 0.2s cubic-bezier(0.1, 1, 0.3, 1);
 }
 
 .hero-orb-1 {
@@ -5747,6 +5754,7 @@ body:has(.landing-page) {
   top: -10%;
   left: -5%;
   animation: orb-drift 20s ease-in-out infinite;
+  transform: translate(calc(var(--v-mouse-x) * 30px - 15px), calc(var(--v-scroll-y) * 0.15px + var(--v-mouse-y) * 20px - 10px));
 }
 
 .hero-orb-2 {
@@ -5756,6 +5764,7 @@ body:has(.landing-page) {
   top: 30%;
   right: -10%;
   animation: orb-drift 25s ease-in-out infinite reverse;
+  transform: translate(calc(var(--v-mouse-x) * -20px + 10px), calc(var(--v-scroll-y) * 0.08px + var(--v-mouse-y) * -15px + 7px));
 }
 
 .hero-orb-3 {
@@ -5765,6 +5774,7 @@ body:has(.landing-page) {
   bottom: 10%;
   left: 20%;
   animation: orb-drift 22s ease-in-out infinite 3s;
+  transform: translate(calc(var(--v-mouse-x) * 15px - 7px), calc(var(--v-scroll-y) * 0.12px + var(--v-mouse-y) * 10px - 5px));
 }
 
 .hero-orb-4 {
@@ -5774,6 +5784,7 @@ body:has(.landing-page) {
   top: 50%;
   left: 60%;
   animation: orb-drift 18s ease-in-out infinite 5s;
+  transform: translate(calc(var(--v-mouse-x) * -25px + 12px), calc(var(--v-scroll-y) * 0.1px + var(--v-mouse-y) * 18px - 9px));
 }
 
 .hero-grid-bg {
