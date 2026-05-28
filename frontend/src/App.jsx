@@ -80,7 +80,7 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [token, setToken] = useState(() => localStorage.getItem('vibrana_token') || null);
-  const [showLogin, setShowLogin] = useState(false);
+  const [showLogin, setShowLogin] = useState(true);
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('vibrana_theme');
     if (saved) return saved;
